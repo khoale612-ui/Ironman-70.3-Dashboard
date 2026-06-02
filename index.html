@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0f1b2d">
+<title>70.3 Melbourne</title>
+<style>
+  :root{
+    --bg:#0f1b2d; --surface:#16243a; --surface2:#1d2f49; --line:rgba(255,255,255,0.09);
+    --text:#eef3f9; --muted:#93a4bd; --hint:#6b7d97;
+    --accent:#4ea3ff; --good:#4cc38a; --warn:#e8b339; --bad:#e25c5c;
+    --swim:#4ea3ff; --bike:#e8845a; --run:#5cc88a; --brick:#e2789e; --rest:#8593a8; --tennis:#e8b339; --race:#9b8cf0;
+    --radius:14px; --radius-sm:10px;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0; padding:0; background:var(--bg); color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; -webkit-font-smoothing:antialiased;}
+  .wrap{max-width:520px; margin:0 auto; padding:16px 16px 40px;}
+  .card{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:16px 18px;}
+  .hero{display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px;}
+  .hero .sub{font-size:13px; color:var(--muted); margin:0;}
+  .hero .title{font-size:19px; font-weight:600; margin:3px 0 0;}
+  .cd{font-size:32px; font-weight:600; line-height:1; text-align:right;}
+  .cd small{display:block; font-size:12px; color:var(--muted); font-weight:400; margin-top:3px;}
+  .bar{height:7px; background:#0a121f; border-radius:4px; overflow:hidden; margin-top:14px;}
+  .bar>div{height:100%; background:var(--accent); border-radius:4px; transition:width .3s;}
+  .barlabel{font-size:12px; color:var(--muted); margin:7px 0 0;}
+  .editrace{font-size:12px; color:var(--accent); cursor:pointer; background:none; border:none; padding:6px 0 0; text-decoration:underline;}
+  .stats{display:grid; grid-template-columns:repeat(2,1fr); gap:11px; margin:16px 0;}
+  .stat{background:var(--surface2); border-radius:var(--radius-sm); padding:12px 14px;}
+  .stat .l{font-size:12px; color:var(--muted);}
+  .stat .v{font-size:22px; font-weight:600; margin:2px 0;}
+  .stat .v span{font-size:12px; color:var(--muted); font-weight:400;}
+  .stat .d{font-size:11px;}
+  .up{color:var(--warn);} .down-good{color:var(--good);} .neutral{color:var(--hint);}
+  .nav{display:flex; align-items:center; justify-content:space-between; margin:18px 0 10px;}
+  .nav button{background:var(--surface); border:1px solid var(--line); color:var(--text);
+    width:44px; height:40px; border-radius:var(--radius-sm); font-size:20px; cursor:pointer;}
+  .nav .wt{text-align:center;} .nav .wt .a{font-size:16px; font-weight:600;}
+  .nav .wt .b{font-size:12px; color:var(--muted); margin-top:1px;}
+  .day{display:flex; align-items:center; gap:12px; background:var(--surface);
+    border:1px solid var(--line); border-radius:var(--radius-sm); padding:11px 12px; margin-bottom:9px;}
+  .day.today{border:2px solid var(--accent);}
+  .day.done{opacity:0.55;} .day.done .dt{text-decoration:line-through;}
+  .dot{width:36px; height:36px; border-radius:50%; flex:0 0 auto; display:flex;
+    align-items:center; justify-content:center; font-size:15px; font-weight:700;}
+  .day .dn{font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.04em;}
+  .day .dt{font-size:14px; font-weight:600; line-height:1.3;}
+  .day .dd{font-size:12px; color:var(--muted); line-height:1.35;}
+  .day .note{font-size:12px; color:var(--accent); margin-top:3px; font-style:italic;}
+  .check{width:24px; height:24px; border-radius:50%; border:2px solid var(--line); flex:0 0 auto;
+    display:flex; align-items:center; justify-content:center; font-size:14px; color:var(--good); cursor:pointer;}
+  .day.done .check{border-color:var(--good); background:var(--good); color:#06121f;}
+  .actions{display:flex; gap:9px; margin-top:12px; flex-wrap:wrap;}
+  .actions button{flex:1; min-width:30%; background:var(--surface); border:1px solid var(--line); color:var(--text);
+    padding:11px; border-radius:var(--radius-sm); font-size:13px; cursor:pointer;}
+  .actions button.primary{background:var(--accent); color:#06121f; border-color:var(--accent); font-weight:600;}
+  .sheet{position:fixed; inset:0; background:rgba(0,0,0,0.6); display:none; align-items:flex-end; z-index:50;}
+  .sheet.open{display:flex;}
+  .sheetinner{background:var(--surface); width:100%; max-width:520px; margin:0 auto; border-radius:18px 18px 0 0; padding:20px 18px 28px;}
+  .sheetinner h3{margin:0 0 4px; font-size:16px;}
+  .sheetinner .sd{font-size:12px; color:var(--muted); margin:0 0 16px;}
+  .field{margin-bottom:14px;}
+  .field label{display:block; font-size:12px; color:var(--muted); margin-bottom:5px;}
+  .field input,.field textarea,.field select{width:100%; background:var(--surface2); border:1px solid var(--line);
+    color:var(--text); border-radius:var(--radius-sm); padding:10px 12px; font-size:14px; font-family:inherit;}
+  .field textarea{resize:vertical; min-height:54px;}
+  .sheetbtns{display:flex; gap:9px; margin-top:6px;}
+  .sheetbtns button{flex:1; padding:12px; border-radius:var(--radius-sm); font-size:14px; font-weight:600; cursor:pointer; border:1px solid var(--line);}
+  .sheetbtns .save{background:var(--accent); color:#06121f; border-color:var(--accent);}
+  .sheetbtns .cancel{background:var(--surface2); color:var(--text);}
+  .zones h3{font-size:14px; font-weight:600; margin:0 0 10px;}
+  .ztable{width:100%; border-collapse:collapse; font-size:12px;}
+  .ztable th{text-align:left; color:var(--muted); font-weight:400; padding:5px 4px; border-bottom:1px solid var(--line);}
+  .ztable td{padding:6px 4px; border-bottom:1px solid var(--line);}
+  .ztable td:first-child{color:var(--muted);}
+  .foot{font-size:11px; color:var(--hint); text-align:center; margin-top:18px; line-height:1.6;}
+  .statusbar{font-size:11px; text-align:center; margin:8px 0 0; height:16px;}
+  .ok{color:var(--good);} .err{color:var(--bad);} .pending{color:var(--warn);}
+  .signin{background:var(--accent); color:#06121f; border:none; padding:14px 22px; border-radius:var(--radius-sm); font-size:14px; font-weight:600; cursor:pointer; width:100%; margin-top:10px;}
+  .setupcard{background:#321f1f; border:1px solid var(--bad); border-radius:var(--radius); padding:14px 16px; margin-bottom:14px; font-size:13px; line-height:1.5;}
+  .setupcard h4{margin:0 0 6px; font-size:14px; color:var(--bad);}
+  .setupcard code{background:#1a0e0e; padding:1px 5px; border-radius:4px; font-size:11px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="setupcard" id="setupwarn" style="display:none;">
+    <h4>⚠ Not configured yet</h4>
+    Open this HTML file in a text editor and replace the three <code>YOUR_*</code> placeholders near the top of the script (CLIENT_ID, API_KEY, SPREADSHEET_ID). Then re-deploy it.
+  </div>
+
+  <div class="card">
+    <div class="hero">
+      <div><p class="sub">IRONMAN 70.3 Melbourne</p><p class="title" id="racetitle">St Kilda · Sun 8 Nov</p></div>
+      <div class="cd" id="cd">—<small>days to go</small></div>
+    </div>
+    <div class="bar"><div id="bar"></div></div>
+    <p class="barlabel" id="barlabel">Week 1 of 24</p>
+    <button class="editrace" id="editrace">Edit race date</button>
+  </div>
+
+  <div id="signinblock" style="display:none; margin:14px 0;">
+    <button class="signin" id="signin">Sign in with Google to sync</button>
+    <p style="font-size:11px; color:var(--muted); text-align:center; margin-top:8px;">Edits sync to your Google Sheet across devices</p>
+  </div>
+
+  <div class="statusbar" id="status"></div>
+
+  <div class="stats">
+    <div class="stat"><div class="l">Sleep (4wk)</div><div class="v">6.15<span> h</span></div><div class="d down-good">↗ improving</div></div>
+    <div class="stat"><div class="l">HRV (4wk)</div><div class="v">44.8<span> ms</span></div><div class="d up">↘ watch trend</div></div>
+    <div class="stat"><div class="l">Resting HR</div><div class="v">62.8<span> bpm</span></div><div class="d up">↗ mild fatigue</div></div>
+    <div class="stat"><div class="l">VO₂ max</div><div class="v">45</div><div class="d neutral">peak was 56</div></div>
+  </div>
+
+  <div class="nav">
+    <button id="prev">‹</button>
+    <div class="wt"><div class="a" id="wt">Week 1</div><div class="b" id="wm">25 May · Survival · 4.0h</div></div>
+    <button id="next">›</button>
+  </div>
+
+  <p style="font-size:11px;color:var(--hint);margin:0 0 10px;text-align:center;">Tap the circle to mark done · tap the session to edit</p>
+  <div id="days"></div>
+
+  <div class="actions">
+    <button id="todaybtn">Current week</button>
+    <button class="primary" id="racebtn">Race week</button>
+    <button id="signoutbtn">Sign out</button>
+  </div>
+
+  <div class="card zones" style="margin-top:16px;">
+    <h3>Heart rate zones</h3>
+    <table class="ztable">
+      <tr><th>Sport</th><th>Z2 aerobic</th><th>Z3 tempo</th><th>Z4 thresh</th></tr>
+      <tr><td>Run</td><td>124–148</td><td>149–167</td><td>168–188</td></tr>
+      <tr><td>Bike</td><td>123–143</td><td>144–163</td><td>164–184</td></tr>
+    </table>
+    <p style="font-size:11px;color:var(--hint);margin:9px 0 0;">Easy/base: stay lower Z2 — under 136 run, 133 bike.</p>
+  </div>
+
+  <p class="foot">Synced to your Google Sheet · re-auth weekly required<br>Add to home screen: Share → Add to Home Screen</p>
+</div>
+
+<div class="sheet" id="sheet">
+  <div class="sheetinner">
+    <h3 id="sheettitle">Edit session</h3>
+    <p class="sd" id="sh_day">Monday · Week 1</p>
+    <div id="sessionfields">
+      <div class="field"><label>Type</label>
+        <select id="sh_type">
+          <option value="swim">Swim</option><option value="bike">Bike</option><option value="run">Run</option>
+          <option value="brick">Brick</option><option value="tennis">Tennis</option><option value="rest">Rest</option><option value="race">Race</option>
+        </select></div>
+      <div class="field"><label>Session</label><input id="sh_session" type="text"></div>
+      <div class="field"><label>Detail</label><input id="sh_detail" type="text"></div>
+      <div class="field"><label>Note (how it went, swaps)</label><textarea id="sh_note"></textarea></div>
+    </div>
+    <div class="field" id="racefield" style="display:none;"><label>Race date</label><input id="sh_racedate" type="date">
+      <p style="font-size:11px;color:var(--hint);margin:6px 0 0;">Plan auto-shifts so week 24 is race week. Syncs to your Sheet.</p></div>
+    <div class="sheetbtns">
+      <button class="cancel" id="sh_cancel">Cancel</button>
+      <button class="save" id="sh_save">Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ====================================================================
+// CONFIG — REPLACE THESE THREE VALUES WITH YOURS (reuse your existing ones)
+// ====================================================================
+const CLIENT_ID = "YOUR_CLIENT_ID_HERE.apps.googleusercontent.com";
+const API_KEY   = "YOUR_API_KEY_HERE";
+const SPREADSHEET_ID = "YOUR_SPREADSHEET_ID_HERE";
+const SHEET_NAME = "Sync";  // tab name in your Google Sheet — create this tab first
+// ====================================================================
+
+const SCOPES = "https://www.googleapis.com/auth/spreadsheets";
+const DISCOVERY = "https://sheets.googleapis.com/$discovery/rest?version=v4";
+
+(function(){
+  var RACE_KEY="__race__";
+  var savedRace=localStorage.getItem('i703_race');
+  var RACE = savedRace ? new Date(savedRace+"T00:00:00") : new Date(2026,10,8);
+  function computeW1(){ return new Date(RACE.getTime() - 23*7*864e5); } // wk24 = race week
+  var W1=computeW1(), today=new Date();
+
+  var PHASE=["Survival","Survival","Survival","Survival","Survival","Survival","Base 1","Base 1","Base 1","Base 1","Base 2","Base 2","Base 2","Base 2","Build 1","Build 1","Build 1","Build 1","Build 2/Peak","Build 2/Peak","Build 2/Peak","Build 2/Peak","Taper","Race wk"];
+  var HRS=["4.0","4.0","4.5","3.5","4.5","5.0","7.0","7.5","8.0","7.0","8.5","8.5","7.5","9.0","9.5","7.5","10.0","10.0","10.0","8.5","10.5","9.5","6.5","3.0"];
+  var DAYS=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+  var COL={swim:"var(--swim)",bike:"var(--bike)",run:"var(--run)",brick:"var(--brick)",rest:"var(--rest)",tennis:"var(--tennis)",race:"var(--race)"};
+  var LET={swim:"S",bike:"B",run:"R",brick:"K",rest:"·",tennis:"T",race:"⚑"};
+  function d(t,a,b){return {type:t,title:a,detail:b};}
+  var R=d("rest","Rest day","Full off — recovery is a session");
+  var BASEPLAN=[
+   [d("swim","Swim 30 min","Easy reactivation, technique"),d("rest","Rest","or 30 min walk"),d("rest","Rest","no tennis during EOFY"),d("run","Run 20 min easy","3 km Z2 (<148 bpm)"),R,d("run","Optional run 20 min","skip if work was rough"),d("bike","Long ride 2:00","45–50 km Z2 · keystone")],
+   [d("swim","Swim 30 min","4×100 drills"),d("rest","Rest","or walk"),d("rest","Rest",""),d("run","Run 25 min easy","3.5 km Z2"),R,d("run","Optional run 25 min",""),d("bike","Long ride 2:00","45–50 km Z2")],
+   [d("swim","Swim 35 min","6×100 aerobic"),d("rest","Rest",""),d("rest","Rest",""),d("run","Run 25 min easy","4 km Z2"),R,d("run","Optional run 30 min",""),d("bike","Long ride 2:15","50–55 km Z2")],
+   [d("swim","Swim 30 min easy","skip if shattered"),d("rest","Rest",""),d("rest","Rest",""),d("run","Run 20 min / walk",""),R,d("rest","Rest","likely needed"),d("bike","Ride 2:00 Z2","cut to 1:30 if tired")],
+   [d("swim","Swim 35 min","aerobic"),d("rest","Rest",""),d("rest","Rest",""),d("run","Run 30 min Z2","5 km"),R,d("run","Optional run 30 min",""),d("bike","Long ride 2:15","55 km Z2")],
+   [d("swim","Swim 40 min","8×100"),d("rest","Rest",""),d("rest","Rest",""),d("run","Run 30 min Z2","5 km"),R,d("run","Run 30 min Z2","4.5 km"),d("bike","Long ride 2:30","60 km Z2")],
+   [d("swim","Swim 45 min","CSS test 2×400"),d("run","Run 35 min Z2","5.5 km"),d("tennis","Tennis optional","only if Achilles ok"),d("swim","Swim 45 min","8×100 @ CSS"),R,d("run","Run 40 min Z2","6 km"),d("bike","Long ride 2:30","60 km Z2")],
+   [d("swim","Swim 50 min","CSS work"),d("run","Run 40 min","6.5 km + strides"),d("tennis","Tennis","+ 45 min spin"),d("swim","Swim 50 min","aerobic"),R,d("run","Run 45 min","7 km Z2"),d("bike","Long ride 2:45","65–70 km Z2")],
+   [d("swim","Swim 55 min","mixed"),d("run","Run 45 min Z2","7 km"),d("tennis","Tennis","+ 1:00 spin"),d("swim","Swim 55 min","12×100 @ CSS"),R,d("run","Run 50 min","8 km Z2"),d("bike","Long ride 3:00","70–75 km Z2")],
+   [d("swim","Swim 40 min easy",""),d("run","Run 35 min Z2","5.5 km"),d("tennis","Tennis only",""),d("swim","Swim 40 min","8×100"),R,d("brick","First brick","Bike 1:00 + Run 15 min"),d("bike","Long ride 2:30","60 km easy")],
+   [d("swim","Swim 1:00","5×300 @ CSS"),d("run","Run 50 min tempo","15 min Z3"),d("tennis","Tennis","+ 1:00 spin"),d("swim","Swim 1:00","aerobic"),R,d("run","Long run 55 min","9 km Z2"),d("bike","Long ride 3:15","80 km Z2")],
+   [d("swim","Swim 1:00","CSS"),d("run","Run 55 min","2×10 min Z3"),d("tennis","Tennis","+ 1:00 spin"),d("swim","Swim 1:00","+ strength"),R,d("run","Long run 1:00","10 km Z2"),d("bike","Long ride 3:30","85 km + 2×15 Z3")],
+   [d("swim","Swim 50 min easy",""),d("run","Run 45 min Z2",""),d("tennis","Tennis only",""),d("swim","Swim 50 min","aerobic"),R,d("run","Run 50 min Z2",""),d("bike","Ride 2:45 Z2","recovery")],
+   [d("swim","Swim 1:00","CSS test #2"),d("run","Run 1:00 tempo","2×15 min Z3"),d("tennis","Tennis","+ 1:00 spin"),d("swim","Swim 1:00","+ strength"),R,d("brick","Brick","Bike 2:00 + Run 30 min"),d("bike","Long ride 4:00","95 km Z2")],
+   [d("swim","Swim 1:00","10×100 @ CSS"),d("run","Run 1:00 threshold","4×5 min Z4"),d("tennis","Tennis (coach call)","+ spin"),d("swim","Swim 1:00","+ strength"),R,d("run","Long run 1:15","12 km Z2"),d("bike","Long ride 4:00 sweet spot","3×20 min 88–94%")],
+   [d("swim","Swim 50 min easy",""),d("run","Run 50 min Z2",""),d("tennis","Tennis only",""),d("swim","Swim 50 min","aerobic"),R,d("run","Run 50 min Z2",""),d("bike","Ride 3:00 Z2","")],
+   [d("swim","Swim 1:00","CSS"),d("run","Run 1:00 threshold","2×10 min Z4"),d("tennis","Tennis / drop","+ spin"),d("swim","Swim 1:00","+ strength"),R,d("run","Long run 1:25","13 km, last 3 Z3"),d("bike","Long ride 4:30","105 km, 2×30 sweet spot")],
+   [d("swim","Swim 1:00","race-pace 200s"),d("run","Run 1:00","threshold mixed"),d("tennis","Tennis / drop",""),d("swim","Swim 1:00","+ strength"),R,d("brick","Brick","Bike 2:30 + Run 40 min"),d("bike","Long ride 4:30","110 km race-pace")],
+   [d("swim","Open water 45 min","St Kilda bay, sighting"),d("run","Run 1:00 race-pace","3×10 min @ goal HM"),d("tennis","Tennis (call)","+ spin"),d("swim","Swim 1:00","OW or pool"),R,d("run","Long run 1:30","14 km Z2 (cap)"),d("brick","Big brick","Bike 3:30 + Run 30 min + fuel")],
+   [d("swim","Swim 50 min easy",""),d("run","Run 50 min Z2",""),d("tennis","Tennis only",""),d("swim","Swim 50 min","OW bay"),R,d("run","Run 1:00 Z2","9 km"),d("bike","Ride 3:00 Z2","easy")],
+   [d("swim","OW bay 1:00","race distance"),d("run","Run 1:05 race-pace","3×12 min"),d("rest","Drop tennis","peak wk · 45 min spin"),d("swim","Swim 1:00","+ strength"),R,d("brick","RACE SIM","Swim 1.5k + Bike 60k + Run 8k"),d("bike","Ride 3:30 easy Z2","")],
+   [d("swim","OW bay 1:00",""),d("run","Run 1:00","race-pace"),d("rest","No tennis","45 min spin"),d("swim","Swim 1:00","race-pace 100s"),R,d("run","Long run 1:25","13 km · final long"),d("bike","Long ride 4:00","95 km · final long")],
+   [d("swim","Swim 50 min","quality short"),d("run","Run 45 min race-pace","3×6 min"),d("rest","No tennis","rest / walk"),d("swim","OW bay 45 min","practice"),R,d("brick","Brick","Bike 1:30 + Run 20 min race pace"),d("bike","Ride 2:30 Z2","55 km")],
+   [d("swim","Swim 30 min easy","+ pickups"),d("bike","Bike 45 min easy","3×1 min openers"),d("run","Run 20 min easy","+ 4 strides"),d("rest","Rest","expo Fri"),R,d("bike","Openers","Bike 20 + Run 10 min"),d("race","RACE DAY","1.9k / 90k / 21.1k · sub-6:30")]
+  ];
+
+  // ---- state ----
+  var overrides={}, done={}, accessToken=null, tokenClient=null, gapiReady=false, gisReady=false;
+  var configured = !CLIENT_ID.includes("YOUR_") && !API_KEY.includes("YOUR_") && !SPREADSHEET_ID.includes("YOUR_");
+
+  function setStatus(msg, cls){ var s=document.getElementById('status'); s.textContent=msg||""; s.className="statusbar "+(cls||""); }
+
+  // ---- Sheets sync ----
+  // Sheet cols A:F  → A:key  B:done  C:type  D:title  E:detail  F:note
+  // Race date stored in a special row with key "__race__", value in column D (title) as YYYY-MM-DD
+  async function loadFromSheet(){
+    if(!accessToken) return;
+    setStatus("Loading…","pending");
+    try{
+      const r = await gapi.client.sheets.spreadsheets.values.get({
+        spreadsheetId: SPREADSHEET_ID, range: SHEET_NAME + "!A2:F1000"
+      });
+      const rows = r.result.values || [];
+      overrides = {}; done = {};
+      for(const row of rows){
+        const key = row[0]; if(!key) continue;
+        if(key===RACE_KEY){
+          if(row[3]){ RACE=new Date(row[3]+"T00:00:00"); localStorage.setItem('i703_race',row[3]); recompute(); cur=startWk; }
+          continue;
+        }
+        if(row[1]==="1") done[key] = 1;
+        if(row[2] || row[3] || row[4] || row[5]){
+          overrides[key] = { type:row[2]||"rest", title:row[3]||"", detail:row[4]||"", note:row[5]||"" };
+        }
+      }
+      setStatus("Synced ✓","ok"); setTimeout(()=>setStatus(""),1500);
+      header(); render();
+    }catch(e){ console.error(e); setStatus("Load failed — check Sheet ID and tab name","err"); }
+  }
+
+  async function saveOneToSheet(key){
+    if(!accessToken) return;
+    setStatus("Saving…","pending");
+    try{
+      const r = await gapi.client.sheets.spreadsheets.values.get({
+        spreadsheetId: SPREADSHEET_ID, range: SHEET_NAME + "!A2:A1000"
+      });
+      const keys = (r.result.values || []).map(x=>x[0]);
+      const rowIdx = keys.indexOf(key);
+      let values;
+      if(key===RACE_KEY){
+        values=[[ RACE_KEY, "", "", RACE.toISOString().slice(0,10), "", "race date" ]];
+      } else {
+        const o = overrides[key] || {};
+        values = [[ key, done[key]?"1":"", o.type||"", o.title||"", o.detail||"", o.note||"" ]];
+      }
+      if(rowIdx >= 0){
+        await gapi.client.sheets.spreadsheets.values.update({
+          spreadsheetId: SPREADSHEET_ID, range: SHEET_NAME + "!A" + (rowIdx+2) + ":F" + (rowIdx+2),
+          valueInputOption: "RAW", resource: { values: values } });
+      } else {
+        await gapi.client.sheets.spreadsheets.values.append({
+          spreadsheetId: SPREADSHEET_ID, range: SHEET_NAME + "!A2:F",
+          valueInputOption: "RAW", resource: { values: values } });
+      }
+      setStatus("Saved ✓","ok"); setTimeout(()=>setStatus(""),1500);
+    }catch(e){ console.error(e); setStatus("Save failed — check sign-in","err"); }
+  }
+
+  // ---- Google sign-in (GIS + GAPI) ----
+  function maybeReady(){ if(gapiReady && gisReady && configured){ document.getElementById('signinblock').style.display='block'; } }
+  window.gapiLoaded = function(){
+    gapi.load('client', async ()=>{ await gapi.client.init({ apiKey: API_KEY, discoveryDocs: [DISCOVERY] }); gapiReady = true; maybeReady(); });
+  };
+  window.gisLoaded = function(){
+    tokenClient = google.accounts.oauth2.initTokenClient({
+      client_id: CLIENT_ID, scope: SCOPES,
+      callback: (resp)=>{ if(resp.error){ setStatus("Sign-in failed","err"); return; }
+        accessToken = resp.access_token; document.getElementById('signinblock').style.display='none'; loadFromSheet(); }
+    });
+    gisReady = true; maybeReady();
+  };
+  document.getElementById('signin').onclick = ()=>{ if(tokenClient) tokenClient.requestAccessToken({ prompt: 'consent' }); };
+  document.getElementById('signoutbtn').onclick = ()=>{
+    if(accessToken){ google.accounts.oauth2.revoke(accessToken); accessToken=null; }
+    document.getElementById('signinblock').style.display='block'; setStatus("Signed out","");
+  };
+
+  // ---- dashboard logic ----
+  function sess(wk,di){ var k=wk+"_"+di; if(overrides[k]) return overrides[k]; return BASEPLAN[wk][di]; }
+  var startWk, cur, todayIdx;
+  function recompute(){
+    W1=computeW1();
+    startWk=Math.max(0,Math.min(23,Math.round((today-W1)/(7*864e5))));
+    todayIdx=(today.getDay()+6)%7;
+    if(typeof cur!=="number") cur=startWk;
+  }
+  recompute();
+  function fd(wk){var dt=new Date(W1.getTime()+wk*7*864e5);return dt.toLocaleDateString('en-AU',{day:'numeric',month:'short'});}
+
+  function render(){
+    document.getElementById('wt').textContent="Week "+(cur+1)+(cur===startWk?" (now)":"");
+    document.getElementById('wm').textContent=fd(cur)+" · "+PHASE[cur]+" · "+HRS[cur]+"h";
+    var html="";
+    for(var i=0;i<7;i++){
+      var s=sess(cur,i), k=cur+"_"+i, isDone=!!done[k];
+      var isToday=(cur===startWk && i===todayIdx);
+      html+='<div class="day'+(isToday?' today':'')+(isDone?' done':'')+'" data-di="'+i+'">'+
+        '<div class="check" data-check="'+i+'">'+(isDone?'✓':'')+'</div>'+
+        '<div class="dot" style="background:'+COL[s.type]+'22;color:'+COL[s.type]+'">'+LET[s.type]+'</div>'+
+        '<div style="flex:1;min-width:0" data-edit="'+i+'">'+
+        '<div class="dn">'+DAYS[i]+(isToday?' · today':'')+'</div>'+
+        '<div class="dt">'+s.title+'</div>'+
+        (s.detail?'<div class="dd">'+s.detail+'</div>':'')+
+        (s.note?'<div class="note">📝 '+s.note+'</div>':'')+
+        '</div></div>';
+    }
+    document.getElementById('days').innerHTML=html;
+    document.getElementById('prev').style.opacity=cur===0?.35:1;
+    document.getElementById('next').style.opacity=cur===23?.35:1;
+    document.querySelectorAll('[data-check]').forEach(function(el){
+      el.onclick=function(ev){ ev.stopPropagation(); var i=+el.getAttribute('data-check'); var k=cur+"_"+i;
+        if(done[k]) delete done[k]; else done[k]=1; render(); saveOneToSheet(k); };
+    });
+    document.querySelectorAll('[data-edit]').forEach(function(el){
+      el.onclick=function(){ openEditor(+el.getAttribute('data-edit')); };
+    });
+  }
+
+  var editingDi=null;
+  function openEditor(i){
+    editingDi=i; var s=sess(cur,i);
+    document.getElementById('sheettitle').textContent="Edit session";
+    document.getElementById('sessionfields').style.display='block';
+    document.getElementById('racefield').style.display='none';
+    document.getElementById('sh_day').textContent=DAYS[i]+" · Week "+(cur+1);
+    document.getElementById('sh_type').value=s.type;
+    document.getElementById('sh_session').value=s.title;
+    document.getElementById('sh_detail').value=s.detail||"";
+    document.getElementById('sh_note').value=s.note||"";
+    document.getElementById('sheet').classList.add('open');
+  }
+  function openRaceEditor(){
+    editingDi="RACE";
+    document.getElementById('sheettitle').textContent="Edit race date";
+    document.getElementById('sh_day').textContent="";
+    document.getElementById('sessionfields').style.display='none';
+    document.getElementById('racefield').style.display='block';
+    document.getElementById('sh_racedate').value=RACE.toISOString().slice(0,10);
+    document.getElementById('sheet').classList.add('open');
+  }
+  function closeEditor(){ document.getElementById('sheet').classList.remove('open'); editingDi=null; }
+  document.getElementById('sh_cancel').onclick=closeEditor;
+  document.getElementById('sheet').onclick=function(ev){ if(ev.target===this) closeEditor(); };
+  document.getElementById('editrace').onclick=openRaceEditor;
+  document.getElementById('sh_save').onclick=function(){
+    if(editingDi==="RACE"){
+      var v=document.getElementById('sh_racedate').value;
+      if(v){ RACE=new Date(v+"T00:00:00"); localStorage.setItem('i703_race',v); recompute(); cur=startWk; header(); render(); saveOneToSheet(RACE_KEY); }
+      closeEditor(); return;
+    }
+    var k=cur+"_"+editingDi;
+    overrides[k]={ type:document.getElementById('sh_type').value,
+      title:document.getElementById('sh_session').value,
+      detail:document.getElementById('sh_detail').value,
+      note:document.getElementById('sh_note').value };
+    closeEditor(); render(); saveOneToSheet(k);
+  };
+
+  function header(){
+    var days=Math.max(0,Math.round((RACE-today)/864e5));
+    document.getElementById('cd').innerHTML=days+'<small>days to go</small>';
+    document.getElementById('racetitle').textContent="St Kilda · "+RACE.toLocaleDateString('en-AU',{weekday:'short',day:'numeric',month:'short'});
+    var pct=Math.min(100,Math.round((startWk+1)/24*100));
+    document.getElementById('bar').style.width=pct+'%';
+    document.getElementById('barlabel').textContent="Week "+(startWk+1)+" of 24 · "+PHASE[startWk]+" phase";
+  }
+  document.getElementById('prev').onclick=function(){if(cur>0){cur--;render();}};
+  document.getElementById('next').onclick=function(){if(cur<23){cur++;render();}};
+  document.getElementById('todaybtn').onclick=function(){cur=startWk;render();};
+  document.getElementById('racebtn').onclick=function(){cur=23;render();};
+
+  // init
+  if(!configured){ document.getElementById('setupwarn').style.display='block'; }
+  header(); render();
+})();
+</script>
+<script async defer src="https://apis.google.com/js/api.js" onload="gapiLoaded()"></script>
+<script async defer src="https://accounts.google.com/gsi/client" onload="gisLoaded()"></script>
+</body>
+</html>
