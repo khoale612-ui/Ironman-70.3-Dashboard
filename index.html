@@ -27,6 +27,7 @@
   .bar{height:7px; background:#0a121f; border-radius:4px; overflow:hidden; margin-top:14px;}
   .bar>div{height:100%; background:var(--accent); border-radius:4px; transition:width .3s;}
   .barlabel{font-size:12px; color:var(--muted); margin:7px 0 0;}
+  .editrace{font-size:12px; color:var(--accent); cursor:pointer; background:none; border:none; padding:6px 0 0; text-decoration:underline;}
   .stats{display:grid; grid-template-columns:repeat(2,1fr); gap:11px; margin:16px 0;}
   .stat{background:var(--surface2); border-radius:var(--radius-sm); padding:12px 14px;}
   .stat .l{font-size:12px; color:var(--muted);}
@@ -87,33 +88,33 @@
 <body>
 <div class="wrap">
 
-  <!-- SETUP WARNING (only shown if not configured) -->
   <div class="setupcard" id="setupwarn" style="display:none;">
     <h4>⚠ Not configured yet</h4>
-    Open this HTML file in a text editor and replace the three <code>YOUR_*</code> placeholders near the top of the script (CLIENT_ID, API_KEY, SPREADSHEET_ID). Then re-upload it. See the setup guide for how to get those values.
+    Open this HTML file in a text editor and replace the three <code>YOUR_*</code> placeholders near the top of the script (CLIENT_ID, API_KEY, SPREADSHEET_ID). Then re-deploy it.
   </div>
 
   <div class="card">
     <div class="hero">
-      <div><p class="sub">IRONMAN 70.3 Melbourne</p><p class="title">St Kilda · Sun 8 Nov</p></div>
-      <div class="cd" id="cd">164<small>days to go</small></div>
+      <div><p class="sub">IRONMAN 70.3 Melbourne</p><p class="title" id="racetitle">St Kilda · Sun 8 Nov</p></div>
+      <div class="cd" id="cd">—<small>days to go</small></div>
     </div>
     <div class="bar"><div id="bar"></div></div>
-    <p class="barlabel" id="barlabel">Week 1 of 24 · Survival phase</p>
+    <p class="barlabel" id="barlabel">Week 1 of 24</p>
+    <button class="editrace" id="editrace">Edit race date</button>
   </div>
 
   <div id="signinblock" style="display:none; margin:14px 0;">
     <button class="signin" id="signin">Sign in with Google to sync</button>
-    <p style="font-size:11px; color:var(--muted); text-align:center; margin-top:8px;">Edits will save to your Google Sheet</p>
+    <p style="font-size:11px; color:var(--muted); text-align:center; margin-top:8px;">Edits sync to your Google Sheet across devices</p>
   </div>
 
   <div class="statusbar" id="status"></div>
 
   <div class="stats">
-    <div class="stat"><div class="l">Sleep (4wk)</div><div class="v">6.15<span> h</span></div><div class="d down-good">↗ improving</div></div>
-    <div class="stat"><div class="l">HRV (4wk)</div><div class="v">44.8<span> ms</span></div><div class="d up">↘ watch trend</div></div>
-    <div class="stat"><div class="l">Resting HR</div><div class="v">62.8<span> bpm</span></div><div class="d up">↗ mild fatigue</div></div>
-    <div class="stat"><div class="l">VO₂ max</div><div class="v">45</div><div class="d neutral">peak was 56</div></div>
+    <div class="stat"><div class="l">Sleep (4wk)</div><div class="v"><span id="m_sleep">6.15</span><span> h</span></div><div class="d down-good">↗ improving</div></div>
+    <div class="stat"><div class="l">HRV (4wk)</div><div class="v"><span id="m_hrv">44.8</span><span> ms</span></div><div class="d up">↘ watch trend</div></div>
+    <div class="stat"><div class="l">Resting HR</div><div class="v"><span id="m_rhr">62.8</span><span> bpm</span></div><div class="d up">↗ mild fatigue</div></div>
+    <div class="stat"><div class="l">VO₂ max</div><div class="v"><span id="m_vo2">45</span></div><div class="d neutral">peak was 56</div></div>
   </div>
 
   <div class="nav">
@@ -146,16 +147,20 @@
 
 <div class="sheet" id="sheet">
   <div class="sheetinner">
-    <h3>Edit session</h3>
+    <h3 id="sheettitle">Edit session</h3>
     <p class="sd" id="sh_day">Monday · Week 1</p>
-    <div class="field"><label>Type</label>
-      <select id="sh_type">
-        <option value="swim">Swim</option><option value="bike">Bike</option><option value="run">Run</option>
-        <option value="brick">Brick</option><option value="tennis">Tennis</option><option value="rest">Rest</option><option value="race">Race</option>
-      </select></div>
-    <div class="field"><label>Session</label><input id="sh_session" type="text"></div>
-    <div class="field"><label>Detail</label><input id="sh_detail" type="text"></div>
-    <div class="field"><label>Note (how it went, swaps)</label><textarea id="sh_note"></textarea></div>
+    <div id="sessionfields">
+      <div class="field"><label>Type</label>
+        <select id="sh_type">
+          <option value="swim">Swim</option><option value="bike">Bike</option><option value="run">Run</option>
+          <option value="brick">Brick</option><option value="tennis">Tennis</option><option value="rest">Rest</option><option value="race">Race</option>
+        </select></div>
+      <div class="field"><label>Session</label><input id="sh_session" type="text"></div>
+      <div class="field"><label>Detail</label><input id="sh_detail" type="text"></div>
+      <div class="field"><label>Note (how it went, swaps)</label><textarea id="sh_note"></textarea></div>
+    </div>
+    <div class="field" id="racefield" style="display:none;"><label>Race date</label><input id="sh_racedate" type="date">
+      <p style="font-size:11px;color:var(--hint);margin:6px 0 0;">Plan auto-shifts so week 24 is race week. Syncs to your Sheet.</p></div>
     <div class="sheetbtns">
       <button class="cancel" id="sh_cancel">Cancel</button>
       <button class="save" id="sh_save">Save</button>
@@ -165,7 +170,7 @@
 
 <script>
 // ====================================================================
-// CONFIG — REPLACE THESE THREE VALUES WITH YOURS (see setup guide)
+// CONFIG — REPLACE THESE THREE VALUES WITH YOURS (reuse your existing ones)
 // ====================================================================
 const CLIENT_ID = "856518051919-r8ichknn98de10aqo6uclnc6nqf4qasd.apps.googleusercontent.com";
 const API_KEY   = "AIzaSyCrLdzVxOXQOxm9TxOFBwSjlsXz_os4QKQ";
@@ -177,9 +182,12 @@ const SCOPES = "https://www.googleapis.com/auth/spreadsheets";
 const DISCOVERY = "https://sheets.googleapis.com/$discovery/rest?version=v4";
 
 (function(){
-  // --- plan data (same as offline version) ---
-  var RACE=new Date(2026,10,8), W1=new Date(2026,4,25), today=new Date();
-  if(today<W1) today=new Date(2026,4,28);
+  var RACE_KEY="__race__", METRICS_KEY="__metrics__";
+  var savedRace=localStorage.getItem('i703_race');
+  var RACE = savedRace ? new Date(savedRace+"T00:00:00") : new Date(2026,10,8);
+  function computeW1(){ return new Date(RACE.getTime() - 23*7*864e5); } // wk24 = race week
+  var W1=computeW1(), today=new Date();
+
   var PHASE=["Survival","Survival","Survival","Survival","Survival","Survival","Base 1","Base 1","Base 1","Base 1","Base 2","Base 2","Base 2","Base 2","Build 1","Build 1","Build 1","Build 1","Build 2/Peak","Build 2/Peak","Build 2/Peak","Build 2/Peak","Taper","Race wk"];
   var HRS=["4.0","4.0","4.5","3.5","4.5","5.0","7.0","7.5","8.0","7.0","8.5","8.5","7.5","9.0","9.5","7.5","10.0","10.0","10.0","8.5","10.5","9.5","6.5","3.0"];
   var DAYS=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
@@ -211,123 +219,109 @@ const DISCOVERY = "https://sheets.googleapis.com/$discovery/rest?version=v4";
    [d("swim","OW bay 1:00","race distance"),d("run","Run 1:05 race-pace","3×12 min"),d("rest","Drop tennis","peak wk · 45 min spin"),d("swim","Swim 1:00","+ strength"),R,d("brick","RACE SIM","Swim 1.5k + Bike 60k + Run 8k"),d("bike","Ride 3:30 easy Z2","")],
    [d("swim","OW bay 1:00",""),d("run","Run 1:00","race-pace"),d("rest","No tennis","45 min spin"),d("swim","Swim 1:00","race-pace 100s"),R,d("run","Long run 1:25","13 km · final long"),d("bike","Long ride 4:00","95 km · final long")],
    [d("swim","Swim 50 min","quality short"),d("run","Run 45 min race-pace","3×6 min"),d("rest","No tennis","rest / walk"),d("swim","OW bay 45 min","practice"),R,d("brick","Brick","Bike 1:30 + Run 20 min race pace"),d("bike","Ride 2:30 Z2","55 km")],
-   [d("swim","Swim 30 min easy","+ pickups"),d("bike","Bike 45 min easy","3×1 min openers"),d("run","Run 20 min easy","+ 4 strides"),d("rest","Rest","expo Fri 6 Nov"),R,d("bike","Openers","Bike 20 + Run 10 min"),d("race","RACE DAY","1.9k / 90k / 21.1k · sub-6:00")]
+   [d("swim","Swim 30 min easy","+ pickups"),d("bike","Bike 45 min easy","3×1 min openers"),d("run","Run 20 min easy","+ 4 strides"),d("rest","Rest","expo Fri"),R,d("bike","Openers","Bike 20 + Run 10 min"),d("race","RACE DAY","1.9k / 90k / 21.1k · sub-6:30")]
   ];
 
   // ---- state ----
   var overrides={}, done={}, accessToken=null, tokenClient=null, gapiReady=false, gisReady=false;
   var configured = !CLIENT_ID.includes("YOUR_") && !API_KEY.includes("YOUR_") && !SPREADSHEET_ID.includes("YOUR_");
 
-  function setStatus(msg, cls){
-    var s=document.getElementById('status'); s.textContent=msg||""; s.className="statusbar "+(cls||"");
-  }
+  function setStatus(msg, cls){ var s=document.getElementById('status'); s.textContent=msg||""; s.className="statusbar "+(cls||""); }
 
   // ---- Sheets sync ----
-  // Sheet layout: rows are wk_day (e.g. "1_0" = Mon of week 1), cols A:E
-  //   A: key (wk_di)  B: done (0/1)  C: type  D: title  E: detail  F: note
+  // Sheet cols A:F  → A:key  B:done  C:type  D:title  E:detail  F:note
+  // Race date stored in a special row with key "__race__", value in column D (title) as YYYY-MM-DD
   async function loadFromSheet(){
     if(!accessToken) return;
     setStatus("Loading…","pending");
     try{
       const r = await gapi.client.sheets.spreadsheets.values.get({
-        spreadsheetId: SPREADSHEET_ID,
-        range: SHEET_NAME + "!A2:F1000"
+        spreadsheetId: SPREADSHEET_ID, range: SHEET_NAME + "!A2:F1000"
       });
       const rows = r.result.values || [];
       overrides = {}; done = {};
       for(const row of rows){
         const key = row[0]; if(!key) continue;
+        if(key===RACE_KEY){
+          if(row[3]){ RACE=new Date(row[3]+"T00:00:00"); localStorage.setItem('i703_race',row[3]); recompute(); cur=startWk; }
+          continue;
+        }
+        if(key===METRICS_KEY){
+          // C:sleep  D:hrv  E:rhr  F:vo2max
+          if(row[2]) document.getElementById('m_sleep').textContent=row[2];
+          if(row[3]) document.getElementById('m_hrv').textContent=row[3];
+          if(row[4]) document.getElementById('m_rhr').textContent=row[4];
+          if(row[5]) document.getElementById('m_vo2').textContent=row[5];
+          continue;
+        }
         if(row[1]==="1") done[key] = 1;
         if(row[2] || row[3] || row[4] || row[5]){
           overrides[key] = { type:row[2]||"rest", title:row[3]||"", detail:row[4]||"", note:row[5]||"" };
         }
       }
-      setStatus("Synced ✓","ok");
-      setTimeout(()=>setStatus(""),1500);
-      render();
-    }catch(e){
-      console.error(e);
-      setStatus("Load failed — check Sheet ID and tab name","err");
-    }
+      setStatus("Synced ✓","ok"); setTimeout(()=>setStatus(""),1500);
+      header(); render();
+    }catch(e){ console.error(e); setStatus("Load failed — check Sheet ID and tab name","err"); }
   }
 
   async function saveOneToSheet(key){
     if(!accessToken) return;
     setStatus("Saving…","pending");
     try{
-      // find existing row for this key
       const r = await gapi.client.sheets.spreadsheets.values.get({
         spreadsheetId: SPREADSHEET_ID, range: SHEET_NAME + "!A2:A1000"
       });
       const keys = (r.result.values || []).map(x=>x[0]);
       const rowIdx = keys.indexOf(key);
-      const o = overrides[key] || {};
-      const values = [[ key, done[key]?"1":"", o.type||"", o.title||"", o.detail||"", o.note||"" ]];
+      let values;
+      if(key===RACE_KEY){
+        values=[[ RACE_KEY, "", "", RACE.toISOString().slice(0,10), "", "race date" ]];
+      } else {
+        const o = overrides[key] || {};
+        values = [[ key, done[key]?"1":"", o.type||"", o.title||"", o.detail||"", o.note||"" ]];
+      }
       if(rowIdx >= 0){
         await gapi.client.sheets.spreadsheets.values.update({
-          spreadsheetId: SPREADSHEET_ID,
-          range: SHEET_NAME + "!A" + (rowIdx+2) + ":F" + (rowIdx+2),
-          valueInputOption: "RAW",
-          resource: { values: values }
-        });
+          spreadsheetId: SPREADSHEET_ID, range: SHEET_NAME + "!A" + (rowIdx+2) + ":F" + (rowIdx+2),
+          valueInputOption: "RAW", resource: { values: values } });
       } else {
         await gapi.client.sheets.spreadsheets.values.append({
-          spreadsheetId: SPREADSHEET_ID,
-          range: SHEET_NAME + "!A2:F",
-          valueInputOption: "RAW",
-          resource: { values: values }
-        });
+          spreadsheetId: SPREADSHEET_ID, range: SHEET_NAME + "!A2:F",
+          valueInputOption: "RAW", resource: { values: values } });
       }
-      setStatus("Saved ✓","ok");
-      setTimeout(()=>setStatus(""),1500);
-    }catch(e){
-      console.error(e);
-      setStatus("Save failed — check sign-in","err");
-    }
+      setStatus("Saved ✓","ok"); setTimeout(()=>setStatus(""),1500);
+    }catch(e){ console.error(e); setStatus("Save failed — check sign-in","err"); }
   }
 
   // ---- Google sign-in (GIS + GAPI) ----
-  function maybeReady(){
-    if(gapiReady && gisReady && configured){
-      document.getElementById('signinblock').style.display='block';
-    }
-  }
+  function maybeReady(){ if(gapiReady && gisReady && configured){ document.getElementById('signinblock').style.display='block'; } }
   window.gapiLoaded = function(){
-    gapi.load('client', async ()=>{
-      await gapi.client.init({ apiKey: API_KEY, discoveryDocs: [DISCOVERY] });
-      gapiReady = true; maybeReady();
-    });
+    gapi.load('client', async ()=>{ await gapi.client.init({ apiKey: API_KEY, discoveryDocs: [DISCOVERY] }); gapiReady = true; maybeReady(); });
   };
   window.gisLoaded = function(){
     tokenClient = google.accounts.oauth2.initTokenClient({
-      client_id: CLIENT_ID,
-      scope: SCOPES,
-      callback: (resp)=>{
-        if(resp.error){ setStatus("Sign-in failed","err"); return; }
-        accessToken = resp.access_token;
-        document.getElementById('signinblock').style.display='none';
-        loadFromSheet();
-      }
+      client_id: CLIENT_ID, scope: SCOPES,
+      callback: (resp)=>{ if(resp.error){ setStatus("Sign-in failed","err"); return; }
+        accessToken = resp.access_token; document.getElementById('signinblock').style.display='none'; loadFromSheet(); }
     });
     gisReady = true; maybeReady();
   };
-  document.getElementById('signin').onclick = ()=>{
-    if(tokenClient) tokenClient.requestAccessToken({ prompt: 'consent' });
-  };
+  document.getElementById('signin').onclick = ()=>{ if(tokenClient) tokenClient.requestAccessToken({ prompt: 'consent' }); };
   document.getElementById('signoutbtn').onclick = ()=>{
     if(accessToken){ google.accounts.oauth2.revoke(accessToken); accessToken=null; }
-    document.getElementById('signinblock').style.display='block';
-    setStatus("Signed out","");
+    document.getElementById('signinblock').style.display='block'; setStatus("Signed out","");
   };
 
   // ---- dashboard logic ----
-  function sess(wk,di){
-    var k=wk+"_"+di;
-    if(overrides[k]) return overrides[k];
-    return BASEPLAN[wk][di];
+  function sess(wk,di){ var k=wk+"_"+di; if(overrides[k]) return overrides[k]; return BASEPLAN[wk][di]; }
+  var startWk, cur, todayIdx;
+  function recompute(){
+    W1=computeW1();
+    startWk=Math.max(0,Math.min(23,Math.round((today-W1)/(7*864e5))));
+    todayIdx=(today.getDay()+6)%7;
+    if(typeof cur!=="number") cur=startWk;
   }
-  var startWk=Math.max(0,Math.min(23,Math.round((today-W1)/(7*864e5))));
-  var cur=startWk, todayIdx=(today.getDay()+6)%7;
+  recompute();
   function fd(wk){var dt=new Date(W1.getTime()+wk*7*864e5);return dt.toLocaleDateString('en-AU',{day:'numeric',month:'short'});}
 
   function render(){
@@ -358,9 +352,13 @@ const DISCOVERY = "https://sheets.googleapis.com/$discovery/rest?version=v4";
       el.onclick=function(){ openEditor(+el.getAttribute('data-edit')); };
     });
   }
+
   var editingDi=null;
   function openEditor(i){
     editingDi=i; var s=sess(cur,i);
+    document.getElementById('sheettitle').textContent="Edit session";
+    document.getElementById('sessionfields').style.display='block';
+    document.getElementById('racefield').style.display='none';
     document.getElementById('sh_day').textContent=DAYS[i]+" · Week "+(cur+1);
     document.getElementById('sh_type').value=s.type;
     document.getElementById('sh_session').value=s.title;
@@ -368,10 +366,25 @@ const DISCOVERY = "https://sheets.googleapis.com/$discovery/rest?version=v4";
     document.getElementById('sh_note').value=s.note||"";
     document.getElementById('sheet').classList.add('open');
   }
+  function openRaceEditor(){
+    editingDi="RACE";
+    document.getElementById('sheettitle').textContent="Edit race date";
+    document.getElementById('sh_day').textContent="";
+    document.getElementById('sessionfields').style.display='none';
+    document.getElementById('racefield').style.display='block';
+    document.getElementById('sh_racedate').value=RACE.toISOString().slice(0,10);
+    document.getElementById('sheet').classList.add('open');
+  }
   function closeEditor(){ document.getElementById('sheet').classList.remove('open'); editingDi=null; }
   document.getElementById('sh_cancel').onclick=closeEditor;
   document.getElementById('sheet').onclick=function(ev){ if(ev.target===this) closeEditor(); };
+  document.getElementById('editrace').onclick=openRaceEditor;
   document.getElementById('sh_save').onclick=function(){
+    if(editingDi==="RACE"){
+      var v=document.getElementById('sh_racedate').value;
+      if(v){ RACE=new Date(v+"T00:00:00"); localStorage.setItem('i703_race',v); recompute(); cur=startWk; header(); render(); saveOneToSheet(RACE_KEY); }
+      closeEditor(); return;
+    }
     var k=cur+"_"+editingDi;
     overrides[k]={ type:document.getElementById('sh_type').value,
       title:document.getElementById('sh_session').value,
@@ -379,10 +392,12 @@ const DISCOVERY = "https://sheets.googleapis.com/$discovery/rest?version=v4";
       note:document.getElementById('sh_note').value };
     closeEditor(); render(); saveOneToSheet(k);
   };
+
   function header(){
     var days=Math.max(0,Math.round((RACE-today)/864e5));
     document.getElementById('cd').innerHTML=days+'<small>days to go</small>';
-    var pct=Math.min(100,Math.round(startWk/24*100));
+    document.getElementById('racetitle').textContent="St Kilda · "+RACE.toLocaleDateString('en-AU',{weekday:'short',day:'numeric',month:'short'});
+    var pct=Math.min(100,Math.round((startWk+1)/24*100));
     document.getElementById('bar').style.width=pct+'%';
     document.getElementById('barlabel').textContent="Week "+(startWk+1)+" of 24 · "+PHASE[startWk]+" phase";
   }
@@ -392,9 +407,7 @@ const DISCOVERY = "https://sheets.googleapis.com/$discovery/rest?version=v4";
   document.getElementById('racebtn').onclick=function(){cur=23;render();};
 
   // init
-  if(!configured){
-    document.getElementById('setupwarn').style.display='block';
-  }
+  if(!configured){ document.getElementById('setupwarn').style.display='block'; }
   header(); render();
 })();
 </script>
