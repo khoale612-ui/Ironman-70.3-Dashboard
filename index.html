@@ -111,10 +111,10 @@
   <div class="statusbar" id="status"></div>
 
   <div class="stats">
-    <div class="stat"><div class="l">Sleep (4wk)</div><div class="v"><span id="m_sleep">6.15</span><span> h</span></div><div class="d down-good">↗ improving</div></div>
-    <div class="stat"><div class="l">HRV (4wk)</div><div class="v"><span id="m_hrv">44.8</span><span> ms</span></div><div class="d up">↘ watch trend</div></div>
-    <div class="stat"><div class="l">Resting HR</div><div class="v"><span id="m_rhr">62.8</span><span> bpm</span></div><div class="d up">↗ mild fatigue</div></div>
-    <div class="stat"><div class="l">VO₂ max</div><div class="v"><span id="m_vo2">45</span></div><div class="d neutral">peak was 56</div></div>
+    <div class="stat"><div class="l">Sleep (4wk)</div><div class="v"><span id="m_sleep">6.15</span><span> h</span></div><div class="d neutral" id="t_sleep">—</div></div>
+    <div class="stat"><div class="l">HRV (4wk)</div><div class="v"><span id="m_hrv">44.8</span><span> ms</span></div><div class="d neutral" id="t_hrv">—</div></div>
+    <div class="stat"><div class="l">Resting HR</div><div class="v"><span id="m_rhr">62.8</span><span> bpm</span></div><div class="d neutral" id="t_rhr">—</div></div>
+    <div class="stat"><div class="l">VO₂ max</div><div class="v"><span id="m_vo2">45</span></div><div class="d neutral" id="t_vo2">—</div></div>
   </div>
 
   <div class="nav">
@@ -228,6 +228,43 @@ const DISCOVERY = "https://sheets.googleapis.com/$discovery/rest?version=v4";
 
   function setStatus(msg, cls){ var s=document.getElementById('status'); s.textContent=msg||""; s.className="statusbar "+(cls||""); }
 
+  // ---- metric trends (auto) ----
+  // betterWhenHigher: sleep/HRV/VO2 = true, resting HR = false
+  var METRIC_DEF={
+    sleep:{el:'m_sleep', tEl:'t_sleep', higher:true},
+    hrv:  {el:'m_hrv',   tEl:'t_hrv',   higher:true},
+    rhr:  {el:'m_rhr',   tEl:'t_rhr',   higher:false},
+    vo2:  {el:'m_vo2',   tEl:'t_vo2',   higher:true}
+  };
+  function applyMetrics(m){
+    var prev={}, trend={};
+    try{ prev=JSON.parse(localStorage.getItem('i703_m_prev'))||{}; }catch(e){}
+    try{ trend=JSON.parse(localStorage.getItem('i703_m_trend'))||{}; }catch(e){}
+    var newPrev=Object.assign({},prev);
+    for(var k in METRIC_DEF){
+      var def=METRIC_DEF[k], raw=m[k];
+      if(raw===undefined||raw===""||raw===null) continue;       // no value this sync → leave as-is
+      var num=parseFloat(raw);
+      document.getElementById(def.el).textContent=raw;
+      if(prev[k]!==undefined && !isNaN(num)){
+        var diff=num-prev[k];
+        if(diff!==0){
+          var good=(diff>0)===def.higher;          // moved in the desired direction?
+          var arrow=diff>0?'↗':'↘';
+          trend[k]={cls:good?'down-good':'up', txt:arrow+' '+(good?'improving':'declining')};
+        }
+        // diff===0 → keep the previously stored trend label
+      }
+      if(!isNaN(num)) newPrev[k]=num;
+      var t=trend[k];
+      var tel=document.getElementById(def.tEl);
+      if(t){ tel.className='d '+t.cls; tel.textContent=t.txt; }
+      else { tel.className='d neutral'; tel.textContent='— baseline set'; }
+    }
+    localStorage.setItem('i703_m_prev',JSON.stringify(newPrev));
+    localStorage.setItem('i703_m_trend',JSON.stringify(trend));
+  }
+
   // ---- Sheets sync ----
   // Sheet cols A:F  → A:key  B:done  C:type  D:title  E:detail  F:note
   // Race date stored in a special row with key "__race__", value in column D (title) as YYYY-MM-DD
@@ -248,10 +285,7 @@ const DISCOVERY = "https://sheets.googleapis.com/$discovery/rest?version=v4";
         }
         if(key===METRICS_KEY){
           // C:sleep  D:hrv  E:rhr  F:vo2max
-          if(row[2]) document.getElementById('m_sleep').textContent=row[2];
-          if(row[3]) document.getElementById('m_hrv').textContent=row[3];
-          if(row[4]) document.getElementById('m_rhr').textContent=row[4];
-          if(row[5]) document.getElementById('m_vo2').textContent=row[5];
+          applyMetrics({ sleep:row[2], hrv:row[3], rhr:row[4], vo2:row[5] });
           continue;
         }
         if(row[1]==="1") done[key] = 1;
