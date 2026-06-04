@@ -185,7 +185,7 @@ const DISCOVERY = "https://sheets.googleapis.com/$discovery/rest?version=v4";
   var RACE_KEY="__race__", METRICS_KEY="__metrics__";
   var savedRace=localStorage.getItem('i703_race');
   var RACE = savedRace ? new Date(savedRace+"T00:00:00") : new Date(2026,10,8);
-  function computeW1(){ return new Date(RACE.getTime() - 23*7*864e5); } // wk24 = race week
+  function computeW1(){ return new Date(RACE.getTime() - (23*7+6)*864e5); } // wk24 = race week; W1 = Monday of week 1
   var W1=computeW1(), today=new Date();
 
   var PHASE=["Survival","Survival","Survival","Survival","Survival","Survival","Base 1","Base 1","Base 1","Base 1","Base 2","Base 2","Base 2","Base 2","Build 1","Build 1","Build 1","Build 1","Build 2/Peak","Build 2/Peak","Build 2/Peak","Build 2/Peak","Taper","Race wk"];
@@ -351,7 +351,7 @@ const DISCOVERY = "https://sheets.googleapis.com/$discovery/rest?version=v4";
   var startWk, cur, todayIdx;
   function recompute(){
     W1=computeW1();
-    startWk=Math.max(0,Math.min(23,Math.round((today-W1)/(7*864e5))));
+    startWk=Math.max(0,Math.min(23,Math.floor((today-W1)/(7*864e5))));
     todayIdx=(today.getDay()+6)%7;
     if(typeof cur!=="number") cur=startWk;
   }
