@@ -138,7 +138,7 @@
       <tr><td>Run</td><td>124–148</td><td>149–167</td><td>168–188</td></tr>
       <tr><td>Bike</td><td>123–143</td><td>144–163</td><td>164–184</td></tr>
     </table>
-    <p style="font-size:11px;color:var(--hint);margin:9px 0 0;">Easy/base: stay lower Z2 — under 136 run, 133 bike.</p>
+    <p style="font-size:11px;color:var(--hint);margin:9px 0 0;">Provisional run zones from recent Strava (easy ~137, drift to 169). Easy/base: stay under 140 run, 133 bike. Update once fresh Garmin data is in.<br><strong style="color:var(--run)">3 runs/week is the non-negotiable — Tue, Thu &amp; Sat. Frequency before volume before pace.</strong></p>
   </div>
 
   <p class="foot">Synced to your Google Sheet · re-auth weekly required<br>Add to home screen: Share → Add to Home Screen</p>
@@ -189,12 +189,12 @@ const DISCOVERY = "https://sheets.googleapis.com/$discovery/rest?version=v4";
   var R=d("rest","Rest day","Full off — recovery is a session");
   // Targets built off: swim 1:40/100m, bike 33 km/h, run 5:30/km
   var BASEPLAN=[
-   [d("swim","Swim 30 min","~2:00/100m · easy reactivation"),d("rest","Rest","or 30 min walk"),d("rest","Rest","no tennis during EOFY"),d("run","Run 20 min easy","7:00/km · Z2 124-148"),R,d("run","Optional run 20 min","7:00/km · skip if rough"),d("bike","Long ride 2:00","27-29 km/h · Z2 123-143 · keystone")],
-   [d("swim","Swim 30 min","~2:00/100m · 4×100 drills"),d("rest","Rest","or walk"),d("rest","Rest",""),d("run","Run 25 min easy","7:00/km · Z2 124-148"),R,d("run","Optional run 25 min","7:00/km"),d("bike","Long ride 2:00","27-29 km/h · Z2 123-143")],
-   [d("swim","Swim 35 min","~1:55/100m · 6×100 aerobic"),d("rest","Rest",""),d("rest","Rest",""),d("run","Run 25 min easy","6:50/km · Z2 124-148"),R,d("run","Optional run 30 min","6:50/km · Z2"),d("bike","Long ride 2:15","28 km/h · Z2 123-143")],
+   [d("swim","Swim 30 min","~2:00/100m · easy reactivation"),d("rest","Rest","or 30 min walk"),d("rest","Rest","no tennis during EOFY"),d("run","Run 20 min easy","7:00/km · &lt;140 bpm easy"),R,d("run","Run 20 min easy","7:00/km · &lt;140 bpm · 3rd run — protect it"),d("bike","Long ride 2:00","27-29 km/h · Z2 123-143 · keystone")],
+   [d("swim","Swim 30 min","~2:00/100m · 4×100 drills"),d("rest","Rest","or walk"),d("rest","Rest",""),d("run","Run 25 min easy","7:00/km · &lt;140 bpm easy"),R,d("run","Run 25 min easy","7:00/km · &lt;140 bpm · 3rd run"),d("bike","Long ride 2:00","27-29 km/h · Z2 123-143")],
+   [d("swim","Swim 35 min","~1:55/100m · 6×100 aerobic"),d("rest","Rest",""),d("rest","Rest",""),d("run","Run 25 min easy","6:50/km · &lt;140 bpm easy"),R,d("run","Run 30 min easy","6:50/km · &lt;140 bpm · 3rd run"),d("bike","Long ride 2:15","28 km/h · Z2 123-143")],
    [d("swim","Swim 30 min easy","~2:00/100m · skip if shattered"),d("rest","Rest",""),d("rest","Rest",""),d("run","Run 20 min / walk","easy · Z1-Z2"),R,d("rest","Rest","likely needed"),d("bike","Ride 2:00 Z2","easy · Z2 123-143")],
-   [d("swim","Swim 35 min","~1:55/100m · aerobic"),d("rest","Rest",""),d("rest","Rest",""),d("run","Run 30 min Z2","6:45/km · Z2 124-148"),R,d("run","Optional run 30 min","6:45/km · Z2"),d("bike","Long ride 2:15","28 km/h · Z2 123-143")],
-   [d("swim","Swim 40 min","8×100 @1:50 · aerobic"),d("rest","Rest",""),d("rest","Rest",""),d("run","Run 30 min Z2","6:45/km · Z2 124-148"),R,d("run","Run 30 min Z2","6:45/km · Z2"),d("bike","Long ride 2:30","28-29 km/h · Z2 123-143")],
+   [d("swim","Swim 35 min","~1:55/100m · aerobic"),d("rest","Rest",""),d("rest","Rest",""),d("run","Run 30 min easy","6:45/km · &lt;140 bpm easy"),R,d("run","Run 30 min easy","6:45/km · &lt;140 bpm · 3rd run"),d("bike","Long ride 2:15","28 km/h · Z2 123-143")],
+   [d("swim","Swim 40 min","8×100 @1:50 · aerobic"),d("rest","Rest",""),d("rest","Rest",""),d("run","Run 30 min easy","6:45/km · &lt;140 bpm easy"),R,d("run","Run 30 min Z2","6:45/km · Z2"),d("bike","Long ride 2:30","28-29 km/h · Z2 123-143")],
    [d("swim","Swim 45 min","CSS TEST 2×400 · set CSS"),d("run","Run 35 min Z2","6:40/km · Z2 124-148"),d("tennis","Tennis optional","only if Achilles ok"),d("swim","Swim 45 min","8×100 @1:40 CSS"),R,d("run","Run 40 min Z2","6:40/km · Z2"),d("bike","Long ride 2:30","28-29 km/h · Z2 123-143")],
    [d("swim","Swim 50 min","CSS @1:40"),d("run","Run 40 min","6:30/km +4 strides · Z2"),d("tennis","Tennis +45m spin","Z2"),d("swim","Swim 50 min","~1:55 aerobic"),R,d("run","Run 45 min","6:30/km · Z2 124-148"),d("bike","Long ride 2:45","29 km/h · Z2 123-143")],
    [d("swim","Swim 55 min","mixed CSS/aerobic"),d("run","Run 45 min Z2","6:30/km · Z2 124-148"),d("tennis","Tennis +1:00 spin","Z2"),d("swim","Swim 55 min","12×100 @1:40 CSS"),R,d("run","Run 50 min","6:30/km · Z2"),d("bike","Long ride 3:00","29 km/h · Z2 123-143")],
