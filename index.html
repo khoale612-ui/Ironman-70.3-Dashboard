@@ -27,6 +27,7 @@
   .bar{height:7px; background:#0a121f; border-radius:4px; overflow:hidden; margin-top:14px;}
   .bar>div{height:100%; background:var(--accent); border-radius:4px; transition:width .3s;}
   .barlabel{font-size:12px; color:var(--muted); margin:7px 0 0;}
+  .editrace{font-size:12px; color:var(--accent); cursor:pointer; background:none; border:none; padding:6px 0 0; text-decoration:underline;}
   .stats{display:grid; grid-template-columns:repeat(2,1fr); gap:11px; margin:16px 0;}
   .stat{background:var(--surface2); border-radius:var(--radius-sm); padding:12px 14px;}
   .stat .l{font-size:12px; color:var(--muted);}
@@ -87,33 +88,33 @@
 <body>
 <div class="wrap">
 
-  <!-- SETUP WARNING (only shown if not configured) -->
   <div class="setupcard" id="setupwarn" style="display:none;">
     <h4>⚠ Not configured yet</h4>
-    Open this HTML file in a text editor and replace the three <code>YOUR_*</code> placeholders near the top of the script (CLIENT_ID, API_KEY, SPREADSHEET_ID). Then re-upload it. See the setup guide for how to get those values.
+    Open this HTML file in a text editor and replace the three <code>YOUR_*</code> placeholders near the top of the script (CLIENT_ID, API_KEY, SPREADSHEET_ID). Then re-deploy it.
   </div>
 
   <div class="card">
     <div class="hero">
-      <div><p class="sub">IRONMAN 70.3 Melbourne</p><p class="title">St Kilda · Sun 8 Nov</p></div>
-      <div class="cd" id="cd">164<small>days to go</small></div>
+      <div><p class="sub">IRONMAN 70.3 Melbourne</p><p class="title" id="racetitle">St Kilda · Sun 8 Nov</p></div>
+      <div class="cd" id="cd">—<small>days to go</small></div>
     </div>
     <div class="bar"><div id="bar"></div></div>
-    <p class="barlabel" id="barlabel">Week 1 of 24 · Survival phase</p>
+    <p class="barlabel" id="barlabel">Week 1 of 24</p>
+    <button class="editrace" id="editrace">Edit race date</button>
   </div>
 
   <div id="signinblock" style="display:none; margin:14px 0;">
     <button class="signin" id="signin">Sign in with Google to sync</button>
-    <p style="font-size:11px; color:var(--muted); text-align:center; margin-top:8px;">Edits will save to your Google Sheet</p>
+    <p style="font-size:11px; color:var(--muted); text-align:center; margin-top:8px;">Edits sync to your Google Sheet across devices</p>
   </div>
 
   <div class="statusbar" id="status"></div>
 
   <div class="stats">
-    <div class="stat"><div class="l">Sleep (4wk)</div><div class="v">6.15<span> h</span></div><div class="d down-good">↗ improving</div></div>
-    <div class="stat"><div class="l">HRV (4wk)</div><div class="v">44.8<span> ms</span></div><div class="d up">↘ watch trend</div></div>
-    <div class="stat"><div class="l">Resting HR</div><div class="v">62.8<span> bpm</span></div><div class="d up">↗ mild fatigue</div></div>
-    <div class="stat"><div class="l">VO₂ max</div><div class="v">45</div><div class="d neutral">peak was 56</div></div>
+    <div class="stat"><div class="l">Sleep (4wk)</div><div class="v"><span id="m_sleep">6.15</span><span> h</span></div><div class="d neutral" id="t_sleep">—</div></div>
+    <div class="stat"><div class="l">HRV (4wk)</div><div class="v"><span id="m_hrv">44.8</span><span> ms</span></div><div class="d neutral" id="t_hrv">—</div></div>
+    <div class="stat"><div class="l">Resting HR</div><div class="v"><span id="m_rhr">62.8</span><span> bpm</span></div><div class="d neutral" id="t_rhr">—</div></div>
+    <div class="stat"><div class="l">VO₂ max</div><div class="v"><span id="m_vo2">45</span></div><div class="d neutral" id="t_vo2">—</div></div>
   </div>
 
   <div class="nav">
@@ -135,10 +136,10 @@
     <h3>Heart rate zones</h3>
     <table class="ztable">
       <tr><th>Sport</th><th>Z2 aerobic</th><th>Z3 tempo</th><th>Z4 thresh</th></tr>
-      <tr><td>Run</td><td>124–148</td><td>149–167</td><td>168–188</td></tr>
-      <tr><td>Bike</td><td>123–143</td><td>144–163</td><td>164–184</td></tr>
+      <tr><td>Run</td><td>150–164</td><td>165–173</td><td>174–184</td></tr>
+      <tr><td>Bike</td><td>146–160</td><td>161–169</td><td>170–180</td></tr>
     </table>
-    <p style="font-size:11px;color:var(--hint);margin:9px 0 0;">Provisional run zones from recent Strava (easy ~137, drift to 169). Easy/base: stay under 140 run, 133 bike. Update once fresh Garmin data is in.<br><strong style="color:var(--run)">3 runs/week is the non-negotiable — Tue, Thu &amp; Sat. Frequency before volume before pace.</strong></p>
+    <p style="font-size:11px;color:var(--hint);margin:9px 0 0;">From Strava HR, Jun 2026 · max HR 203 (run) · threshold ~184 run / ~180 bike. Easy/base: keep low Z2 — under 158 run, 155 bike.</p>
   </div>
 
   <p class="foot">Synced to your Google Sheet · re-auth weekly required<br>Add to home screen: Share → Add to Home Screen</p>
@@ -146,16 +147,20 @@
 
 <div class="sheet" id="sheet">
   <div class="sheetinner">
-    <h3>Edit session</h3>
+    <h3 id="sheettitle">Edit session</h3>
     <p class="sd" id="sh_day">Monday · Week 1</p>
-    <div class="field"><label>Type</label>
-      <select id="sh_type">
-        <option value="swim">Swim</option><option value="bike">Bike</option><option value="run">Run</option>
-        <option value="brick">Brick</option><option value="tennis">Tennis</option><option value="rest">Rest</option><option value="race">Race</option>
-      </select></div>
-    <div class="field"><label>Session</label><input id="sh_session" type="text"></div>
-    <div class="field"><label>Detail</label><input id="sh_detail" type="text"></div>
-    <div class="field"><label>Note (how it went, swaps)</label><textarea id="sh_note"></textarea></div>
+    <div id="sessionfields">
+      <div class="field"><label>Type</label>
+        <select id="sh_type">
+          <option value="swim">Swim</option><option value="bike">Bike</option><option value="run">Run</option>
+          <option value="brick">Brick</option><option value="tennis">Tennis</option><option value="rest">Rest</option><option value="race">Race</option>
+        </select></div>
+      <div class="field"><label>Session</label><input id="sh_session" type="text"></div>
+      <div class="field"><label>Detail</label><input id="sh_detail" type="text"></div>
+      <div class="field"><label>Note (how it went, swaps)</label><textarea id="sh_note"></textarea></div>
+    </div>
+    <div class="field" id="racefield" style="display:none;"><label>Race date</label><input id="sh_racedate" type="date">
+      <p style="font-size:11px;color:var(--hint);margin:6px 0 0;">Plan auto-shifts so week 24 is race week. Syncs to your Sheet.</p></div>
     <div class="sheetbtns">
       <button class="cancel" id="sh_cancel">Cancel</button>
       <button class="save" id="sh_save">Save</button>
@@ -165,7 +170,7 @@
 
 <script>
 // ====================================================================
-// CONFIG — REPLACE THESE THREE VALUES WITH YOURS (see setup guide)
+// CONFIG — REPLACE THESE THREE VALUES WITH YOURS (reuse your existing ones)
 // ====================================================================
 const CLIENT_ID = "856518051919-r8ichknn98de10aqo6uclnc6nqf4qasd.apps.googleusercontent.com";
 const API_KEY   = "AIzaSyCrLdzVxOXQOxm9TxOFBwSjlsXz_os4QKQ";
@@ -177,158 +182,180 @@ const SCOPES = "https://www.googleapis.com/auth/spreadsheets";
 const DISCOVERY = "https://sheets.googleapis.com/$discovery/rest?version=v4";
 
 (function(){
-  // --- plan data (same as offline version) ---
-  var RACE=new Date(2026,10,8), W1=new Date(2026,4,25), today=new Date();
-  if(today<W1) today=new Date(2026,4,28);
+  var RACE_KEY="__race__", METRICS_KEY="__metrics__";
+  var savedRace=localStorage.getItem('i703_race');
+  var RACE = savedRace ? new Date(savedRace+"T00:00:00") : new Date(2026,10,8);
+  function computeW1(){ return new Date(RACE.getTime() - 23*7*864e5); } // wk24 = race week
+  var W1=computeW1(), today=new Date();
+
   var PHASE=["Survival","Survival","Survival","Survival","Survival","Survival","Base 1","Base 1","Base 1","Base 1","Base 2","Base 2","Base 2","Base 2","Build 1","Build 1","Build 1","Build 1","Build 2/Peak","Build 2/Peak","Build 2/Peak","Build 2/Peak","Taper","Race wk"];
   var HRS=["4.0","4.0","4.5","3.5","4.5","5.0","7.0","7.5","8.0","7.0","8.5","8.5","7.5","9.0","9.5","7.5","10.0","10.0","10.0","8.5","10.5","9.5","6.5","3.0"];
   var DAYS=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
   var COL={swim:"var(--swim)",bike:"var(--bike)",run:"var(--run)",brick:"var(--brick)",rest:"var(--rest)",tennis:"var(--tennis)",race:"var(--race)"};
-  var LET={swim:"S",bike:"B",run:"R",brick:"K",rest:"·",tennis:"T",race:"\u2691"};
+  var LET={swim:"S",bike:"B",run:"R",brick:"K",rest:"·",tennis:"T",race:"⚑"};
   function d(t,a,b){return {type:t,title:a,detail:b};}
   var R=d("rest","Rest day","Full off — recovery is a session");
-  // Targets built off: swim 1:40/100m, bike 33 km/h, run 5:30/km
   var BASEPLAN=[
-   [d("swim","Swim 30 min","~2:00/100m · easy reactivation"),d("rest","Rest","or 30 min walk"),d("rest","Rest","no tennis during EOFY"),d("run","Run 20 min easy","7:00/km · &lt;140 bpm easy"),R,d("run","Run 20 min easy","7:00/km · &lt;140 bpm · 3rd run — protect it"),d("bike","Long ride 2:00","27-29 km/h · Z2 123-143 · keystone")],
-   [d("swim","Swim 30 min","~2:00/100m · 4×100 drills"),d("rest","Rest","or walk"),d("rest","Rest",""),d("run","Run 25 min easy","7:00/km · &lt;140 bpm easy"),R,d("run","Run 25 min easy","7:00/km · &lt;140 bpm · 3rd run"),d("bike","Long ride 2:00","27-29 km/h · Z2 123-143")],
-   [d("swim","Swim 35 min","~1:55/100m · 6×100 aerobic"),d("rest","Rest",""),d("rest","Rest",""),d("run","Run 25 min easy","6:50/km · &lt;140 bpm easy"),R,d("run","Run 30 min easy","6:50/km · &lt;140 bpm · 3rd run"),d("bike","Long ride 2:15","28 km/h · Z2 123-143")],
-   [d("swim","Swim 30 min easy","~2:00/100m · skip if shattered"),d("rest","Rest",""),d("rest","Rest",""),d("run","Run 20 min / walk","easy · Z1-Z2"),R,d("rest","Rest","likely needed"),d("bike","Ride 2:00 Z2","easy · Z2 123-143")],
-   [d("swim","Swim 35 min","~1:55/100m · aerobic"),d("rest","Rest",""),d("rest","Rest",""),d("run","Run 30 min easy","6:45/km · &lt;140 bpm easy"),R,d("run","Run 30 min easy","6:45/km · &lt;140 bpm · 3rd run"),d("bike","Long ride 2:15","28 km/h · Z2 123-143")],
-   [d("swim","Swim 40 min","8×100 @1:50 · aerobic"),d("rest","Rest",""),d("rest","Rest",""),d("run","Run 30 min easy","6:45/km · &lt;140 bpm easy"),R,d("run","Run 30 min Z2","6:45/km · Z2"),d("bike","Long ride 2:30","28-29 km/h · Z2 123-143")],
-   [d("swim","Swim 45 min","CSS TEST 2×400 · set CSS"),d("run","Run 35 min Z2","6:40/km · Z2 124-148"),d("tennis","Tennis optional","only if Achilles ok"),d("swim","Swim 45 min","8×100 @1:40 CSS"),R,d("run","Run 40 min Z2","6:40/km · Z2"),d("bike","Long ride 2:30","28-29 km/h · Z2 123-143")],
-   [d("swim","Swim 50 min","CSS @1:40"),d("run","Run 40 min","6:30/km +4 strides · Z2"),d("tennis","Tennis +45m spin","Z2"),d("swim","Swim 50 min","~1:55 aerobic"),R,d("run","Run 45 min","6:30/km · Z2 124-148"),d("bike","Long ride 2:45","29 km/h · Z2 123-143")],
-   [d("swim","Swim 55 min","mixed CSS/aerobic"),d("run","Run 45 min Z2","6:30/km · Z2 124-148"),d("tennis","Tennis +1:00 spin","Z2"),d("swim","Swim 55 min","12×100 @1:40 CSS"),R,d("run","Run 50 min","6:30/km · Z2"),d("bike","Long ride 3:00","29 km/h · Z2 123-143")],
-   [d("swim","Swim 40 min easy","~1:55/100m"),d("run","Run 35 min Z2","6:40/km · Z2"),d("tennis","Tennis only",""),d("swim","Swim 40 min","8×100 aerobic"),R,d("brick","FIRST BRICK","Bike 1:00@29 + Run 15min@6:00 · Z2-3"),d("bike","Long ride 2:30","easy · Z2 123-143")],
-   [d("swim","Swim 1:00","5×300 @1:42 CSS"),d("run","Run 50 min TEMPO","15min @5:40/km · Z3 149-167"),d("tennis","Tennis +1:00 spin","Z2"),d("swim","Swim 1:00","~1:55 aerobic"),R,d("run","Long run 55 min","6:20/km · Z2 124-148"),d("bike","Long ride 3:15","30 km/h · Z2 123-143")],
-   [d("swim","Swim 1:00","CSS @1:40"),d("run","Run 55 min","2×10min @5:40/km · Z3 149-167"),d("tennis","Tennis +1:00 spin","Z2"),d("swim","Swim 1:00","+strength"),R,d("run","Long run 1:00","6:20/km · Z2"),d("bike","Long ride 3:30","2×15min@31 · Z2 base/Z3")],
-   [d("swim","Swim 50 min easy","~1:55"),d("run","Run 45 min Z2","6:30/km · Z2"),d("tennis","Tennis only",""),d("swim","Swim 50 min","aerobic"),R,d("run","Run 50 min Z2","6:30/km"),d("bike","Ride 2:45 Z2","recovery · Z2 123-143")],
-   [d("swim","Swim 1:00","CSS TEST #2 · reset CSS"),d("run","Run 1:00 tempo","2×15min @5:35/km · Z3 149-167"),d("tennis","Tennis +1:00 spin","Z2"),d("swim","Swim 1:00","+strength"),R,d("brick","Brick","Bike 2:00@30 + Run 30min@6:10 · Z2"),d("bike","Long ride 4:00","30-31 km/h · Z2 123-143")],
-   [d("swim","Swim 1:00","10×100 @1:40 CSS"),d("run","Run 1:00 THRESHOLD","4×5min @5:10/km · Z4 168-188"),d("tennis","Tennis (call)+spin","Z2"),d("swim","Swim 1:00","+strength"),R,d("run","Long run 1:15","6:15/km · Z2 124-148"),d("bike","Long ride 4:00 SWEET SPOT","3×20min @90-94% · Z3-Z4")],
-   [d("swim","Swim 50 min easy","~1:55"),d("run","Run 50 min Z2","6:30/km · Z2"),d("tennis","Tennis only",""),d("swim","Swim 50 min","aerobic"),R,d("run","Run 50 min Z2","6:30/km"),d("bike","Ride 3:00 Z2","easy · Z2 123-143")],
-   [d("swim","Swim 1:00","CSS @1:38"),d("run","Run 1:00 threshold","2×10min @5:10/km · Z4 168-188"),d("tennis","Tennis/drop +spin","Z2"),d("swim","Swim 1:00","+strength"),R,d("run","Long run 1:25","13km @6:10, last 3 @5:35 · Z2-3"),d("bike","Long ride 4:30","2×30min sweet spot · Z3-Z4")],
-   [d("swim","Swim 1:00","race-pace 200s @1:40"),d("run","Run 1:00","threshold mixed @5:10 · Z4"),d("tennis","Tennis/drop",""),d("swim","Swim 1:00","+strength"),R,d("brick","Brick","Bike 2:30@31 + Run 40min@5:40 · Z3"),d("bike","Long ride 4:30","race blocks @33 · Z3 148-160")],
-   [d("swim","OPEN WATER 45 min","St Kilda @1:45 · sighting"),d("run","Run 1:00 race-pace","3×10min @5:30/km · Z3 150-165"),d("tennis","Tennis (call)+spin","Z2"),d("swim","Swim 1:00","OW or pool"),R,d("run","Long run 1:30","14km @6:10/km (cap) · Z2"),d("brick","BIG BRICK","Bike 3:30@31 + Run 30min@5:30 + fuel")],
-   [d("swim","Swim 50 min easy","~1:55"),d("run","Run 50 min Z2","6:30/km · Z2"),d("tennis","Tennis only",""),d("swim","Swim 50 min","OW bay @1:45"),R,d("run","Run 1:00 Z2","6:25/km · Z2"),d("bike","Ride 3:00 Z2","easy · Z2 123-143")],
-   [d("swim","OW bay 1:00","race distance @1:40"),d("run","Run 1:05 race-pace","3×12min @5:30/km · Z3 150-165"),d("rest","Drop tennis - peak wk","45min spin · Z2"),d("swim","Swim 1:00","+strength"),R,d("brick","RACE SIM","1.5k@1:40 / 60k@33 / 8k@5:30"),d("bike","Ride 3:30 easy Z2","recover from sim")],
-   [d("swim","OW bay 1:00","@1:40 race effort"),d("run","Run 1:00","race-pace 5:30/km · Z3 150-165"),d("rest","No tennis","45min spin · Z2"),d("swim","Swim 1:00","race-pace 100s @1:38"),R,d("run","Long run 1:25","13km @6:05/km · final long"),d("bike","Long ride 4:00","95km @33 · final long · Z3")],
-   [d("swim","Swim 50 min","quality short @1:38"),d("run","Run 45 min race-pace","3×6min @5:30/km · Z3 150-165"),d("rest","No tennis","rest / walk"),d("swim","OW bay 45 min","practice @1:45"),R,d("brick","Brick","Bike 1:30@32 + Run 20min@5:30 · race"),d("bike","Ride 2:30 Z2","55km easy · Z2 123-143")],
-   [d("swim","Swim 30 min easy","+ pickups @1:40"),d("bike","Bike 45 min easy","3×1min openers @race"),d("run","Run 20 min easy","+4 strides · Z2"),d("rest","Rest - expo Fri 6 Nov",""),R,d("bike","Openers","Bike 20min + Run 10min easy"),d("race","RACE DAY","Swim 32m@1:40 / Bike 2:44@33 / Run 1:56@5:30")]
+   [d("swim","Swim 30 min","Easy reactivation, technique"),d("rest","Rest","or 30 min walk"),d("rest","Rest","no tennis during EOFY"),d("run","Run 20 min easy","3 km Z2 (<148 bpm)"),R,d("run","Optional run 20 min","skip if work was rough"),d("bike","Long ride 2:00","45–50 km Z2 · keystone")],
+   [d("swim","Swim 30 min","4×100 drills"),d("rest","Rest","or walk"),d("rest","Rest",""),d("run","Run 25 min easy","3.5 km Z2"),R,d("run","Optional run 25 min",""),d("bike","Long ride 2:00","45–50 km Z2")],
+   [d("swim","Swim 35 min","6×100 aerobic"),d("rest","Rest",""),d("rest","Rest",""),d("run","Run 25 min easy","4 km Z2"),R,d("run","Optional run 30 min",""),d("bike","Long ride 2:15","50–55 km Z2")],
+   [d("swim","Swim 30 min easy","skip if shattered"),d("rest","Rest",""),d("rest","Rest",""),d("run","Run 20 min / walk",""),R,d("rest","Rest","likely needed"),d("bike","Ride 2:00 Z2","cut to 1:30 if tired")],
+   [d("swim","Swim 35 min","aerobic"),d("rest","Rest",""),d("rest","Rest",""),d("run","Run 30 min Z2","5 km"),R,d("run","Optional run 30 min",""),d("bike","Long ride 2:15","55 km Z2")],
+   [d("swim","Swim 40 min","8×100"),d("rest","Rest",""),d("rest","Rest",""),d("run","Run 30 min Z2","5 km"),R,d("run","Run 30 min Z2","4.5 km"),d("bike","Long ride 2:30","60 km Z2")],
+   [d("swim","Swim 45 min","CSS test 2×400"),d("run","Run 35 min Z2","5.5 km"),d("tennis","Tennis optional","only if Achilles ok"),d("swim","Swim 45 min","8×100 @ CSS"),R,d("run","Run 40 min Z2","6 km"),d("bike","Long ride 2:30","60 km Z2")],
+   [d("swim","Swim 50 min","CSS work"),d("run","Run 40 min","6.5 km + strides"),d("tennis","Tennis","+ 45 min spin"),d("swim","Swim 50 min","aerobic"),R,d("run","Run 45 min","7 km Z2"),d("bike","Long ride 2:45","65–70 km Z2")],
+   [d("swim","Swim 55 min","mixed"),d("run","Run 45 min Z2","7 km"),d("tennis","Tennis","+ 1:00 spin"),d("swim","Swim 55 min","12×100 @ CSS"),R,d("run","Run 50 min","8 km Z2"),d("bike","Long ride 3:00","70–75 km Z2")],
+   [d("swim","Swim 40 min easy",""),d("run","Run 35 min Z2","5.5 km"),d("tennis","Tennis only",""),d("swim","Swim 40 min","8×100"),R,d("brick","First brick","Bike 1:00 + Run 15 min"),d("bike","Long ride 2:30","60 km easy")],
+   [d("swim","Swim 1:00","5×300 @ CSS"),d("run","Run 50 min tempo","15 min Z3"),d("tennis","Tennis","+ 1:00 spin"),d("swim","Swim 1:00","aerobic"),R,d("run","Long run 55 min","9 km Z2"),d("bike","Long ride 3:15","80 km Z2")],
+   [d("swim","Swim 1:00","CSS"),d("run","Run 55 min","2×10 min Z3"),d("tennis","Tennis","+ 1:00 spin"),d("swim","Swim 1:00","+ strength"),R,d("run","Long run 1:00","10 km Z2"),d("bike","Long ride 3:30","85 km + 2×15 Z3")],
+   [d("swim","Swim 50 min easy",""),d("run","Run 45 min Z2",""),d("tennis","Tennis only",""),d("swim","Swim 50 min","aerobic"),R,d("run","Run 50 min Z2",""),d("bike","Ride 2:45 Z2","recovery")],
+   [d("swim","Swim 1:00","CSS test #2"),d("run","Run 1:00 tempo","2×15 min Z3"),d("tennis","Tennis","+ 1:00 spin"),d("swim","Swim 1:00","+ strength"),R,d("brick","Brick","Bike 2:00 + Run 30 min"),d("bike","Long ride 4:00","95 km Z2")],
+   [d("swim","Swim 1:00","10×100 @ CSS"),d("run","Run 1:00 threshold","4×5 min Z4"),d("tennis","Tennis (coach call)","+ spin"),d("swim","Swim 1:00","+ strength"),R,d("run","Long run 1:15","12 km Z2"),d("bike","Long ride 4:00 sweet spot","3×20 min 88–94%")],
+   [d("swim","Swim 50 min easy",""),d("run","Run 50 min Z2",""),d("tennis","Tennis only",""),d("swim","Swim 50 min","aerobic"),R,d("run","Run 50 min Z2",""),d("bike","Ride 3:00 Z2","")],
+   [d("swim","Swim 1:00","CSS"),d("run","Run 1:00 threshold","2×10 min Z4"),d("tennis","Tennis / drop","+ spin"),d("swim","Swim 1:00","+ strength"),R,d("run","Long run 1:25","13 km, last 3 Z3"),d("bike","Long ride 4:30","105 km, 2×30 sweet spot")],
+   [d("swim","Swim 1:00","race-pace 200s"),d("run","Run 1:00","threshold mixed"),d("tennis","Tennis / drop",""),d("swim","Swim 1:00","+ strength"),R,d("brick","Brick","Bike 2:30 + Run 40 min"),d("bike","Long ride 4:30","110 km race-pace")],
+   [d("swim","Open water 45 min","St Kilda bay, sighting"),d("run","Run 1:00 race-pace","3×10 min @ goal HM"),d("tennis","Tennis (call)","+ spin"),d("swim","Swim 1:00","OW or pool"),R,d("run","Long run 1:30","14 km Z2 (cap)"),d("brick","Big brick","Bike 3:30 + Run 30 min + fuel")],
+   [d("swim","Swim 50 min easy",""),d("run","Run 50 min Z2",""),d("tennis","Tennis only",""),d("swim","Swim 50 min","OW bay"),R,d("run","Run 1:00 Z2","9 km"),d("bike","Ride 3:00 Z2","easy")],
+   [d("swim","OW bay 1:00","race distance"),d("run","Run 1:05 race-pace","3×12 min"),d("rest","Drop tennis","peak wk · 45 min spin"),d("swim","Swim 1:00","+ strength"),R,d("brick","RACE SIM","Swim 1.5k + Bike 60k + Run 8k"),d("bike","Ride 3:30 easy Z2","")],
+   [d("swim","OW bay 1:00",""),d("run","Run 1:00","race-pace"),d("rest","No tennis","45 min spin"),d("swim","Swim 1:00","race-pace 100s"),R,d("run","Long run 1:25","13 km · final long"),d("bike","Long ride 4:00","95 km · final long")],
+   [d("swim","Swim 50 min","quality short"),d("run","Run 45 min race-pace","3×6 min"),d("rest","No tennis","rest / walk"),d("swim","OW bay 45 min","practice"),R,d("brick","Brick","Bike 1:30 + Run 20 min race pace"),d("bike","Ride 2:30 Z2","55 km")],
+   [d("swim","Swim 30 min easy","+ pickups"),d("bike","Bike 45 min easy","3×1 min openers"),d("run","Run 20 min easy","+ 4 strides"),d("rest","Rest","expo Fri"),R,d("bike","Openers","Bike 20 + Run 10 min"),d("race","RACE DAY","1.9k / 90k / 21.1k · sub-6:30")]
   ];
 
   // ---- state ----
   var overrides={}, done={}, accessToken=null, tokenClient=null, gapiReady=false, gisReady=false;
   var configured = !CLIENT_ID.includes("YOUR_") && !API_KEY.includes("YOUR_") && !SPREADSHEET_ID.includes("YOUR_");
 
-  function setStatus(msg, cls){
-    var s=document.getElementById('status'); s.textContent=msg||""; s.className="statusbar "+(cls||"");
+  function setStatus(msg, cls){ var s=document.getElementById('status'); s.textContent=msg||""; s.className="statusbar "+(cls||""); }
+
+  // ---- metric trends (auto) ----
+  // betterWhenHigher: sleep/HRV/VO2 = true, resting HR = false
+  var METRIC_DEF={
+    sleep:{el:'m_sleep', tEl:'t_sleep', higher:true,  dp:2},
+    hrv:  {el:'m_hrv',   tEl:'t_hrv',   higher:true,  dp:1},
+    rhr:  {el:'m_rhr',   tEl:'t_rhr',   higher:false, dp:1},
+    vo2:  {el:'m_vo2',   tEl:'t_vo2',   higher:true,  dp:0}
+  };
+  function applyMetrics(m){
+    var prev={}, trend={};
+    try{ prev=JSON.parse(localStorage.getItem('i703_m_prev'))||{}; }catch(e){}
+    try{ trend=JSON.parse(localStorage.getItem('i703_m_trend'))||{}; }catch(e){}
+    var newPrev=Object.assign({},prev);
+    for(var k in METRIC_DEF){
+      var def=METRIC_DEF[k], raw=m[k];
+      if(raw===undefined||raw===""||raw===null) continue;       // no value this sync → leave as-is
+      var num=parseFloat(raw);
+      document.getElementById(def.el).textContent=raw;
+      if(prev[k]!==undefined && !isNaN(num)){
+        var diff=num-prev[k];
+        if(diff!==0){
+          var good=(diff>0)===def.higher;          // moved in the desired direction?
+          var arrow=diff>0?'↗':'↘';
+          trend[k]={cls:good?'down-good':'up', txt:arrow+' '+(good?'improving':'declining')};
+        }
+        // diff===0 → keep the previously stored trend label
+      }
+      if(!isNaN(num)) newPrev[k]=num;
+      var t=trend[k];
+      var tel=document.getElementById(def.tEl);
+      if(t){ tel.className='d '+t.cls; tel.textContent=t.txt; }
+      else { tel.className='d neutral'; tel.textContent='— baseline set'; }
+    }
+    localStorage.setItem('i703_m_prev',JSON.stringify(newPrev));
+    localStorage.setItem('i703_m_trend',JSON.stringify(trend));
   }
 
   // ---- Sheets sync ----
-  // Sheet layout: rows are wk_day (e.g. "1_0" = Mon of week 1), cols A:E
-  //   A: key (wk_di)  B: done (0/1)  C: type  D: title  E: detail  F: note
+  // Sheet cols A:F  → A:key  B:done  C:type  D:title  E:detail  F:note
+  // Race date stored in a special row with key "__race__", value in column D (title) as YYYY-MM-DD
   async function loadFromSheet(){
     if(!accessToken) return;
     setStatus("Loading…","pending");
     try{
       const r = await gapi.client.sheets.spreadsheets.values.get({
-        spreadsheetId: SPREADSHEET_ID,
-        range: SHEET_NAME + "!A2:F1000"
+        spreadsheetId: SPREADSHEET_ID, range: SHEET_NAME + "!A2:F1000"
       });
       const rows = r.result.values || [];
       overrides = {}; done = {};
       for(const row of rows){
         const key = row[0]; if(!key) continue;
+        if(key===RACE_KEY){
+          if(row[3]){ RACE=new Date(row[3]+"T00:00:00"); localStorage.setItem('i703_race',row[3]); recompute(); cur=startWk; }
+          continue;
+        }
+        if(key===METRICS_KEY){
+          // C:sleep  D:hrv  E:rhr  F:vo2max
+          applyMetrics({ sleep:row[2], hrv:row[3], rhr:row[4], vo2:row[5] });
+          continue;
+        }
         if(row[1]==="1") done[key] = 1;
         if(row[2] || row[3] || row[4] || row[5]){
           overrides[key] = { type:row[2]||"rest", title:row[3]||"", detail:row[4]||"", note:row[5]||"" };
         }
       }
-      setStatus("Synced ✓","ok");
-      setTimeout(()=>setStatus(""),1500);
-      render();
-    }catch(e){
-      console.error(e);
-      setStatus("Load failed — check Sheet ID and tab name","err");
-    }
+      setStatus("Synced ✓","ok"); setTimeout(()=>setStatus(""),1500);
+      header(); render();
+    }catch(e){ console.error(e); setStatus("Load failed — check Sheet ID and tab name","err"); }
   }
 
   async function saveOneToSheet(key){
     if(!accessToken) return;
     setStatus("Saving…","pending");
     try{
-      // find existing row for this key
       const r = await gapi.client.sheets.spreadsheets.values.get({
         spreadsheetId: SPREADSHEET_ID, range: SHEET_NAME + "!A2:A1000"
       });
       const keys = (r.result.values || []).map(x=>x[0]);
       const rowIdx = keys.indexOf(key);
-      const o = overrides[key] || {};
-      const values = [[ key, done[key]?"1":"", o.type||"", o.title||"", o.detail||"", o.note||"" ]];
+      let values;
+      if(key===RACE_KEY){
+        values=[[ RACE_KEY, "", "", RACE.toISOString().slice(0,10), "", "race date" ]];
+      } else {
+        const o = overrides[key] || {};
+        values = [[ key, done[key]?"1":"", o.type||"", o.title||"", o.detail||"", o.note||"" ]];
+      }
       if(rowIdx >= 0){
         await gapi.client.sheets.spreadsheets.values.update({
-          spreadsheetId: SPREADSHEET_ID,
-          range: SHEET_NAME + "!A" + (rowIdx+2) + ":F" + (rowIdx+2),
-          valueInputOption: "RAW",
-          resource: { values: values }
-        });
+          spreadsheetId: SPREADSHEET_ID, range: SHEET_NAME + "!A" + (rowIdx+2) + ":F" + (rowIdx+2),
+          valueInputOption: "RAW", resource: { values: values } });
       } else {
         await gapi.client.sheets.spreadsheets.values.append({
-          spreadsheetId: SPREADSHEET_ID,
-          range: SHEET_NAME + "!A2:F",
-          valueInputOption: "RAW",
-          resource: { values: values }
-        });
+          spreadsheetId: SPREADSHEET_ID, range: SHEET_NAME + "!A2:F",
+          valueInputOption: "RAW", resource: { values: values } });
       }
-      setStatus("Saved ✓","ok");
-      setTimeout(()=>setStatus(""),1500);
-    }catch(e){
-      console.error(e);
-      setStatus("Save failed — check sign-in","err");
-    }
+      setStatus("Saved ✓","ok"); setTimeout(()=>setStatus(""),1500);
+    }catch(e){ console.error(e); setStatus("Save failed — check sign-in","err"); }
   }
 
   // ---- Google sign-in (GIS + GAPI) ----
-  function maybeReady(){
-    if(gapiReady && gisReady && configured){
-      document.getElementById('signinblock').style.display='block';
-    }
-  }
+  function maybeReady(){ if(gapiReady && gisReady && configured){ document.getElementById('signinblock').style.display='block'; } }
   window.gapiLoaded = function(){
-    gapi.load('client', async ()=>{
-      await gapi.client.init({ apiKey: API_KEY, discoveryDocs: [DISCOVERY] });
-      gapiReady = true; maybeReady();
-    });
+    gapi.load('client', async ()=>{ await gapi.client.init({ apiKey: API_KEY, discoveryDocs: [DISCOVERY] }); gapiReady = true; maybeReady(); });
   };
   window.gisLoaded = function(){
     tokenClient = google.accounts.oauth2.initTokenClient({
-      client_id: CLIENT_ID,
-      scope: SCOPES,
-      callback: (resp)=>{
-        if(resp.error){ setStatus("Sign-in failed","err"); return; }
-        accessToken = resp.access_token;
-        document.getElementById('signinblock').style.display='none';
-        loadFromSheet();
-      }
+      client_id: CLIENT_ID, scope: SCOPES,
+      callback: (resp)=>{ if(resp.error){ setStatus("Sign-in failed","err"); return; }
+        accessToken = resp.access_token; document.getElementById('signinblock').style.display='none'; loadFromSheet(); }
     });
     gisReady = true; maybeReady();
   };
-  document.getElementById('signin').onclick = ()=>{
-    if(tokenClient) tokenClient.requestAccessToken({ prompt: 'consent' });
-  };
+  document.getElementById('signin').onclick = ()=>{ if(tokenClient) tokenClient.requestAccessToken({ prompt: 'consent' }); };
   document.getElementById('signoutbtn').onclick = ()=>{
     if(accessToken){ google.accounts.oauth2.revoke(accessToken); accessToken=null; }
-    document.getElementById('signinblock').style.display='block';
-    setStatus("Signed out","");
+    document.getElementById('signinblock').style.display='block'; setStatus("Signed out","");
   };
 
   // ---- dashboard logic ----
-  function sess(wk,di){
-    var k=wk+"_"+di;
-    if(overrides[k]) return overrides[k];
-    return BASEPLAN[wk][di];
+  function sess(wk,di){ var k=wk+"_"+di; if(overrides[k]) return overrides[k]; return BASEPLAN[wk][di]; }
+  var startWk, cur, todayIdx;
+  function recompute(){
+    W1=computeW1();
+    startWk=Math.max(0,Math.min(23,Math.round((today-W1)/(7*864e5))));
+    todayIdx=(today.getDay()+6)%7;
+    if(typeof cur!=="number") cur=startWk;
   }
-  var startWk=Math.max(0,Math.min(23,Math.round((today-W1)/(7*864e5))));
-  var cur=startWk, todayIdx=(today.getDay()+6)%7;
+  recompute();
   function fd(wk){var dt=new Date(W1.getTime()+wk*7*864e5);return dt.toLocaleDateString('en-AU',{day:'numeric',month:'short'});}
 
   function render(){
@@ -359,9 +386,13 @@ const DISCOVERY = "https://sheets.googleapis.com/$discovery/rest?version=v4";
       el.onclick=function(){ openEditor(+el.getAttribute('data-edit')); };
     });
   }
+
   var editingDi=null;
   function openEditor(i){
     editingDi=i; var s=sess(cur,i);
+    document.getElementById('sheettitle').textContent="Edit session";
+    document.getElementById('sessionfields').style.display='block';
+    document.getElementById('racefield').style.display='none';
     document.getElementById('sh_day').textContent=DAYS[i]+" · Week "+(cur+1);
     document.getElementById('sh_type').value=s.type;
     document.getElementById('sh_session').value=s.title;
@@ -369,10 +400,25 @@ const DISCOVERY = "https://sheets.googleapis.com/$discovery/rest?version=v4";
     document.getElementById('sh_note').value=s.note||"";
     document.getElementById('sheet').classList.add('open');
   }
+  function openRaceEditor(){
+    editingDi="RACE";
+    document.getElementById('sheettitle').textContent="Edit race date";
+    document.getElementById('sh_day').textContent="";
+    document.getElementById('sessionfields').style.display='none';
+    document.getElementById('racefield').style.display='block';
+    document.getElementById('sh_racedate').value=RACE.toISOString().slice(0,10);
+    document.getElementById('sheet').classList.add('open');
+  }
   function closeEditor(){ document.getElementById('sheet').classList.remove('open'); editingDi=null; }
   document.getElementById('sh_cancel').onclick=closeEditor;
   document.getElementById('sheet').onclick=function(ev){ if(ev.target===this) closeEditor(); };
+  document.getElementById('editrace').onclick=openRaceEditor;
   document.getElementById('sh_save').onclick=function(){
+    if(editingDi==="RACE"){
+      var v=document.getElementById('sh_racedate').value;
+      if(v){ RACE=new Date(v+"T00:00:00"); localStorage.setItem('i703_race',v); recompute(); cur=startWk; header(); render(); saveOneToSheet(RACE_KEY); }
+      closeEditor(); return;
+    }
     var k=cur+"_"+editingDi;
     overrides[k]={ type:document.getElementById('sh_type').value,
       title:document.getElementById('sh_session').value,
@@ -380,10 +426,12 @@ const DISCOVERY = "https://sheets.googleapis.com/$discovery/rest?version=v4";
       note:document.getElementById('sh_note').value };
     closeEditor(); render(); saveOneToSheet(k);
   };
+
   function header(){
     var days=Math.max(0,Math.round((RACE-today)/864e5));
     document.getElementById('cd').innerHTML=days+'<small>days to go</small>';
-    var pct=Math.min(100,Math.round(startWk/24*100));
+    document.getElementById('racetitle').textContent="St Kilda · "+RACE.toLocaleDateString('en-AU',{weekday:'short',day:'numeric',month:'short'});
+    var pct=Math.min(100,Math.round((startWk+1)/24*100));
     document.getElementById('bar').style.width=pct+'%';
     document.getElementById('barlabel').textContent="Week "+(startWk+1)+" of 24 · "+PHASE[startWk]+" phase";
   }
@@ -393,9 +441,7 @@ const DISCOVERY = "https://sheets.googleapis.com/$discovery/rest?version=v4";
   document.getElementById('racebtn').onclick=function(){cur=23;render();};
 
   // init
-  if(!configured){
-    document.getElementById('setupwarn').style.display='block';
-  }
+  if(!configured){ document.getElementById('setupwarn').style.display='block'; }
   header(); render();
 })();
 </script>
