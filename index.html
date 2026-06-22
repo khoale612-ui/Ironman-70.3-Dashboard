@@ -185,7 +185,11 @@ const DISCOVERY = "https://sheets.googleapis.com/$discovery/rest?version=v4";
   var RACE_KEY="__race__", METRICS_KEY="__metrics__";
   var savedRace=localStorage.getItem('i703_race');
   var RACE = savedRace ? new Date(savedRace+"T00:00:00") : new Date(2026,10,8);
-  function computeW1(){ return new Date(RACE.getTime() - 23*7*864e5); } // wk24 = race week
+  function computeW1(){ // week 1 = Monday, 23 weeks before the Mon–Sun week containing race day
+    var dow=(RACE.getDay()+6)%7;                       // 0=Mon … 6=Sun
+    var raceWeekMon=new Date(RACE.getTime()-dow*864e5);// Monday of race week (wk24)
+    return new Date(raceWeekMon.getTime()-23*7*864e5); // wk1 Monday
+  }
   var W1=computeW1(), today=new Date();
 
   var PHASE=["Survival","Survival","Survival","Survival","Survival","Survival","Base 1","Base 1","Base 1","Base 1","Base 2","Base 2","Base 2","Base 2","Build 1","Build 1","Build 1","Build 1","Build 2/Peak","Build 2/Peak","Build 2/Peak","Build 2/Peak","Taper","Race wk"];
