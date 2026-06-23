@@ -176,6 +176,7 @@ const CLIENT_ID = "856518051919-r8ichknn98de10aqo6uclnc6nqf4qasd.apps.googleuser
 const API_KEY   = "AIzaSyCrLdzVxOXQOxm9TxOFBwSjlsXz_os4QKQ";
 const SPREADSHEET_ID = "1PfNjSDhZ3-bjEn4fHeUgXnZ5Oy9PsRDWAKtrcLoAo34";
 const SHEET_NAME = "Sync";  // tab name in your Google Sheet — create this tab first
+const SLEEP_TARGET = 8;     // nightly sleep goal (hours)
 // ====================================================================
 
 const SCOPES = "https://www.googleapis.com/auth/spreadsheets";
@@ -265,6 +266,12 @@ const DISCOVERY = "https://sheets.googleapis.com/$discovery/rest?version=v4";
       var tel=document.getElementById(def.tEl);
       if(t){ tel.className='d '+t.cls; tel.textContent=t.txt; }
       else { tel.className='d neutral'; tel.textContent='— baseline set'; }
+      // sleep gets a fixed 8h target readout instead of the generic trend
+      if(k==='sleep' && !isNaN(num)){
+        var gap=num-SLEEP_TARGET;
+        if(gap>=0){ tel.className='d down-good'; tel.textContent='✓ meets '+SLEEP_TARGET+'h goal'; }
+        else { tel.className='d up'; tel.textContent='↓ '+(-gap).toFixed(1)+'h under '+SLEEP_TARGET+'h goal'; }
+      }
     }
     localStorage.setItem('i703_m_prev',JSON.stringify(newPrev));
     localStorage.setItem('i703_m_trend',JSON.stringify(trend));
