@@ -136,10 +136,10 @@
     <h3>Heart rate zones</h3>
     <table class="ztable">
       <tr><th>Sport</th><th>Z2 aerobic</th><th>Z3 tempo</th><th>Z4 thresh</th></tr>
-      <tr><td>Run</td><td>124–144</td><td>145–165</td><td>166–186</td></tr>
-      <tr><td>Bike</td><td>124–144</td><td>145–165</td><td>166–186</td></tr>
+      <tr><td>Run</td><td>149–165</td><td>166–176</td><td>177–185</td></tr>
+      <tr><td>Bike</td><td>145–160</td><td>161–171</td><td>172–180</td></tr>
     </table>
-    <p style="font-size:11px;color:var(--hint);margin:9px 0 0;">Garmin zones · % of max HR (max 207). Z1 104–124 · Z5 187+. Single HR set applies to run &amp; bike. Easy/base = Z2 (124–144).</p>
+    <p style="font-size:11px;color:var(--hint);margin:9px 0 0;">From 4 yrs Strava+Garmin HR · max 203 · threshold 185 run / 180 bike. Z1 run &lt;149 / bike &lt;145 · Z5 run 186+ / bike 181+. Easy/base = low Z2: runs 150–158, bike 145–153.</p>
   </div>
 
   <p class="foot">Synced to your Google Sheet · stays signed in<br>Add to home screen: Share → Add to Home Screen</p>
@@ -206,7 +206,7 @@ const DISCOVERY = "https://sheets.googleapis.com/$discovery/rest?version=v4";
    [d("swim","Swim 30 min","4×100 drills"),d("rest","Rest","or walk"),d("rest","Rest",""),d("run","Run 25 min easy","3.5 km Z2"),R,d("run","Optional run 25 min",""),d("bike","Long ride 2:00","45–50 km Z2")],
    [d("swim","Swim 35 min","6×100 aerobic"),d("rest","Rest",""),d("rest","Rest",""),d("run","Run 25 min easy","4 km Z2"),R,d("run","Optional run 30 min",""),d("bike","Long ride 2:15","50–55 km Z2")],
    [d("swim","Swim 30 min easy","skip if shattered"),d("rest","Rest",""),d("rest","Rest",""),d("run","Run 20 min / walk",""),R,d("rest","Rest","likely needed"),d("bike","Ride 2:00 Z2","cut to 1:30 if tired")],
-   [d("swim","Swim 35 min","aerobic"),d("run","Run 30 min easy","5 km low Z2 <144"),d("swim","Swim 30 min","8×50 · tennis optional"),d("run","Run 30 min easy","5 km Z2"),R,d("run","Run 35 min easy","5.5 km Z2"),d("bike","Long ride 2:15","55 km Z2")],
+   [d("swim","Swim 35 min","aerobic"),d("run","Run 30 min easy","5 km low Z2 <158"),d("swim","Swim 30 min","8×50 · tennis optional"),d("run","Run 30 min easy","5 km Z2"),R,d("run","Run 35 min easy","5.5 km Z2"),d("bike","Long ride 2:15","55 km Z2")],
    [d("swim","Swim 40 min","8×100"),d("run","Run 30 min easy","5 km Z2"),d("swim","Swim 30 min","aerobic · tennis optional"),d("run","Run 35 min easy","5.5 km Z2"),R,d("run","Run 40 min easy","6 km Z2"),d("bike","Long ride 2:30","60 km Z2")],
    [d("swim","Swim 45 min","CSS 2×400"),d("run","Run 40 min Z2","6 km"),d("swim","Swim 45 min","8×100 @ CSS · tennis optional"),d("run","Run 40 min easy","6 km Z2"),R,d("run","Run 45 min Z2","7 km"),d("bike","Long ride 2:30","60 km Z2")],
    [d("swim","Swim 50 min","CSS work"),d("run","Run 45 min","7 km + strides"),d("swim","Swim 50 min","aerobic · tennis optional"),d("run","Run 40 min easy","6.5 km Z2"),R,d("run","Run 50 min Z2","8 km"),d("bike","Long ride 2:45","65–70 km Z2")],
