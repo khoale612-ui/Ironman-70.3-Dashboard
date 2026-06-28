@@ -95,7 +95,12 @@
   .sheet.open{display:flex;}
   .sheetinner{background:var(--surface); width:100%; max-width:560px; margin:0 auto; border-radius:18px 18px 0 0; padding:20px 18px 28px;}
   .sheetinner h3{margin:0 0 4px; font-size:16px;}
-  .sheetinner .sd{font-size:12px; color:var(--muted); margin:0 0 16px;}
+  .sheetinner .sd{font-size:12px; color:var(--muted); margin:0 0 14px;}
+  #sh_structure{background:var(--surface2); border:1px solid var(--line); border-radius:var(--r-sm); padding:13px 15px; margin-bottom:15px;}
+  #sh_structure .sl{font-size:10px; letter-spacing:.08em; text-transform:uppercase; color:var(--accent); margin-top:11px; font-weight:700;}
+  #sh_structure .sl:first-child{margin-top:0;}
+  #sh_structure .st{font-size:13px; color:var(--text); line-height:1.45; margin-top:3px;}
+  .editlink{background:none;border:none;color:var(--muted);font-size:12px;text-decoration:underline;cursor:pointer;padding:0 0 12px;}
   .field{margin-bottom:13px;}
   .field label{display:block; font-size:12px; color:var(--muted); margin-bottom:5px;}
   .field input,.field textarea,.field select{width:100%; background:var(--surface2); border:1px solid var(--line); color:var(--text); border-radius:var(--r-sm); padding:10px 12px; font-size:14px; font-family:inherit;}
@@ -219,10 +224,12 @@
 <!-- edit sheet -->
 <div class="sheet" id="sheet">
   <div class="sheetinner">
-    <h3 id="sheettitle">Edit session</h3>
+    <h3 id="sheettitle">Session</h3>
     <p class="sd" id="sh_day">Monday · Week 1</p>
-    <div id="sessionfields">
-      <button class="donebtn" id="sh_done">Mark done ✓</button>
+    <div id="sh_structure"></div>
+    <button class="donebtn" id="sh_done">Mark done ✓</button>
+    <button class="editlink" id="sh_editToggle">Edit session / log a note ▾</button>
+    <div id="sessionfields" style="display:none;">
       <div class="field"><label>Type</label>
         <select id="sh_type">
           <option value="swim">Swim</option><option value="bike">Bike</option><option value="run">Run</option>
@@ -412,20 +419,51 @@ const DISCOVERY = "https://sheets.googleapis.com/$discovery/rest?version=v4";
   function renderAll(){ renderHome(); renderPlan(); }
 
   // ---- editor ----
+  // ---- structured workout builder (warm-up / main / cool-down) ----
+  function buildSet(s){
+    var t=s.type, ti=(s.title||"").toLowerCase(), de=s.detail||""; function L(l,x){return {l:l,t:x};}
+    if(t==='rest') return [L('Today','Full day off — or a 20–30 min easy walk + 10 min mobility/stretch.'),L('Why','Recovery and sleep are the work today. Adaptation happens on rest days.')];
+    if(t==='race') return [L('Swim 1.9k','Steady, sight every 6–8 strokes. Settle breathing in first 200m.'),L('T1 → Bike 90k','HR 150–160, never spike on climbs. Fuel 60–80 g carb/hr + drink every 15 min.'),L('T2 → Run 21.1k','Start controlled at HR 165, build to 175 in the back half. Negative-split it.'),L('Goal','Sub-6:30 — pace the bike conservatively so the run holds together.')];
+    if(t==='swim') return [L('Warm-up','200 m easy + 4×50 drill (catch-up / fingertip-drag), 15 s rest'),L('Main set', de||s.title),L('Cool-down','100 m easy, mixed stroke')];
+    if(t==='brick'){
+      var m=de.match(/Bike\s*([0-9:\.]+\s*[kmin]*)[^A-Za-z]*([^+]*)\+\s*Run\s*([0-9:\.]+\s*[kmin]*)\s*(.*)/i);
+      var bk=m?(m[1]+(m[2]?' '+m[2].trim():'')):'as listed', rn=m?(m[3]+(m[4]?' '+m[4].trim():'')):'as listed';
+      return [L('Warm-up','10 min easy spin'),L('Bike', bk.trim()+' — hold target HR, eat/drink on the bike'),L('Transition','Rack bike, quick shoe swap — keep it under 2 min'),L('Run off the bike', rn.trim()+' — legs feel heavy ~5 min, lock into HR target'),L('Cool-down','5 min walk + stretch')];
+    }
+    if(t==='bike'){
+      if(/openers/i.test(ti)) return [L('Openers','10 min easy → 3×1 min @ race intensity (full recovery between) → easy spin home.'),L('Note','Wake the legs up — do NOT fatigue them. Race-week only.')];
+      if(/sweet spot|threshold|2×15|2×30|3×20|Z3/i.test(de)||/sweet spot/i.test(ti))
+        return [L('Warm-up','15 min easy spin, last 3 min build + 2×1 min @ Z3'),L('Main set', de),L('Cool-down','10 min easy spin')];
+      return [L('Warm-up','15 min spinning, gradually build into Z2'),L('Main', de||'Steady Z2 endurance'),L('Fuel','60 g carb/hr + 500–750 ml fluid/hr — rehearse race nutrition'),L('Cool-down','10 min easy spin')];
+    }
+    // run
+    if(/threshold/i.test(ti)) return [L('Warm-up','15 min easy Z2 + 3–4 strides + leg swings'),L('Main set', de+' — jog 90 s easy between reps'),L('Cool-down','10 min easy jog')];
+    if(/tempo/i.test(ti)) return [L('Warm-up','10 min easy Z2 + 4×20 s strides'),L('Main set', de+' — easy jog 3 min between blocks'),L('Cool-down','10 min easy')];
+    if(/race-pace|race pace/i.test(ti)) return [L('Warm-up','12 min easy + 4 strides'),L('Main set', de+' — float 2 min easy between'),L('Cool-down','10 min easy')];
+    if(/long run/i.test(ti)) return [L('Warm-up','10 min easy build'),L('Main', de+' — steady, conversational'),L('Fuel','30–40 g carb after 45 min, sip fluid throughout'),L('Cool-down','5 min walk + stretch')];
+    return [L('Warm-up','5 min brisk walk → easy jog to settle in'),L('Main', (de||'Easy aerobic')+' — stay fully conversational'),L('Cool-down','5 min easy jog/walk + light stretch')];
+  }
+
   var edWk=null, edDi=null;
   function openEditor(wk,i){ edWk=wk; edDi=i; var s=sess(wk,i), k=wk+"_"+i;
-    document.getElementById('sheettitle').textContent="Edit session";
-    document.getElementById('sessionfields').style.display='block';
+    document.getElementById('sheettitle').textContent=s.title;
+    document.getElementById('sh_day').textContent=DAYS[i]+" · Week "+(wk+1)+" · "+PHASE[wk];
+    var st=document.getElementById('sh_structure'); st.style.display='block';
+    st.innerHTML=buildSet(s).map(function(r){return '<div class="sl">'+r.l+'</div><div class="st">'+r.t+'</div>';}).join('');
+    document.getElementById('sh_done').style.display='block';
+    document.getElementById('sh_editToggle').style.display='block';
+    document.getElementById('sessionfields').style.display='none';
     document.getElementById('racefield').style.display='none';
-    document.getElementById('sh_day').textContent=DAYS[i]+" · Week "+(wk+1);
     var db=document.getElementById('sh_done'); db.className='donebtn'+(done[k]?' isdone':''); db.textContent=done[k]?'✓ Done — tap to undo':'Mark done ✓';
     document.getElementById('sh_type').value=s.type; document.getElementById('sh_session').value=s.title;
     document.getElementById('sh_detail').value=s.detail||""; document.getElementById('sh_note').value=s.note||"";
     document.getElementById('sheet').classList.add('open');
   }
   function openRaceEditor(){ edWk="RACE"; document.getElementById('sheettitle').textContent="Edit race date"; document.getElementById('sh_day').textContent="";
+    document.getElementById('sh_structure').style.display='none'; document.getElementById('sh_done').style.display='none'; document.getElementById('sh_editToggle').style.display='none';
     document.getElementById('sessionfields').style.display='none'; document.getElementById('racefield').style.display='block';
     document.getElementById('sh_racedate').value=RACE.toISOString().slice(0,10); document.getElementById('sheet').classList.add('open'); }
+  document.getElementById('sh_editToggle').onclick=function(){ var f=document.getElementById('sessionfields'); f.style.display=(f.style.display==='none')?'block':'none'; };
   function closeEditor(){ document.getElementById('sheet').classList.remove('open'); edWk=null; edDi=null; }
   document.getElementById('sh_done').onclick=function(){ var k=edWk+"_"+edDi; if(done[k]) delete done[k]; else done[k]=1;
     var db=document.getElementById('sh_done'); db.className='donebtn'+(done[k]?' isdone':''); db.textContent=done[k]?'✓ Done — tap to undo':'Mark done ✓'; renderAll(); saveOneToSheet(k); };
