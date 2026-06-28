@@ -4,159 +4,232 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#0f1b2d">
-<title>70.3 Melbourne</title>
+<meta name="theme-color" content="#0a0d14">
+<title>triplan · 70.3</title>
 <style>
   :root{
-    --bg:#0f1b2d; --surface:#16243a; --surface2:#1d2f49; --line:rgba(255,255,255,0.09);
-    --text:#eef3f9; --muted:#93a4bd; --hint:#6b7d97;
-    --accent:#4ea3ff; --good:#4cc38a; --warn:#e8b339; --bad:#e25c5c;
-    --swim:#4ea3ff; --bike:#e8845a; --run:#5cc88a; --brick:#e2789e; --rest:#8593a8; --tennis:#e8b339; --race:#9b8cf0;
-    --radius:14px; --radius-sm:10px;
+    --bg:#0a0d14; --surface:#141925; --surface2:#1b2230; --line:rgba(255,255,255,0.08);
+    --text:#eef3f9; --muted:#8a97ad; --hint:#5f6c80;
+    --accent:#19d3a2; --good:#19d3a2; --warn:#e8b339; --bad:#e25c5c;
+    --swim:#4ea3ff; --bike:#19d3a2; --run:#ff7d4d; --brick:#e2789e; --rest:#7f8ba0; --tennis:#e8b339; --race:#9b8cf0; --str:#b08cf0;
+    --r:16px; --r-sm:11px;
   }
   *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
   html,body{margin:0; padding:0; background:var(--bg); color:var(--text);
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; -webkit-font-smoothing:antialiased;}
-  .wrap{max-width:520px; margin:0 auto; padding:16px 16px 40px;}
-  .card{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:16px 18px;}
-  .hero{display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px;}
-  .hero .sub{font-size:13px; color:var(--muted); margin:0;}
-  .hero .title{font-size:19px; font-weight:600; margin:3px 0 0;}
-  .cd{font-size:32px; font-weight:600; line-height:1; text-align:right;}
-  .cd small{display:block; font-size:12px; color:var(--muted); font-weight:400; margin-top:3px;}
-  .bar{height:7px; background:#0a121f; border-radius:4px; overflow:hidden; margin-top:14px;}
-  .bar>div{height:100%; background:var(--accent); border-radius:4px; transition:width .3s;}
-  .barlabel{font-size:12px; color:var(--muted); margin:7px 0 0;}
-  .editrace{font-size:12px; color:var(--accent); cursor:pointer; background:none; border:none; padding:6px 0 0; text-decoration:underline;}
-  .stats{display:grid; grid-template-columns:repeat(2,1fr); gap:11px; margin:16px 0;}
-  .stat{background:var(--surface2); border-radius:var(--radius-sm); padding:12px 14px;}
+  .wrap{max-width:560px; margin:0 auto; padding:14px 16px 96px;}
+  .top{display:flex; align-items:center; justify-content:center; height:40px; font-weight:600; font-size:16px; color:var(--text); position:relative; margin-bottom:6px;}
+  .scr{display:none;} .scr.on{display:block;}
+
+  /* race cards */
+  .glabel{font-size:12px; letter-spacing:.12em; color:var(--muted); text-transform:uppercase; margin:8px 2px 10px;}
+  .name{font-size:26px; font-weight:800; margin:0 2px 14px;}
+  .races{display:grid; grid-template-columns:1fr; gap:12px;}
+  .race{position:relative; background:var(--surface); border:1px solid var(--line); border-radius:var(--r); padding:16px 18px; overflow:hidden;}
+  .race::before{content:""; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,#19d3a2,#4ea3ff);}
+  .race .rl{font-size:12px; letter-spacing:.1em; color:var(--muted); text-transform:uppercase;}
+  .race .rn{font-size:46px; font-weight:800; line-height:1; color:var(--accent); margin:6px 0 8px;}
+  .race .rr{font-size:14px; color:var(--text);} .race .rd{font-size:13px; color:var(--muted); margin-top:2px;}
+  .race .rsub{font-size:11px; color:var(--hint); margin-top:8px;}
+  .editrace{font-size:12px; color:var(--accent); cursor:pointer; background:none; border:none; padding:0; text-decoration:underline;}
+
+  /* week card */
+  .wkcard{background:var(--surface); border:1px solid var(--line); border-radius:var(--r); padding:16px 16px 8px; margin-top:14px;}
+  .wkhead{display:flex; align-items:flex-start; justify-content:space-between;}
+  .wkhead .cw{font-size:11px; letter-spacing:.12em; color:var(--muted); text-transform:uppercase;}
+  .wkhead .wt{font-size:24px; font-weight:800; margin:2px 0 0;}
+  .badge{font-size:11px; font-weight:700; letter-spacing:.06em; color:var(--accent); border:1px solid var(--accent); border-radius:999px; padding:5px 12px; text-transform:uppercase; white-space:nowrap;}
+  .wkdesc{font-size:13px; color:var(--muted); line-height:1.5; margin:10px 0 12px;}
+  .nav{display:flex; align-items:center; justify-content:space-between; margin:4px 2px 12px;}
+  .nav button{background:var(--surface2); border:1px solid var(--line); color:var(--text); width:42px; height:38px; border-radius:var(--r-sm); font-size:18px; cursor:pointer;}
+  .nav .wm{text-align:center; font-size:13px; color:var(--muted);}
+
+  .dayrow{display:flex; align-items:center; gap:10px; margin-bottom:9px;}
+  .dl{width:34px; flex:0 0 auto; font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:.03em;}
+  .check{width:22px;height:22px;flex:0 0 auto;border-radius:50%;border:2px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:12px;color:#06121f;cursor:pointer;}
+  .check.on{background:var(--good);border-color:var(--good);}
+  .chip{flex:1; min-width:0; display:flex; align-items:center; gap:9px; border-radius:var(--r-sm); padding:10px 12px; cursor:pointer; border:1px solid transparent;}
+  .chip .em{font-size:15px; flex:0 0 auto;}
+  .chip .ct{font-size:13.5px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .chip .cd{font-size:11px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .chip .col{min-width:0; display:flex; flex-direction:column;}
+  .chip.done{opacity:.5;} .chip.done .ct{text-decoration:line-through;}
+  .chip .done-tag{margin-left:auto; font-size:10px; font-weight:700; color:var(--good); flex:0 0 auto;}
+  .todaydot{margin-left:6px; font-size:10px; color:var(--accent);}
+
+  .actions{display:flex; gap:8px; margin:8px 2px 0; flex-wrap:wrap;}
+  .actions button{flex:1; min-width:30%; background:var(--surface2); border:1px solid var(--line); color:var(--text); padding:10px; border-radius:var(--r-sm); font-size:12.5px; cursor:pointer;}
+
+  /* zones */
+  .card{background:var(--surface); border:1px solid var(--line); border-radius:var(--r); padding:16px 18px; margin-top:14px;}
+  .card h3{font-size:14px; font-weight:700; margin:0 0 12px;}
+  .ztable{width:100%; border-collapse:collapse; font-size:13px;}
+  .ztable th{text-align:left; color:var(--muted); font-weight:500; padding:6px 4px; border-bottom:1px solid var(--line); font-size:11px; text-transform:uppercase; letter-spacing:.04em;}
+  .ztable td{padding:8px 4px; border-bottom:1px solid var(--line);}
+  .ztable td:first-child{color:var(--muted);}
+  .znote{font-size:11px; color:var(--hint); margin:10px 0 0; line-height:1.5;}
+  .zk{display:flex; gap:6px; flex-wrap:wrap; margin-top:6px;}
+  .zk span{font-size:11px; padding:3px 9px; border-radius:999px;}
+
+  /* metrics */
+  .stats{display:grid; grid-template-columns:repeat(2,1fr); gap:11px; margin-top:14px;}
+  .stat{background:var(--surface); border:1px solid var(--line); border-radius:var(--r-sm); padding:13px 15px;}
   .stat .l{font-size:12px; color:var(--muted);}
-  .stat .v{font-size:22px; font-weight:600; margin:2px 0;}
+  .stat .v{font-size:24px; font-weight:700; margin:3px 0;}
   .stat .v span{font-size:12px; color:var(--muted); font-weight:400;}
   .stat .d{font-size:11px;}
   .up{color:var(--warn);} .down-good{color:var(--good);} .neutral{color:var(--hint);}
-  .nav{display:flex; align-items:center; justify-content:space-between; margin:18px 0 10px;}
-  .nav button{background:var(--surface); border:1px solid var(--line); color:var(--text);
-    width:44px; height:40px; border-radius:var(--radius-sm); font-size:20px; cursor:pointer;}
-  .nav .wt{text-align:center;} .nav .wt .a{font-size:16px; font-weight:600;}
-  .nav .wt .b{font-size:12px; color:var(--muted); margin-top:1px;}
-  .day{display:flex; align-items:center; gap:12px; background:var(--surface);
-    border:1px solid var(--line); border-radius:var(--radius-sm); padding:11px 12px; margin-bottom:9px;}
-  .day.today{border:2px solid var(--accent);}
-  .day.done{opacity:0.55;} .day.done .dt{text-decoration:line-through;}
-  .dot{width:36px; height:36px; border-radius:50%; flex:0 0 auto; display:flex;
-    align-items:center; justify-content:center; font-size:15px; font-weight:700;}
-  .day .dn{font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.04em;}
-  .day .dt{font-size:14px; font-weight:600; line-height:1.3;}
-  .day .dd{font-size:12px; color:var(--muted); line-height:1.35;}
-  .day .note{font-size:12px; color:var(--accent); margin-top:3px; font-style:italic;}
-  .check{width:24px; height:24px; border-radius:50%; border:2px solid var(--line); flex:0 0 auto;
-    display:flex; align-items:center; justify-content:center; font-size:14px; color:var(--good); cursor:pointer;}
-  .day.done .check{border-color:var(--good); background:var(--good); color:#06121f;}
-  .actions{display:flex; gap:9px; margin-top:12px; flex-wrap:wrap;}
-  .actions button{flex:1; min-width:30%; background:var(--surface); border:1px solid var(--line); color:var(--text);
-    padding:11px; border-radius:var(--radius-sm); font-size:13px; cursor:pointer;}
-  .actions button.primary{background:var(--accent); color:#06121f; border-color:var(--accent); font-weight:600;}
-  .sheet{position:fixed; inset:0; background:rgba(0,0,0,0.6); display:none; align-items:flex-end; z-index:50;}
+  .signin{background:var(--accent); color:#04221a; border:none; padding:13px 22px; border-radius:var(--r-sm); font-size:14px; font-weight:700; cursor:pointer; width:100%; margin-top:14px;}
+  .statusbar{font-size:11px; text-align:center; margin:10px 0 0; height:16px;}
+  .ok{color:var(--good);} .err{color:var(--bad);} .pending{color:var(--warn);}
+  .setupcard{background:#321f1f;border:1px solid var(--bad);border-radius:var(--r);padding:13px 15px;margin-top:14px;font-size:13px;line-height:1.5;}
+
+  /* bottom nav */
+  .tabbar{position:fixed; bottom:0; left:0; right:0; background:rgba(10,13,20,.94); backdrop-filter:blur(12px); border-top:1px solid var(--line); display:flex; max-width:560px; margin:0 auto; padding:8px 0 14px;}
+  .tabbar button{flex:1; background:none; border:none; color:var(--hint); font-size:11px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:3px;}
+  .tabbar button .ti{font-size:19px;}
+  .tabbar button.on{color:var(--accent);}
+
+  /* edit sheet */
+  .sheet{position:fixed; inset:0; background:rgba(0,0,0,.6); display:none; align-items:flex-end; z-index:60;}
   .sheet.open{display:flex;}
-  .sheetinner{background:var(--surface); width:100%; max-width:520px; margin:0 auto; border-radius:18px 18px 0 0; padding:20px 18px 28px;}
+  .sheetinner{background:var(--surface); width:100%; max-width:560px; margin:0 auto; border-radius:18px 18px 0 0; padding:20px 18px 28px;}
   .sheetinner h3{margin:0 0 4px; font-size:16px;}
   .sheetinner .sd{font-size:12px; color:var(--muted); margin:0 0 16px;}
-  .field{margin-bottom:14px;}
+  .field{margin-bottom:13px;}
   .field label{display:block; font-size:12px; color:var(--muted); margin-bottom:5px;}
-  .field input,.field textarea,.field select{width:100%; background:var(--surface2); border:1px solid var(--line);
-    color:var(--text); border-radius:var(--radius-sm); padding:10px 12px; font-size:14px; font-family:inherit;}
-  .field textarea{resize:vertical; min-height:54px;}
-  .sheetbtns{display:flex; gap:9px; margin-top:6px;}
-  .sheetbtns button{flex:1; padding:12px; border-radius:var(--radius-sm); font-size:14px; font-weight:600; cursor:pointer; border:1px solid var(--line);}
-  .sheetbtns .save{background:var(--accent); color:#06121f; border-color:var(--accent);}
+  .field input,.field textarea,.field select{width:100%; background:var(--surface2); border:1px solid var(--line); color:var(--text); border-radius:var(--r-sm); padding:10px 12px; font-size:14px; font-family:inherit;}
+  .field textarea{resize:vertical; min-height:52px;}
+  .donebtn{width:100%; padding:11px; border-radius:var(--r-sm); font-size:13px; font-weight:700; cursor:pointer; border:1px solid var(--good); background:transparent; color:var(--good); margin-bottom:13px;}
+  .donebtn.isdone{background:var(--good); color:#04221a;}
+  .sheetbtns{display:flex; gap:9px;}
+  .sheetbtns button{flex:1; padding:12px; border-radius:var(--r-sm); font-size:14px; font-weight:700; cursor:pointer; border:1px solid var(--line);}
+  .sheetbtns .save{background:var(--accent); color:#04221a; border-color:var(--accent);}
   .sheetbtns .cancel{background:var(--surface2); color:var(--text);}
-  .zones h3{font-size:14px; font-weight:600; margin:0 0 10px;}
-  .ztable{width:100%; border-collapse:collapse; font-size:12px;}
-  .ztable th{text-align:left; color:var(--muted); font-weight:400; padding:5px 4px; border-bottom:1px solid var(--line);}
-  .ztable td{padding:6px 4px; border-bottom:1px solid var(--line);}
-  .ztable td:first-child{color:var(--muted);}
-  .foot{font-size:11px; color:var(--hint); text-align:center; margin-top:18px; line-height:1.6;}
-  .statusbar{font-size:11px; text-align:center; margin:8px 0 0; height:16px;}
-  .ok{color:var(--good);} .err{color:var(--bad);} .pending{color:var(--warn);}
-  .signin{background:var(--accent); color:#06121f; border:none; padding:14px 22px; border-radius:var(--radius-sm); font-size:14px; font-weight:600; cursor:pointer; width:100%; margin-top:10px;}
-  .setupcard{background:#321f1f; border:1px solid var(--bad); border-radius:var(--radius); padding:14px 16px; margin-bottom:14px; font-size:13px; line-height:1.5;}
-  .setupcard h4{margin:0 0 6px; font-size:14px; color:var(--bad);}
-  .setupcard code{background:#1a0e0e; padding:1px 5px; border-radius:4px; font-size:11px;}
 </style>
 </head>
 <body>
 <div class="wrap">
+  <div class="top">triplan</div>
 
-  <div class="setupcard" id="setupwarn" style="display:none;">
-    <h4>⚠ Not configured yet</h4>
-    Open this HTML file in a text editor and replace the three <code>YOUR_*</code> placeholders near the top of the script (CLIENT_ID, API_KEY, SPREADSHEET_ID). Then re-deploy it.
-  </div>
-
-  <div class="card">
-    <div class="hero">
-      <div><p class="sub">IRONMAN 70.3 Melbourne</p><p class="title" id="racetitle">St Kilda · Sun 8 Nov</p></div>
-      <div class="cd" id="cd">—<small>days to go</small></div>
+  <!-- HOME -->
+  <div class="scr on" id="scr-home">
+    <div class="glabel">Your training plan</div>
+    <div class="name">Khoa</div>
+    <div class="races">
+      <div class="race">
+        <div class="rl">Ironman 70.3</div>
+        <div class="rn" id="cd">—</div>
+        <div class="rr" id="racetitle">St Kilda — A Race</div>
+        <div class="rd" id="racedate">Sun 8 Nov 2026</div>
+        <div class="rsub" id="racephase">Week 1 of 24</div>
+        <button class="editrace" id="editrace">Edit race date</button>
+      </div>
     </div>
-    <div class="bar"><div id="bar"></div></div>
-    <p class="barlabel" id="barlabel">Week 1 of 24</p>
-    <button class="editrace" id="editrace">Edit race date</button>
+    <div class="wkcard">
+      <div class="wkhead">
+        <div><div class="cw">Current week</div><div class="wt" id="h_wt">Week 1</div></div>
+        <div class="badge" id="h_badge">BASE</div>
+      </div>
+      <div class="wkdesc" id="h_desc"></div>
+      <div id="h_days"></div>
+    </div>
+    <p style="font-size:11px;color:var(--hint);text-align:center;margin:14px 0 0;">Tap the circle to mark done · tap a session to edit</p>
   </div>
 
-  <div id="signinblock" style="display:none; margin:14px 0;">
-    <button class="signin" id="signin">Sign in with Google to sync</button>
-    <p style="font-size:11px; color:var(--muted); text-align:center; margin-top:8px;">Edits sync to your Google Sheet across devices</p>
+  <!-- PLAN -->
+  <div class="scr" id="scr-plan">
+    <div class="glabel">Full plan · 24 weeks</div>
+    <div class="nav">
+      <button id="prev">‹</button>
+      <div class="wm"><div class="wt" id="p_wt" style="font-size:16px;font-weight:700;color:var(--text)">Week 1</div><div id="p_wm">25 May · Survival · 4.0h</div></div>
+      <button id="next">›</button>
+    </div>
+    <div class="wkcard" style="margin-top:0;">
+      <div id="p_days"></div>
+    </div>
+    <div class="actions">
+      <button id="todaybtn">Current week</button>
+      <button id="racebtn">Race week</button>
+      <button id="resetbtn">Reset edits</button>
+    </div>
   </div>
 
-  <div class="statusbar" id="status"></div>
-
-  <div class="stats">
-    <div class="stat"><div class="l">Sleep (4wk)</div><div class="v"><span id="m_sleep">6.15</span><span> h</span></div><div class="d neutral" id="t_sleep">—</div></div>
-    <div class="stat"><div class="l">HRV (4wk)</div><div class="v"><span id="m_hrv">44.8</span><span> ms</span></div><div class="d neutral" id="t_hrv">—</div></div>
-    <div class="stat"><div class="l">Resting HR</div><div class="v"><span id="m_rhr">62.8</span><span> bpm</span></div><div class="d neutral" id="t_rhr">—</div></div>
-    <div class="stat"><div class="l">VO₂ max</div><div class="v"><span id="m_vo2">45</span></div><div class="d neutral" id="t_vo2">—</div></div>
+  <!-- ZONES -->
+  <div class="scr" id="scr-zones">
+    <div class="glabel">Heart-rate zones</div>
+    <div class="card" style="margin-top:6px;">
+      <h3>Run</h3>
+      <table class="ztable">
+        <tr><th>Zone</th><th>BPM</th><th>Use</th></tr>
+        <tr><td>Z1 recovery</td><td>&lt;149</td><td>walk / very easy</td></tr>
+        <tr><td>Z2 aerobic</td><td>149–165</td><td>easy &amp; long runs</td></tr>
+        <tr><td>Z3 tempo</td><td>166–176</td><td>tempo</td></tr>
+        <tr><td>Z4 threshold</td><td>177–185</td><td>threshold reps</td></tr>
+        <tr><td>Z5 VO₂</td><td>186+</td><td>short hard</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <h3>Bike</h3>
+      <table class="ztable">
+        <tr><th>Zone</th><th>BPM</th><th>Use</th></tr>
+        <tr><td>Z1 recovery</td><td>&lt;145</td><td>spin</td></tr>
+        <tr><td>Z2 aerobic</td><td>145–160</td><td>long rides</td></tr>
+        <tr><td>Z3 tempo</td><td>161–171</td><td>tempo</td></tr>
+        <tr><td>Z4 threshold</td><td>172–180</td><td>sweet-spot / threshold</td></tr>
+        <tr><td>Z5</td><td>181+</td><td>short hard</td></tr>
+      </table>
+      <p class="znote">From 4 yrs Strava + Garmin HR · max 203 · threshold 185 run / 180 bike. Easy/base = low Z2 (runs 150–158, bike 145–153).</p>
+    </div>
   </div>
 
-  <div class="nav">
-    <button id="prev">‹</button>
-    <div class="wt"><div class="a" id="wt">Week 1</div><div class="b" id="wm">25 May · Survival · 4.0h</div></div>
-    <button id="next">›</button>
+  <!-- METRICS -->
+  <div class="scr" id="scr-metrics">
+    <div class="glabel">Recovery metrics</div>
+    <div class="setupcard" id="setupwarn" style="display:none;">⚠ Not configured — add your Google CLIENT_ID, API_KEY and SPREADSHEET_ID at the top of the script, then re-deploy.</div>
+    <div id="signinblock" style="display:none; margin-top:6px;">
+      <button class="signin" id="signin">Sign in with Google to sync</button>
+      <p style="font-size:11px;color:var(--muted);text-align:center;margin-top:8px;">Syncs to your Google Sheet across devices</p>
+    </div>
+    <div class="statusbar" id="status"></div>
+    <div class="stats">
+      <div class="stat"><div class="l">Sleep (4wk)</div><div class="v"><span id="m_sleep">6.48</span><span> h</span></div><div class="d neutral" id="t_sleep">—</div></div>
+      <div class="stat"><div class="l">HRV (4wk)</div><div class="v"><span id="m_hrv">49</span><span> ms</span></div><div class="d neutral" id="t_hrv">—</div></div>
+      <div class="stat"><div class="l">Resting HR</div><div class="v"><span id="m_rhr">55</span><span> bpm</span></div><div class="d neutral" id="t_rhr">—</div></div>
+      <div class="stat"><div class="l">VO₂ max</div><div class="v"><span id="m_vo2">45</span></div><div class="d neutral" id="t_vo2">—</div></div>
+    </div>
+    <div class="card">
+      <h3>Sleep target</h3>
+      <p class="znote" style="margin:0;">Goal 8 h/night. To wake 7:25, lights-out ~11:00pm. A weekly progress log is kept in the Sheet (Progress columns).</p>
+    </div>
+    <div class="actions" style="margin-top:14px;">
+      <button id="signoutbtn">Sign out</button>
+    </div>
   </div>
-
-  <p style="font-size:11px;color:var(--hint);margin:0 0 10px;text-align:center;">Tap the circle to mark done · tap the session to edit</p>
-  <div id="days"></div>
-
-  <div class="actions">
-    <button id="todaybtn">Current week</button>
-    <button class="primary" id="racebtn">Race week</button>
-    <button id="signoutbtn">Sign out</button>
-  </div>
-
-  <div class="card zones" style="margin-top:16px;">
-    <h3>Heart rate zones</h3>
-    <table class="ztable">
-      <tr><th>Sport</th><th>Z2 aerobic</th><th>Z3 tempo</th><th>Z4 thresh</th></tr>
-      <tr><td>Run</td><td>149–165</td><td>166–176</td><td>177–185</td></tr>
-      <tr><td>Bike</td><td>145–160</td><td>161–171</td><td>172–180</td></tr>
-    </table>
-    <p style="font-size:11px;color:var(--hint);margin:9px 0 0;">From 4 yrs Strava+Garmin HR · max 203 · threshold 185 run / 180 bike. Z1 run &lt;149 / bike &lt;145 · Z5 run 186+ / bike 181+. Easy/base = low Z2: runs 150–158, bike 145–153.</p>
-  </div>
-
-  <p class="foot">Synced to your Google Sheet · stays signed in<br>Add to home screen: Share → Add to Home Screen</p>
 </div>
 
+<!-- bottom nav -->
+<div class="tabbar">
+  <button data-tab="home" class="on"><span class="ti">🏠</span>Home</button>
+  <button data-tab="plan"><span class="ti">🗓️</span>Plan</button>
+  <button data-tab="zones"><span class="ti">🎯</span>Zones</button>
+  <button data-tab="metrics"><span class="ti">📊</span>Metrics</button>
+</div>
+
+<!-- edit sheet -->
 <div class="sheet" id="sheet">
   <div class="sheetinner">
     <h3 id="sheettitle">Edit session</h3>
     <p class="sd" id="sh_day">Monday · Week 1</p>
     <div id="sessionfields">
+      <button class="donebtn" id="sh_done">Mark done ✓</button>
       <div class="field"><label>Type</label>
         <select id="sh_type">
           <option value="swim">Swim</option><option value="bike">Bike</option><option value="run">Run</option>
           <option value="brick">Brick</option><option value="tennis">Tennis</option><option value="rest">Rest</option><option value="race">Race</option>
         </select></div>
       <div class="field"><label>Session</label><input id="sh_session" type="text"></div>
-      <div class="field"><label>Detail</label><input id="sh_detail" type="text"></div>
+      <div class="field"><label>Detail / HR target</label><input id="sh_detail" type="text"></div>
       <div class="field"><label>Note (how it went, swaps)</label><textarea id="sh_note"></textarea></div>
     </div>
     <div class="field" id="racefield" style="display:none;"><label>Race date</label><input id="sh_racedate" type="date">
@@ -170,37 +243,33 @@
 
 <script>
 // ====================================================================
-// CONFIG — REPLACE THESE THREE VALUES WITH YOURS (reuse your existing ones)
+// CONFIG
 // ====================================================================
 const CLIENT_ID = "856518051919-r8ichknn98de10aqo6uclnc6nqf4qasd.apps.googleusercontent.com";
 const API_KEY   = "AIzaSyCrLdzVxOXQOxm9TxOFBwSjlsXz_os4QKQ";
 const SPREADSHEET_ID = "1PfNjSDhZ3-bjEn4fHeUgXnZ5Oy9PsRDWAKtrcLoAo34";
-const SHEET_NAME = "Sync";  // tab name in your Google Sheet — create this tab first
-const SLEEP_TARGET = 8;     // nightly sleep goal (hours)
+const SHEET_NAME = "Sync";
+const SLEEP_TARGET = 8;
 // ====================================================================
-
 const SCOPES = "https://www.googleapis.com/auth/spreadsheets";
 const DISCOVERY = "https://sheets.googleapis.com/$discovery/rest?version=v4";
 
 (function(){
   var RACE_KEY="__race__", METRICS_KEY="__metrics__";
-  var savedRace=localStorage.getItem('i703_race');
-  function addDays(dt,n){var x=new Date(dt); x.setDate(x.getDate()+n); return x;} // calendar-day math (DST-safe)
+  function addDays(dt,n){var x=new Date(dt); x.setDate(x.getDate()+n); return x;}
   function noon(dt){return new Date(dt.getFullYear(),dt.getMonth(),dt.getDate(),12,0,0);}
+  var savedRace=localStorage.getItem('i703_race');
   var RACE = savedRace ? new Date(savedRace+"T12:00:00") : new Date(2026,10,8,12,0,0);
-  function computeW1(){ // week 1 = Monday, 23 weeks before the Mon–Sun week containing race day
-    var dow=(RACE.getDay()+6)%7;            // 0=Mon … 6=Sun
-    return addDays(RACE, -dow - 23*7);      // Monday of race week, then back 23 weeks
-  }
+  function computeW1(){ var dow=(RACE.getDay()+6)%7; return addDays(RACE,-dow-23*7); }
   var W1=computeW1(), today=noon(new Date());
 
   var PHASE=["Survival","Survival","Survival","Survival","Survival","Survival","Base 1","Base 1","Base 1","Base 1","Base 2","Base 2","Base 2","Base 2","Build 1","Build 1","Build 1","Build 1","Build 2/Peak","Build 2/Peak","Build 2/Peak","Build 2/Peak","Taper","Race wk"];
   var HRS=["4.0","4.0","4.5","3.5","4.5","5.0","7.0","7.5","8.0","7.0","8.5","8.5","7.5","9.0","9.5","7.5","10.0","10.0","10.0","8.5","10.5","9.5","6.5","3.0"];
   var DAYS=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
-  var COL={swim:"var(--swim)",bike:"var(--bike)",run:"var(--run)",brick:"var(--brick)",rest:"var(--rest)",tennis:"var(--tennis)",race:"var(--race)"};
-  var LET={swim:"S",bike:"B",run:"R",brick:"K",rest:"·",tennis:"T",race:"⚑"};
+  var COL={swim:"--swim",bike:"--bike",run:"--run",brick:"--brick",rest:"--rest",tennis:"--tennis",race:"--race"};
+  var EMO={swim:"🏊",bike:"🚴",run:"🏃",brick:"🔁",rest:"💤",tennis:"🎾",race:"🏁"};
   function d(t,a,b){return {type:t,title:a,detail:b};}
-  var R=d("rest","Rest day","Full off — recovery is a session");
+  var R=d("rest","Rest day","Recovery is a session");
   var BASEPLAN=[
    [d("swim","Swim 30 min","Easy reactivation, technique"),d("rest","Rest","or 30 min walk"),d("rest","Rest","no tennis during EOFY"),d("run","Run 20 min easy","3 km Z2 (<148 bpm)"),R,d("run","Optional run 20 min","skip if work was rough"),d("bike","Long ride 2:00","45–50 km Z2 · keystone")],
    [d("swim","Swim 30 min","4×100 drills"),d("rest","Rest","or walk"),d("rest","Rest",""),d("run","Run 25 min easy","3.5 km Z2"),R,d("run","Optional run 25 min",""),d("bike","Long ride 2:00","45–50 km Z2")],
@@ -228,259 +297,171 @@ const DISCOVERY = "https://sheets.googleapis.com/$discovery/rest?version=v4";
    [d("swim","Swim 30 min easy","+ pickups"),d("bike","Bike 45 min easy","HR <150 · 3×1 min openers"),d("run","Run 20 min easy","easy HR 150–158 + 4 strides"),d("rest","Rest","expo Fri"),R,d("bike","Openers","Bike 20 + Run 10 min · race-pace feel"),d("race","RACE DAY","Swim 1.9k / Bike 90k HR 150–160 / Run 21.1k HR 165–175 · sub-6:30")]
   ];
 
-  // ---- state ----
   var overrides={}, done={}, accessToken=null, tokenClient=null, gapiReady=false, gisReady=false;
   var configured = !CLIENT_ID.includes("YOUR_") && !API_KEY.includes("YOUR_") && !SPREADSHEET_ID.includes("YOUR_");
-
   function setStatus(msg, cls){ var s=document.getElementById('status'); s.textContent=msg||""; s.className="statusbar "+(cls||""); }
 
-  // ---- metric trends (auto) ----
-  // betterWhenHigher: sleep/HRV/VO2 = true, resting HR = false
-  var METRIC_DEF={
-    sleep:{el:'m_sleep', tEl:'t_sleep', higher:true,  dp:2},
-    hrv:  {el:'m_hrv',   tEl:'t_hrv',   higher:true,  dp:1},
-    rhr:  {el:'m_rhr',   tEl:'t_rhr',   higher:false, dp:1},
-    vo2:  {el:'m_vo2',   tEl:'t_vo2',   higher:true,  dp:0}
-  };
+  // ---- metric trends ----
+  var METRIC_DEF={ sleep:{el:'m_sleep',tEl:'t_sleep',higher:true,dp:2}, hrv:{el:'m_hrv',tEl:'t_hrv',higher:true,dp:1}, rhr:{el:'m_rhr',tEl:'t_rhr',higher:false,dp:1}, vo2:{el:'m_vo2',tEl:'t_vo2',higher:true,dp:0} };
   function applyMetrics(m){
-    var prev={}, trend={};
-    try{ prev=JSON.parse(localStorage.getItem('i703_m_prev'))||{}; }catch(e){}
-    try{ trend=JSON.parse(localStorage.getItem('i703_m_trend'))||{}; }catch(e){}
-    var newPrev=Object.assign({},prev);
+    var prev={},trend={};
+    try{prev=JSON.parse(localStorage.getItem('i703_m_prev'))||{};}catch(e){}
+    try{trend=JSON.parse(localStorage.getItem('i703_m_trend'))||{};}catch(e){}
+    var np=Object.assign({},prev);
     for(var k in METRIC_DEF){
-      var def=METRIC_DEF[k], raw=m[k];
-      if(raw===undefined||raw===""||raw===null) continue;       // no value this sync → leave as-is
-      var num=parseFloat(raw);
-      document.getElementById(def.el).textContent=raw;
-      if(prev[k]!==undefined && !isNaN(num)){
-        var diff=num-prev[k];
-        if(diff!==0){
-          var good=(diff>0)===def.higher;          // moved in the desired direction?
-          var arrow=diff>0?'↗':'↘';
-          trend[k]={cls:good?'down-good':'up', txt:arrow+' '+(good?'improving':'declining')};
-        }
-        // diff===0 → keep the previously stored trend label
-      }
-      if(!isNaN(num)) newPrev[k]=num;
-      var t=trend[k];
-      var tel=document.getElementById(def.tEl);
-      if(t){ tel.className='d '+t.cls; tel.textContent=t.txt; }
-      else { tel.className='d neutral'; tel.textContent='— baseline set'; }
-      // sleep gets a fixed 8h target readout instead of the generic trend
-      if(k==='sleep' && !isNaN(num)){
-        var gap=num-SLEEP_TARGET;
-        if(gap>=0){ tel.className='d down-good'; tel.textContent='✓ meets '+SLEEP_TARGET+'h goal'; }
-        else { tel.className='d up'; tel.textContent='↓ '+(-gap).toFixed(1)+'h under '+SLEEP_TARGET+'h goal'; }
-      }
+      var def=METRIC_DEF[k], raw=m[k]; if(raw===undefined||raw===""||raw===null) continue;
+      var num=parseFloat(raw); document.getElementById(def.el).textContent=raw;
+      if(prev[k]!==undefined && !isNaN(num)){ var diff=num-prev[k]; if(diff!==0){ var good=(diff>0)===def.higher; trend[k]={cls:good?'down-good':'up',txt:(diff>0?'↗':'↘')+' '+(good?'improving':'declining')}; } }
+      if(!isNaN(num)) np[k]=num;
+      var t=trend[k], tel=document.getElementById(def.tEl);
+      if(t){tel.className='d '+t.cls; tel.textContent=t.txt;} else {tel.className='d neutral'; tel.textContent='— baseline set';}
+      if(k==='sleep' && !isNaN(num)){ var gap=num-SLEEP_TARGET; if(gap>=0){tel.className='d down-good';tel.textContent='✓ meets '+SLEEP_TARGET+'h goal';} else {tel.className='d up';tel.textContent='↓ '+(-gap).toFixed(1)+'h under '+SLEEP_TARGET+'h goal';} }
     }
-    localStorage.setItem('i703_m_prev',JSON.stringify(newPrev));
+    localStorage.setItem('i703_m_prev',JSON.stringify(np));
     localStorage.setItem('i703_m_trend',JSON.stringify(trend));
   }
 
   // ---- Sheets sync ----
-  // Sheet cols A:F  → A:key  B:done  C:type  D:title  E:detail  F:note
-  // Race date stored in a special row with key "__race__", value in column D (title) as YYYY-MM-DD
   async function loadFromSheet(){
-    if(!accessToken) return;
-    setStatus("Loading…","pending");
+    if(!accessToken) return; setStatus("Loading…","pending");
     try{
-      const r = await gapi.client.sheets.spreadsheets.values.get({
-        spreadsheetId: SPREADSHEET_ID, range: SHEET_NAME + "!A2:F1000"
-      });
-      const rows = r.result.values || [];
-      overrides = {}; done = {};
-      for(const row of rows){
-        const key = row[0]; if(!key) continue;
-        if(key===RACE_KEY){
-          if(row[3]){ RACE=new Date(row[3]+"T12:00:00"); localStorage.setItem('i703_race',row[3]); recompute(); cur=startWk; }
-          continue;
-        }
-        if(key===METRICS_KEY){
-          // C:sleep  D:hrv  E:rhr  F:vo2max
-          applyMetrics({ sleep:row[2], hrv:row[3], rhr:row[4], vo2:row[5] });
-          continue;
-        }
-        if(row[1]==="1") done[key] = 1;
-        if(row[2] || row[3] || row[4] || row[5]){
-          overrides[key] = { type:row[2]||"rest", title:row[3]||"", detail:row[4]||"", note:row[5]||"" };
-        }
+      const r=await gapi.client.sheets.spreadsheets.values.get({spreadsheetId:SPREADSHEET_ID,range:SHEET_NAME+"!A2:F1000"});
+      const rows=r.result.values||[]; overrides={}; done={};
+      for(const row of rows){ const key=row[0]; if(!key) continue;
+        if(key===RACE_KEY){ if(row[3]){ RACE=new Date(row[3]+"T12:00:00"); localStorage.setItem('i703_race',row[3]); recompute(); cur=startWk; } continue; }
+        if(key===METRICS_KEY){ applyMetrics({sleep:row[2],hrv:row[3],rhr:row[4],vo2:row[5]}); continue; }
+        if(row[1]==="1") done[key]=1;
+        if(row[2]||row[3]||row[4]||row[5]) overrides[key]={type:row[2]||"rest",title:row[3]||"",detail:row[4]||"",note:row[5]||""};
       }
-      setStatus("Synced ✓","ok"); setTimeout(()=>setStatus(""),1500);
-      header(); render();
+      setStatus("Synced ✓","ok"); setTimeout(()=>setStatus(""),1500); header(); renderAll();
     }catch(e){ console.error(e); setStatus("Load failed — check Sheet ID and tab name","err"); }
   }
-
   async function saveOneToSheet(key){
-    if(!accessToken) return;
-    setStatus("Saving…","pending");
+    if(!accessToken) return; setStatus("Saving…","pending");
     try{
-      const r = await gapi.client.sheets.spreadsheets.values.get({
-        spreadsheetId: SPREADSHEET_ID, range: SHEET_NAME + "!A2:A1000"
-      });
-      const keys = (r.result.values || []).map(x=>x[0]);
-      const rowIdx = keys.indexOf(key);
-      let values;
-      if(key===RACE_KEY){
-        values=[[ RACE_KEY, "", "", RACE.toISOString().slice(0,10), "", "race date" ]];
-      } else {
-        const o = overrides[key] || {};
-        values = [[ key, done[key]?"1":"", o.type||"", o.title||"", o.detail||"", o.note||"" ]];
-      }
-      if(rowIdx >= 0){
-        await gapi.client.sheets.spreadsheets.values.update({
-          spreadsheetId: SPREADSHEET_ID, range: SHEET_NAME + "!A" + (rowIdx+2) + ":F" + (rowIdx+2),
-          valueInputOption: "RAW", resource: { values: values } });
-      } else {
-        await gapi.client.sheets.spreadsheets.values.append({
-          spreadsheetId: SPREADSHEET_ID, range: SHEET_NAME + "!A2:F",
-          valueInputOption: "RAW", resource: { values: values } });
-      }
+      const r=await gapi.client.sheets.spreadsheets.values.get({spreadsheetId:SPREADSHEET_ID,range:SHEET_NAME+"!A2:A1000"});
+      const keys=(r.result.values||[]).map(x=>x[0]); const idx=keys.indexOf(key); let values;
+      if(key===RACE_KEY) values=[[RACE_KEY,"","",RACE.toISOString().slice(0,10),"","race date"]];
+      else { const o=overrides[key]||{}; values=[[key,done[key]?"1":"",o.type||"",o.title||"",o.detail||"",o.note||""]]; }
+      if(idx>=0) await gapi.client.sheets.spreadsheets.values.update({spreadsheetId:SPREADSHEET_ID,range:SHEET_NAME+"!A"+(idx+2)+":F"+(idx+2),valueInputOption:"RAW",resource:{values:values}});
+      else await gapi.client.sheets.spreadsheets.values.append({spreadsheetId:SPREADSHEET_ID,range:SHEET_NAME+"!A2:F",valueInputOption:"RAW",resource:{values:values}});
       setStatus("Saved ✓","ok"); setTimeout(()=>setStatus(""),1500);
     }catch(e){ console.error(e); setStatus("Save failed — check sign-in","err"); }
   }
 
-  // ---- Google sign-in (GIS + GAPI) with token caching + silent refresh ----
+  // ---- Google sign-in ----
   var refreshTimer=null;
-  function showSignin(show){ document.getElementById('signinblock').style.display=show?'block':'none'; }
-  function useToken(tok){
-    accessToken=tok;
-    try{ gapi.client.setToken({access_token:tok}); }catch(e){}
-  }
-  function cachedToken(){
-    try{ var o=JSON.parse(localStorage.getItem('i703_token')); if(o && o.exp>Date.now()+5000) return o; }catch(e){}
-    return null;
-  }
-  function onToken(resp){
-    if(resp.error){ showSignin(true); setStatus("Sign-in needed","err"); return; }
-    var ttl=(parseInt(resp.expires_in,10)||3600)*1000;
-    var exp=Date.now()+ttl;
-    localStorage.setItem('i703_token', JSON.stringify({t:resp.access_token, exp:exp}));
-    useToken(resp.access_token);
-    showSignin(false);
-    if(refreshTimer) clearTimeout(refreshTimer);
-    refreshTimer=setTimeout(silentRefresh, Math.max(ttl-120000, 30000)); // refresh ~2 min early
-    loadFromSheet();
-  }
-  function silentRefresh(){ if(tokenClient) tokenClient.requestAccessToken({prompt:''}); } // no popup if session valid
-  function maybeReady(){
-    if(!(gapiReady && gisReady && configured)) return;
-    var c=cachedToken();
-    if(c){ useToken(c.t); showSignin(false); loadFromSheet();
-      refreshTimer=setTimeout(silentRefresh, Math.max(c.exp-Date.now()-120000, 30000)); }
-    else { silentRefresh(); showSignin(true); }   // try silent; show button as fallback for first run
-  }
-  window.gapiLoaded = function(){
-    gapi.load('client', async ()=>{ await gapi.client.init({ apiKey: API_KEY, discoveryDocs: [DISCOVERY] }); gapiReady = true; maybeReady(); });
-  };
-  window.gisLoaded = function(){
-    tokenClient = google.accounts.oauth2.initTokenClient({ client_id: CLIENT_ID, scope: SCOPES, callback: onToken });
-    gisReady = true; maybeReady();
-  };
-  document.getElementById('signin').onclick = ()=>{ if(tokenClient) tokenClient.requestAccessToken({ prompt: '' }); };
-  document.getElementById('signoutbtn').onclick = ()=>{
-    if(refreshTimer) clearTimeout(refreshTimer);
-    localStorage.removeItem('i703_token');
-    if(accessToken){ google.accounts.oauth2.revoke(accessToken); accessToken=null; }
-    showSignin(true); setStatus("Signed out","");
-  };
+  function showSignin(s){ document.getElementById('signinblock').style.display=s?'block':'none'; }
+  function useToken(t){ accessToken=t; try{ gapi.client.setToken({access_token:t}); }catch(e){} }
+  function cachedToken(){ try{ var o=JSON.parse(localStorage.getItem('i703_token')); if(o&&o.exp>Date.now()+5000) return o; }catch(e){} return null; }
+  function onToken(resp){ if(resp.error){ showSignin(true); setStatus("Sign-in needed","err"); return; }
+    var ttl=(parseInt(resp.expires_in,10)||3600)*1000; localStorage.setItem('i703_token',JSON.stringify({t:resp.access_token,exp:Date.now()+ttl}));
+    useToken(resp.access_token); showSignin(false); if(refreshTimer) clearTimeout(refreshTimer); refreshTimer=setTimeout(silentRefresh,Math.max(ttl-120000,30000)); loadFromSheet(); }
+  function silentRefresh(){ if(tokenClient) tokenClient.requestAccessToken({prompt:''}); }
+  function maybeReady(){ if(!(gapiReady&&gisReady&&configured)) return; var c=cachedToken();
+    if(c){ useToken(c.t); showSignin(false); loadFromSheet(); refreshTimer=setTimeout(silentRefresh,Math.max(c.exp-Date.now()-120000,30000)); }
+    else { silentRefresh(); showSignin(true); } }
+  window.gapiLoaded=function(){ gapi.load('client',async()=>{ await gapi.client.init({apiKey:API_KEY,discoveryDocs:[DISCOVERY]}); gapiReady=true; maybeReady(); }); };
+  window.gisLoaded=function(){ tokenClient=google.accounts.oauth2.initTokenClient({client_id:CLIENT_ID,scope:SCOPES,callback:onToken}); gisReady=true; maybeReady(); };
+  document.getElementById('signin').onclick=()=>{ if(tokenClient) tokenClient.requestAccessToken({prompt:''}); };
+  document.getElementById('signoutbtn').onclick=()=>{ if(refreshTimer) clearTimeout(refreshTimer); localStorage.removeItem('i703_token'); if(accessToken){ google.accounts.oauth2.revoke(accessToken); accessToken=null; } showSignin(true); setStatus("Signed out",""); };
 
-  // ---- dashboard logic ----
+  // ---- plan logic ----
   function sess(wk,di){ var k=wk+"_"+di; if(overrides[k]) return overrides[k]; return BASEPLAN[wk][di]; }
   var startWk, cur, todayIdx;
-  function recompute(){
-    W1=computeW1();
-    startWk=Math.max(0,Math.min(23,Math.round((today-W1)/(7*864e5))));
-    todayIdx=(today.getDay()+6)%7;
-    if(typeof cur!=="number") cur=startWk;
-  }
+  function recompute(){ W1=computeW1(); startWk=Math.max(0,Math.min(23,Math.round((today-W1)/(7*864e5)))); todayIdx=(today.getDay()+6)%7; if(typeof cur!=="number") cur=startWk; }
   recompute();
-  function fd(wk){return addDays(W1,wk*7).toLocaleDateString('en-AU',{day:'numeric',month:'short'});}
+  function fd(wk){ return addDays(W1,wk*7).toLocaleDateString('en-AU',{day:'numeric',month:'short'}); }
 
-  function render(){
-    document.getElementById('wt').textContent="Week "+(cur+1)+(cur===startWk?" (now)":"");
-    document.getElementById('wm').textContent=fd(cur)+" · "+PHASE[cur]+" · "+HRS[cur]+"h";
+  function dayRows(wk, isHome){
     var html="";
     for(var i=0;i<7;i++){
-      var s=sess(cur,i), k=cur+"_"+i, isDone=!!done[k];
-      var isToday=(cur===startWk && i===todayIdx);
-      html+='<div class="day'+(isToday?' today':'')+(isDone?' done':'')+'" data-di="'+i+'">'+
-        '<div class="check" data-check="'+i+'">'+(isDone?'✓':'')+'</div>'+
-        '<div class="dot" style="background:'+COL[s.type]+'22;color:'+COL[s.type]+'">'+LET[s.type]+'</div>'+
-        '<div style="flex:1;min-width:0" data-edit="'+i+'">'+
-        '<div class="dn">'+DAYS[i]+(isToday?' · today':'')+'</div>'+
-        '<div class="dt">'+s.title+'</div>'+
-        (s.detail?'<div class="dd">'+s.detail+'</div>':'')+
-        (s.note?'<div class="note">📝 '+s.note+'</div>':'')+
+      var s=sess(wk,i), k=wk+"_"+i, isDone=!!done[k], isToday=(wk===startWk && i===todayIdx);
+      var cvar=COL[s.type]||"--rest";
+      html+='<div class="dayrow"><div class="dl">'+DAYS[i]+'</div>'+
+        '<div class="check'+(isDone?' on':'')+'" data-ck="'+wk+'_'+i+'">'+(isDone?'✓':'')+'</div>'+
+        '<div class="chip'+(isDone?' done':'')+'" data-ed="'+wk+'_'+i+'" style="background:var('+cvar+')1a;border-color:var('+cvar+')33">'+
+          '<span class="em">'+(EMO[s.type]||'•')+'</span>'+
+          '<div class="col"><div class="ct" style="color:var('+cvar+')">'+s.title+(isToday?'<span class="todaydot">• today</span>':'')+'</div>'+
+          (s.detail?'<div class="cd">'+s.detail+'</div>':'')+
+          (s.note?'<div class="cd" style="color:var(--accent)">📝 '+s.note+'</div>':'')+'</div>'+
+          (isDone?'<span class="done-tag">✓ DONE</span>':'')+
         '</div></div>';
     }
-    document.getElementById('days').innerHTML=html;
+    return html;
+  }
+  function bindRows(container){
+    container.querySelectorAll('[data-ck]').forEach(function(el){ el.onclick=function(ev){ ev.stopPropagation(); var p=el.getAttribute('data-ck').split('_'); var k=p[0]+'_'+p[1]; if(done[k]) delete done[k]; else done[k]=1; renderAll(); saveOneToSheet(k); }; });
+    container.querySelectorAll('[data-ed]').forEach(function(el){ el.onclick=function(){ var p=el.getAttribute('data-ed').split('_'); openEditor(+p[0],+p[1]); }; });
+  }
+  function descFor(wk){ return "Week "+(wk+1)+" of 24 · "+PHASE[wk]+" · ~"+HRS[wk]+"h. 3 runs Tue/Thu/Sat easy Z2 (HR 150–158), 2 swims, long ride Sun, Fri rest."; }
+
+  function renderHome(){
+    document.getElementById('h_wt').textContent="Week "+(startWk+1);
+    document.getElementById('h_badge').textContent=PHASE[startWk];
+    document.getElementById('h_desc').textContent=descFor(startWk);
+    var c=document.getElementById('h_days'); c.innerHTML=dayRows(startWk,true); bindRows(c);
+  }
+  function renderPlan(){
+    document.getElementById('p_wt').textContent="Week "+(cur+1)+(cur===startWk?" (now)":"");
+    document.getElementById('p_wm').textContent=fd(cur)+" · "+PHASE[cur]+" · "+HRS[cur]+"h";
     document.getElementById('prev').style.opacity=cur===0?.35:1;
     document.getElementById('next').style.opacity=cur===23?.35:1;
-    document.querySelectorAll('[data-check]').forEach(function(el){
-      el.onclick=function(ev){ ev.stopPropagation(); var i=+el.getAttribute('data-check'); var k=cur+"_"+i;
-        if(done[k]) delete done[k]; else done[k]=1; render(); saveOneToSheet(k); };
-    });
-    document.querySelectorAll('[data-edit]').forEach(function(el){
-      el.onclick=function(){ openEditor(+el.getAttribute('data-edit')); };
-    });
+    var c=document.getElementById('p_days'); c.innerHTML=dayRows(cur,false); bindRows(c);
   }
+  function renderAll(){ renderHome(); renderPlan(); }
 
-  var editingDi=null;
-  function openEditor(i){
-    editingDi=i; var s=sess(cur,i);
+  // ---- editor ----
+  var edWk=null, edDi=null;
+  function openEditor(wk,i){ edWk=wk; edDi=i; var s=sess(wk,i), k=wk+"_"+i;
     document.getElementById('sheettitle').textContent="Edit session";
     document.getElementById('sessionfields').style.display='block';
     document.getElementById('racefield').style.display='none';
-    document.getElementById('sh_day').textContent=DAYS[i]+" · Week "+(cur+1);
-    document.getElementById('sh_type').value=s.type;
-    document.getElementById('sh_session').value=s.title;
-    document.getElementById('sh_detail').value=s.detail||"";
-    document.getElementById('sh_note').value=s.note||"";
+    document.getElementById('sh_day').textContent=DAYS[i]+" · Week "+(wk+1);
+    var db=document.getElementById('sh_done'); db.className='donebtn'+(done[k]?' isdone':''); db.textContent=done[k]?'✓ Done — tap to undo':'Mark done ✓';
+    document.getElementById('sh_type').value=s.type; document.getElementById('sh_session').value=s.title;
+    document.getElementById('sh_detail').value=s.detail||""; document.getElementById('sh_note').value=s.note||"";
     document.getElementById('sheet').classList.add('open');
   }
-  function openRaceEditor(){
-    editingDi="RACE";
-    document.getElementById('sheettitle').textContent="Edit race date";
-    document.getElementById('sh_day').textContent="";
-    document.getElementById('sessionfields').style.display='none';
-    document.getElementById('racefield').style.display='block';
-    document.getElementById('sh_racedate').value=RACE.toISOString().slice(0,10);
-    document.getElementById('sheet').classList.add('open');
-  }
-  function closeEditor(){ document.getElementById('sheet').classList.remove('open'); editingDi=null; }
+  function openRaceEditor(){ edWk="RACE"; document.getElementById('sheettitle').textContent="Edit race date"; document.getElementById('sh_day').textContent="";
+    document.getElementById('sessionfields').style.display='none'; document.getElementById('racefield').style.display='block';
+    document.getElementById('sh_racedate').value=RACE.toISOString().slice(0,10); document.getElementById('sheet').classList.add('open'); }
+  function closeEditor(){ document.getElementById('sheet').classList.remove('open'); edWk=null; edDi=null; }
+  document.getElementById('sh_done').onclick=function(){ var k=edWk+"_"+edDi; if(done[k]) delete done[k]; else done[k]=1;
+    var db=document.getElementById('sh_done'); db.className='donebtn'+(done[k]?' isdone':''); db.textContent=done[k]?'✓ Done — tap to undo':'Mark done ✓'; renderAll(); saveOneToSheet(k); };
   document.getElementById('sh_cancel').onclick=closeEditor;
   document.getElementById('sheet').onclick=function(ev){ if(ev.target===this) closeEditor(); };
   document.getElementById('editrace').onclick=openRaceEditor;
   document.getElementById('sh_save').onclick=function(){
-    if(editingDi==="RACE"){
-      var v=document.getElementById('sh_racedate').value;
-      if(v){ RACE=new Date(v+"T12:00:00"); localStorage.setItem('i703_race',v); recompute(); cur=startWk; header(); render(); saveOneToSheet(RACE_KEY); }
-      closeEditor(); return;
-    }
-    var k=cur+"_"+editingDi;
-    overrides[k]={ type:document.getElementById('sh_type').value,
-      title:document.getElementById('sh_session').value,
-      detail:document.getElementById('sh_detail').value,
-      note:document.getElementById('sh_note').value };
-    closeEditor(); render(); saveOneToSheet(k);
+    if(edWk==="RACE"){ var v=document.getElementById('sh_racedate').value; if(v){ RACE=new Date(v+"T12:00:00"); localStorage.setItem('i703_race',v); recompute(); cur=startWk; header(); renderAll(); saveOneToSheet(RACE_KEY); } closeEditor(); return; }
+    var k=edWk+"_"+edDi; overrides[k]={type:document.getElementById('sh_type').value,title:document.getElementById('sh_session').value,detail:document.getElementById('sh_detail').value,note:document.getElementById('sh_note').value};
+    closeEditor(); renderAll(); saveOneToSheet(k);
   };
 
   function header(){
     var days=Math.max(0,Math.round((RACE-today)/864e5));
-    document.getElementById('cd').innerHTML=days+'<small>days to go</small>';
-    document.getElementById('racetitle').textContent="St Kilda · "+RACE.toLocaleDateString('en-AU',{weekday:'short',day:'numeric',month:'short'});
-    var pct=Math.min(100,Math.round((startWk+1)/24*100));
-    document.getElementById('bar').style.width=pct+'%';
-    document.getElementById('barlabel').textContent="Week "+(startWk+1)+" of 24 · "+PHASE[startWk]+" phase";
+    document.getElementById('cd').textContent=days;
+    document.getElementById('racedate').textContent=RACE.toLocaleDateString('en-AU',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
+    document.getElementById('racephase').textContent="Week "+(startWk+1)+" of 24 · "+PHASE[startWk];
   }
-  document.getElementById('prev').onclick=function(){if(cur>0){cur--;render();}};
-  document.getElementById('next').onclick=function(){if(cur<23){cur++;render();}};
-  document.getElementById('todaybtn').onclick=function(){cur=startWk;render();};
-  document.getElementById('racebtn').onclick=function(){cur=23;render();};
 
-  // init
-  if(!configured){ document.getElementById('setupwarn').style.display='block'; }
-  header(); render();
+  document.getElementById('prev').onclick=function(){ if(cur>0){cur--;renderPlan();} };
+  document.getElementById('next').onclick=function(){ if(cur<23){cur++;renderPlan();} };
+  document.getElementById('todaybtn').onclick=function(){ cur=startWk; renderPlan(); };
+  document.getElementById('racebtn').onclick=function(){ cur=23; renderPlan(); };
+  document.getElementById('resetbtn').onclick=function(){ if(confirm("Clear all check-offs and session edits?")){ done={}; overrides={}; renderAll(); if(accessToken){ /* note: clears local only */ } } };
+
+  // ---- tabs ----
+  document.querySelectorAll('.tabbar button').forEach(function(b){ b.onclick=function(){
+    var t=b.getAttribute('data-tab');
+    document.querySelectorAll('.tabbar button').forEach(x=>x.classList.remove('on')); b.classList.add('on');
+    document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));
+    document.getElementById('scr-'+t).classList.add('on');
+    document.querySelector('.top').textContent = t==='home'?'triplan':(t.charAt(0).toUpperCase()+t.slice(1));
+  }; });
+
+  if(!configured) document.getElementById('setupwarn').style.display='block';
+  header(); renderAll();
 })();
 </script>
 <script async defer src="https://apis.google.com/js/api.js" onload="gapiLoaded()"></script>
