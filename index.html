@@ -376,7 +376,7 @@ const DISCOVERY = "https://sheets.googleapis.com/$discovery/rest?version=v4";
   // ---- plan logic ----
   function sess(wk,di){ var k=wk+"_"+di; if(overrides[k]) return overrides[k]; return BASEPLAN[wk][di]; }
   var startWk, cur, todayIdx;
-  function recompute(){ W1=computeW1(); startWk=Math.max(0,Math.min(23,Math.round((today-W1)/(7*864e5)))); todayIdx=(today.getDay()+6)%7; if(typeof cur!=="number") cur=startWk; }
+  function recompute(){ W1=computeW1(); startWk=Math.max(0,Math.min(23,Math.floor(((today-W1)/864e5+0.5)/7))); todayIdx=(today.getDay()+6)%7; if(typeof cur!=="number") cur=startWk; }
   recompute();
   function fd(wk){ return addDays(W1,wk*7).toLocaleDateString('en-AU',{day:'numeric',month:'short'}); }
 
