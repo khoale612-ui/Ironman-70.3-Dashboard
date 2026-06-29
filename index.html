@@ -326,7 +326,7 @@ const DISCOVERY = "https://sheets.googleapis.com/$discovery/rest?version=v4";
    [d("swim","OW bay 1:00","race distance"),d("run","Run 1:05 race-pace","3×12 min @ HR 172–180"),d("swim","Swim 1:00","+ strength · drop tennis"),d("run","Run 40 min easy","easy · HR 150–158"),R,d("brick","RACE SIM","Swim 1.5k + Bike 60k HR 150–160 + Run 8k HR 166–176"),d("bike","Ride 3:30 easy Z2","HR 145–155")],
    [d("swim","OW bay 1:00",""),d("run","Run 1:00","race-pace HR 172–180"),d("swim","Swim 1:00","race-pace 100s · no tennis"),d("run","Run 40 min easy","easy · HR 150–158"),R,d("run","Long run 1:25","13 km Z2 HR 150–162 · final long"),d("bike","Long ride 4:00","95 km Z2 HR 145–158 · final long")],
    [d("swim","Swim 50 min","quality short"),d("run","Run 45 min race-pace","3×6 min @ HR 172–180"),d("swim","OW bay 45 min","practice · no tennis"),d("run","Run 30 min easy","easy HR 150–158 + strides"),R,d("brick","Brick","Bike 1:30 HR 150 + Run 20 min race-pace HR 172–180"),d("bike","Ride 2:30 Z2","55 km · HR 145–158")],
-   [d("swim","Swim 30 min easy","+ pickups"),d("bike","Bike 45 min easy","HR <150 · 3×1 min openers"),d("run","Run 20 min easy","easy HR 150–158 + 4 strides"),d("rest","Rest","expo Fri"),R,d("bike","Openers","Bike 20 + Run 10 min · race-pace feel"),d("race","RACE DAY","Swim 1.9k / Bike 90k HR 150–160 / Run 21.1k HR 165–175 · sub-6:30")]
+   [d("swim","Swim 30 min easy","+ pickups"),d("bike","Bike 45 min easy","HR <150 · 3×1 min openers"),d("run","Run 20 min easy","easy HR 150–158 + 4 strides"),d("rest","Rest","expo Fri"),R,d("bike","Openers","Bike 20 + Run 10 min · race-pace feel"),d("race","RACE DAY","Swim 1.9k ~39min / Bike 90k ~2:48 @ 150W / Run 21.1k ~1:57 @ 5:35/km · SUB-5:30")]
   ];
 
   var overrides={}, done={}, accessToken=null, tokenClient=null, gapiReady=false, gisReady=false;
@@ -449,7 +449,7 @@ const DISCOVERY = "https://sheets.googleapis.com/$discovery/rest?version=v4";
   function buildSet(s, di){
     var t=s.type, ti=(s.title||"").toLowerCase(), de=s.detail||""; function L(l,x){return {l:l,t:x};}
     if(t==='rest') return [L('Today','Full day off — or a 20–30 min easy walk + 10 min mobility/stretch.'),L('Why','Recovery and sleep are the work today — keep it restful, no strength.')];
-    if(t==='race') return [L('Swim 1.9k','Steady, sight every 6–8 strokes. Settle breathing in first 200 m.'),L('Bike 90k','Power 120–140 W (Z2–low Z3, 75–88% FTP) · HR 150–160 · fuel 60–80 g carb/hr, drink every 15 min'),L('Run 21.1k','Start 6:35–6:45/km @ HR 165, build to 6:10–6:25/km @ HR 175 in the back half'),L('Goal','Sub-6:30 — discipline the bike (≤140 W) so the run holds together.')];
+    if(t==='race') return [L('Swim 1.9k','Target ~38–40 min (2:00–2:06/100m). Steady, sight every 6–8 strokes.'),L('Bike 90k','Target 2:45–2:50 · ~150 W NP (Z3, ~94% FTP) · HR 150–160 · fuel 70–90 g carb/hr, drink every 15 min'),L('Run 21.1k','Target ~1:55–2:00 · 5:30–5:42/km · build from HR 168 to 178 in the back half'),L('Goal','SUB-5:30 — bike strong but controlled (≤155 W) so you can hold 5:35/km off the bike.')];
     if(t==='swim'){ var sw=[L('Warm-up','200 m easy + 4×50 drill (catch-up / fingertip-drag), 15 s rest'),L('Main set', de||s.title),L('Cool-down','100 m easy, mixed stroke')]; if(/strength/i.test(de)) sw.push(L('+ Strength (15–20 min)', STR)); return sw; }
     if(t==='brick'){
       var m=de.match(/Bike\s*([0-9:\.]+\s*[kmin]*)[^A-Za-z]*([^+]*)\+\s*Run\s*([0-9:\.]+\s*[kmin]*)\s*(.*)/i);
