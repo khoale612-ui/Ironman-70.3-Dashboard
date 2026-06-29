@@ -527,6 +527,20 @@ const DISCOVERY = "https://sheets.googleapis.com/$discovery/rest?version=v4";
     document.querySelector('.top').textContent = t==='home'?'triplan':(t.charAt(0).toUpperCase()+t.slice(1));
   }; });
 
+  // auto-sync whenever the app is opened or brought back to the foreground
+  var lastSync=0;
+  function autoSync(force){
+    if(!(gapiReady&&gisReady&&configured)) return;
+    if(!force && Date.now()-lastSync<20000) return;   // debounce rapid refocus
+    lastSync=Date.now();
+    var c=cachedToken();
+    if(c){ useToken(c.t); showSignin(false); loadFromSheet(); }
+    else if(tokenClient){ silentRefresh(); }            // grabs a fresh token silently if session valid
+  }
+  document.addEventListener('visibilitychange',function(){ if(document.visibilityState==='visible') autoSync(); });
+  window.addEventListener('focus',function(){ autoSync(); });
+  window.addEventListener('pageshow',function(e){ if(e.persisted) autoSync(true); }); // back/forward cache restore
+
   if(!configured) document.getElementById('setupwarn').style.display='block';
   header(); renderAll();
 })();
