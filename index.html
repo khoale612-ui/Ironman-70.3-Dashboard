@@ -186,6 +186,31 @@
       </table>
       <p class="znote">From 4 yrs Strava + Garmin HR · max 203 · threshold 185 run / 180 bike. Easy/base = low Z2 (runs 150–158, bike 145–153).</p>
     </div>
+    <div class="card">
+      <h3>Run pace</h3>
+      <table class="ztable">
+        <tr><th>Effort</th><th>min/km</th></tr>
+        <tr><td>Easy / recovery</td><td>7:15–7:50</td></tr>
+        <tr><td>Long / aerobic</td><td>7:00–7:30</td></tr>
+        <tr><td>Tempo (Z3)</td><td>6:25–6:45</td></tr>
+        <tr><td>Race pace (HM)</td><td>6:15–6:35</td></tr>
+        <tr><td>Threshold (Z4)</td><td>5:50–6:10</td></tr>
+      </table>
+      <p class="znote">From your Strava pace zones · current 5k ≈ 6:09/km. These lift as fitness returns.</p>
+    </div>
+    <div class="card">
+      <h3>Bike power · FTP 160 W</h3>
+      <table class="ztable">
+        <tr><th>Zone</th><th>Watts</th><th>% FTP</th></tr>
+        <tr><td>Z1 recovery</td><td>&lt;90</td><td>&lt;56</td></tr>
+        <tr><td>Z2 endurance</td><td>105–120</td><td>66–75</td></tr>
+        <tr><td>Z3 tempo</td><td>121–144</td><td>76–90</td></tr>
+        <tr><td>Sweet spot</td><td>140–150</td><td>88–94</td></tr>
+        <tr><td>Z4 threshold</td><td>145–168</td><td>91–105</td></tr>
+        <tr><td>Z5 VO₂</td><td>169–192</td><td>106–120</td></tr>
+      </table>
+      <p class="znote">FTP 160 W (measured, not estimated). Long rides = Z2 105–125 W. Re-test FTP every 6–8 weeks.</p>
+    </div>
   </div>
 
   <!-- METRICS -->
@@ -401,7 +426,7 @@ const DISCOVERY = "https://sheets.googleapis.com/$discovery/rest?version=v4";
     container.querySelectorAll('[data-ck]').forEach(function(el){ el.onclick=function(ev){ ev.stopPropagation(); var p=el.getAttribute('data-ck').split('_'); var k=p[0]+'_'+p[1]; if(done[k]) delete done[k]; else done[k]=1; renderAll(); saveOneToSheet(k); }; });
     container.querySelectorAll('[data-ed]').forEach(function(el){ el.onclick=function(){ var p=el.getAttribute('data-ed').split('_'); openEditor(+p[0],+p[1]); }; });
   }
-  function descFor(wk){ return "Week "+(wk+1)+" of 24 · "+PHASE[wk]+" · ~"+HRS[wk]+"h. 3 runs Tue/Thu/Sat easy Z2 (HR 150–158), 2 swims, long ride Sun, Fri rest."; }
+  function descFor(wk){ return "Week "+(wk+1)+" of 24 · "+PHASE[wk]+" · ~"+HRS[wk]+"h. 3 runs Tue/Thu/Sat easy Z2 (HR 150–158), strength after Tue & Thu runs, 2 swims, long ride Sun, Fri rest."; }
 
   function renderHome(){
     document.getElementById('h_wt').textContent="Week "+(startWk+1);
@@ -420,28 +445,32 @@ const DISCOVERY = "https://sheets.googleapis.com/$discovery/rest?version=v4";
 
   // ---- editor ----
   // ---- structured workout builder (warm-up / main / cool-down) ----
-  function buildSet(s){
+  var STR="A) Goblet squat 3×10 · B) Single-leg calf raise 3×12/side (Achilles) · C) Romanian deadlift 3×10 · D) Walking lunge 2×10/side · E) Plank 3×40s + side-plank 3×20s/side. Light–moderate load, 1–2 reps in reserve, full range.";
+  function buildSet(s, di){
     var t=s.type, ti=(s.title||"").toLowerCase(), de=s.detail||""; function L(l,x){return {l:l,t:x};}
-    if(t==='rest') return [L('Today','Full day off — or a 20–30 min easy walk + 10 min mobility/stretch.'),L('Why','Recovery and sleep are the work today. Adaptation happens on rest days.')];
-    if(t==='race') return [L('Swim 1.9k','Steady, sight every 6–8 strokes. Settle breathing in first 200m.'),L('T1 → Bike 90k','HR 150–160, never spike on climbs. Fuel 60–80 g carb/hr + drink every 15 min.'),L('T2 → Run 21.1k','Start controlled at HR 165, build to 175 in the back half. Negative-split it.'),L('Goal','Sub-6:30 — pace the bike conservatively so the run holds together.')];
-    if(t==='swim') return [L('Warm-up','200 m easy + 4×50 drill (catch-up / fingertip-drag), 15 s rest'),L('Main set', de||s.title),L('Cool-down','100 m easy, mixed stroke')];
+    if(t==='rest') return [L('Today','Full day off — or a 20–30 min easy walk + 10 min mobility/stretch.'),L('Why','Recovery and sleep are the work today — keep it restful, no strength.')];
+    if(t==='race') return [L('Swim 1.9k','Steady, sight every 6–8 strokes. Settle breathing in first 200 m.'),L('Bike 90k','Power 120–140 W (Z2–low Z3, 75–88% FTP) · HR 150–160 · fuel 60–80 g carb/hr, drink every 15 min'),L('Run 21.1k','Start 6:35–6:45/km @ HR 165, build to 6:10–6:25/km @ HR 175 in the back half'),L('Goal','Sub-6:30 — discipline the bike (≤140 W) so the run holds together.')];
+    if(t==='swim'){ var sw=[L('Warm-up','200 m easy + 4×50 drill (catch-up / fingertip-drag), 15 s rest'),L('Main set', de||s.title),L('Cool-down','100 m easy, mixed stroke')]; if(/strength/i.test(de)) sw.push(L('+ Strength (15–20 min)', STR)); return sw; }
     if(t==='brick'){
       var m=de.match(/Bike\s*([0-9:\.]+\s*[kmin]*)[^A-Za-z]*([^+]*)\+\s*Run\s*([0-9:\.]+\s*[kmin]*)\s*(.*)/i);
       var bk=m?(m[1]+(m[2]?' '+m[2].trim():'')):'as listed', rn=m?(m[3]+(m[4]?' '+m[4].trim():'')):'as listed';
-      return [L('Warm-up','10 min easy spin'),L('Bike', bk.trim()+' — hold target HR, eat/drink on the bike'),L('Transition','Rack bike, quick shoe swap — keep it under 2 min'),L('Run off the bike', rn.trim()+' — legs feel heavy ~5 min, lock into HR target'),L('Cool-down','5 min walk + stretch')];
+      return [L('Warm-up','10 min easy spin @ 90–110 W'),L('Bike', bk.trim()+' — Z2 power 110–130 W, eat/drink on the bike'),L('Transition','Rack bike, quick shoe swap — keep it under 2 min'),L('Run off the bike', rn.trim()+' — legs heavy ~5 min; settle ~6:45/km then build to HR target'),L('Cool-down','5 min walk + stretch')];
     }
     if(t==='bike'){
-      if(/openers/i.test(ti)) return [L('Openers','10 min easy → 3×1 min @ race intensity (full recovery between) → easy spin home.'),L('Note','Wake the legs up — do NOT fatigue them. Race-week only.')];
+      if(/openers/i.test(ti)) return [L('Openers','10 min easy @ 90 W → 3×1 min @ 150–165 W (full recovery between) → easy spin home.'),L('Note','Prime the legs — do NOT fatigue them. Race-week only.')];
       if(/sweet spot|threshold|2×15|2×30|3×20|Z3/i.test(de)||/sweet spot/i.test(ti))
-        return [L('Warm-up','15 min easy spin, last 3 min build + 2×1 min @ Z3'),L('Main set', de),L('Cool-down','10 min easy spin')];
-      return [L('Warm-up','15 min spinning, gradually build into Z2'),L('Main', de||'Steady Z2 endurance'),L('Fuel','60 g carb/hr + 500–750 ml fluid/hr — rehearse race nutrition'),L('Cool-down','10 min easy spin')];
+        return [L('Warm-up','15 min easy @ 95–115 W, last 3 min build + 2×1 min @ 145 W'),L('Main set', de+'  ·  Power: sweet-spot 140–150 W (88–94% FTP), threshold reps 152–168 W'),L('Cool-down','10 min easy spin @ <100 W')];
+      return [L('Warm-up','15 min spin, build 90→115 W'),L('Main', de+'  ·  Power: hold 105–125 W (Z2, 66–78% FTP), cadence 85–90'),L('Fuel','60 g carb/hr + 500–750 ml fluid/hr — rehearse race nutrition'),L('Cool-down','10 min easy @ <100 W')];
     }
-    // run
-    if(/threshold/i.test(ti)) return [L('Warm-up','15 min easy Z2 + 3–4 strides + leg swings'),L('Main set', de+' — jog 90 s easy between reps'),L('Cool-down','10 min easy jog')];
-    if(/tempo/i.test(ti)) return [L('Warm-up','10 min easy Z2 + 4×20 s strides'),L('Main set', de+' — easy jog 3 min between blocks'),L('Cool-down','10 min easy')];
-    if(/race-pace|race pace/i.test(ti)) return [L('Warm-up','12 min easy + 4 strides'),L('Main set', de+' — float 2 min easy between'),L('Cool-down','10 min easy')];
-    if(/long run/i.test(ti)) return [L('Warm-up','10 min easy build'),L('Main', de+' — steady, conversational'),L('Fuel','30–40 g carb after 45 min, sip fluid throughout'),L('Cool-down','5 min walk + stretch')];
-    return [L('Warm-up','5 min brisk walk → easy jog to settle in'),L('Main', (de||'Easy aerobic')+' — stay fully conversational'),L('Cool-down','5 min easy jog/walk + light stretch')];
+    // run — paces from your Strava pace zones (5k ≈ 6:09/km)
+    var rows;
+    if(/threshold/i.test(ti)) rows=[L('Warm-up','15 min easy @ 7:15–7:40/km + 3–4 strides + leg swings'),L('Main set', de+'  ·  Pace 5:50–6:10/km, HR 177–185 · jog 90 s easy between reps'),L('Cool-down','10 min easy @ ~7:30/km')];
+    else if(/tempo/i.test(ti)) rows=[L('Warm-up','10 min easy @ 7:15/km + 4×20 s strides'),L('Main set', de+'  ·  Pace 6:25–6:45/km, HR 166–176 · easy 3 min between blocks'),L('Cool-down','10 min easy')];
+    else if(/race-pace|race pace/i.test(ti)) rows=[L('Warm-up','12 min easy + 4 strides'),L('Main set', de+'  ·  Pace 6:15–6:35/km (goal HM), HR 172–180 · float 2 min easy'),L('Cool-down','10 min easy')];
+    else if(/long run/i.test(ti)) rows=[L('Warm-up','10 min easy build'),L('Main', de+'  ·  Pace 7:00–7:30/km, HR 150–162, conversational'),L('Fuel','30–40 g carb after 45 min, sip fluid'),L('Cool-down','5 min walk + stretch')];
+    else rows=[L('Warm-up','5 min brisk walk → easy jog'),L('Main', (de||'Easy aerobic')+'  ·  Pace 7:15–7:50/km, HR 150–158, fully conversational'),L('Cool-down','5 min easy + light stretch')];
+    if(di===1||di===3) rows.push(L('+ Strength (15–20 min)', STR));  // Tue & Thu run days
+    return rows;
   }
 
   var edWk=null, edDi=null;
@@ -449,7 +478,7 @@ const DISCOVERY = "https://sheets.googleapis.com/$discovery/rest?version=v4";
     document.getElementById('sheettitle').textContent=s.title;
     document.getElementById('sh_day').textContent=DAYS[i]+" · Week "+(wk+1)+" · "+PHASE[wk];
     var st=document.getElementById('sh_structure'); st.style.display='block';
-    st.innerHTML=buildSet(s).map(function(r){return '<div class="sl">'+r.l+'</div><div class="st">'+r.t+'</div>';}).join('');
+    st.innerHTML=buildSet(s,i).map(function(r){return '<div class="sl">'+r.l+'</div><div class="st">'+r.t+'</div>';}).join('');
     document.getElementById('sh_done').style.display='block';
     document.getElementById('sh_editToggle').style.display='block';
     document.getElementById('sessionfields').style.display='none';
