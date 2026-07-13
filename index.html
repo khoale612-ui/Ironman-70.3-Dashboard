@@ -20,7 +20,6 @@
   .wrap{max-width:560px; margin:0 auto; padding:14px 16px 96px;}
   .top{display:flex; align-items:center; justify-content:center; height:40px; font-weight:600; font-size:16px; color:var(--text); position:relative; margin-bottom:6px;}
   .scr{display:none;} .scr.on{display:block;}
-
   /* race cards */
   .glabel{font-size:12px; letter-spacing:.12em; color:var(--muted); text-transform:uppercase; margin:8px 2px 10px;}
   .name{font-size:26px; font-weight:800; margin:0 2px 14px;}
@@ -32,7 +31,6 @@
   .race .rr{font-size:14px; color:var(--text);} .race .rd{font-size:13px; color:var(--muted); margin-top:2px;}
   .race .rsub{font-size:11px; color:var(--hint); margin-top:8px;}
   .editrace{font-size:12px; color:var(--accent); cursor:pointer; background:none; border:none; padding:0; text-decoration:underline;}
-
   /* week card */
   .wkcard{background:var(--surface); border:1px solid var(--line); border-radius:var(--r); padding:16px 16px 8px; margin-top:14px;}
   .wkhead{display:flex; align-items:flex-start; justify-content:space-between;}
@@ -43,7 +41,6 @@
   .nav{display:flex; align-items:center; justify-content:space-between; margin:4px 2px 12px;}
   .nav button{background:var(--surface2); border:1px solid var(--line); color:var(--text); width:42px; height:38px; border-radius:var(--r-sm); font-size:18px; cursor:pointer;}
   .nav .wm{text-align:center; font-size:13px; color:var(--muted);}
-
   .dayrow{display:flex; align-items:center; gap:10px; margin-bottom:9px;}
   .dl{width:34px; flex:0 0 auto; font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:.03em;}
   .check{width:22px;height:22px;flex:0 0 auto;border-radius:50%;border:2px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:12px;color:#06121f;cursor:pointer;}
@@ -56,10 +53,8 @@
   .chip.done{opacity:.5;} .chip.done .ct{text-decoration:line-through;}
   .chip .done-tag{margin-left:auto; font-size:10px; font-weight:700; color:var(--good); flex:0 0 auto;}
   .todaydot{margin-left:6px; font-size:10px; color:var(--accent);}
-
   .actions{display:flex; gap:8px; margin:8px 2px 0; flex-wrap:wrap;}
   .actions button{flex:1; min-width:30%; background:var(--surface2); border:1px solid var(--line); color:var(--text); padding:10px; border-radius:var(--r-sm); font-size:12.5px; cursor:pointer;}
-
   /* zones */
   .card{background:var(--surface); border:1px solid var(--line); border-radius:var(--r); padding:16px 18px; margin-top:14px;}
   .card h3{font-size:14px; font-weight:700; margin:0 0 12px;}
@@ -70,7 +65,6 @@
   .znote{font-size:11px; color:var(--hint); margin:10px 0 0; line-height:1.5;}
   .zk{display:flex; gap:6px; flex-wrap:wrap; margin-top:6px;}
   .zk span{font-size:11px; padding:3px 9px; border-radius:999px;}
-
   /* metrics */
   .stats{display:grid; grid-template-columns:repeat(2,1fr); gap:11px; margin-top:14px;}
   .stat{background:var(--surface); border:1px solid var(--line); border-radius:var(--r-sm); padding:13px 15px;}
@@ -83,13 +77,11 @@
   .statusbar{font-size:11px; text-align:center; margin:10px 0 0; height:16px;}
   .ok{color:var(--good);} .err{color:var(--bad);} .pending{color:var(--warn);}
   .setupcard{background:#321f1f;border:1px solid var(--bad);border-radius:var(--r);padding:13px 15px;margin-top:14px;font-size:13px;line-height:1.5;}
-
   /* bottom nav */
   .tabbar{position:fixed; bottom:0; left:0; right:0; background:rgba(10,13,20,.94); backdrop-filter:blur(12px); border-top:1px solid var(--line); display:flex; max-width:560px; margin:0 auto; padding:8px 0 14px;}
   .tabbar button{flex:1; background:none; border:none; color:var(--hint); font-size:11px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:3px;}
   .tabbar button .ti{font-size:19px;}
   .tabbar button.on{color:var(--accent);}
-
   /* edit sheet */
   .sheet{position:fixed; inset:0; background:rgba(0,0,0,.6); display:none; align-items:flex-end; z-index:60;}
   .sheet.open{display:flex;}
@@ -116,7 +108,6 @@
 <body>
 <div class="wrap">
   <div class="top">triplan</div>
-
   <!-- HOME -->
   <div class="scr on" id="scr-home">
     <div class="glabel">Your training plan</div>
@@ -141,7 +132,6 @@
     </div>
     <p style="font-size:11px;color:var(--hint);text-align:center;margin:14px 0 0;">Tap the circle to mark done · tap a session to edit</p>
   </div>
-
   <!-- PLAN -->
   <div class="scr" id="scr-plan">
     <div class="glabel">Full plan · 24 weeks</div>
@@ -159,7 +149,6 @@
       <button id="resetbtn">Reset edits</button>
     </div>
   </div>
-
   <!-- ZONES -->
   <div class="scr" id="scr-zones">
     <div class="glabel">Heart-rate zones</div>
@@ -196,7 +185,7 @@
         <tr><td>Race pace (HM)</td><td>6:15–6:35</td></tr>
         <tr><td>Threshold (Z4)</td><td>5:50–6:10</td></tr>
       </table>
-      <p class="znote">From your Strava pace zones · current 5k ≈ 6:09/km. These lift as fitness returns.</p>
+      <p class="znote">From your Strava pace zones · current 5k ≈ 6:09/km. These lift as fitness returns — re-anchor at every 5k test (W7, W14).</p>
     </div>
     <div class="card">
       <h3>Bike power · FTP 160 W</h3>
@@ -209,10 +198,9 @@
         <tr><td>Z4 threshold</td><td>145–168</td><td>91–105</td></tr>
         <tr><td>Z5 VO₂</td><td>169–192</td><td>106–120</td></tr>
       </table>
-      <p class="znote">FTP 160 W (measured, not estimated). Long rides = Z2 105–125 W. Re-test FTP every 6–8 weeks.</p>
+      <p class="znote">FTP 160 W (measured, not estimated). Long rides = Z2 105–125 W. Tests built into the plan: W7 ramp test, W14 20-min retest (target ≥205 W). A confirmed ~190–205 W lifts every watt target here ~20–25%.</p>
     </div>
   </div>
-
   <!-- METRICS -->
   <div class="scr" id="scr-metrics">
     <div class="glabel">Recovery metrics</div>
@@ -237,7 +225,6 @@
     </div>
   </div>
 </div>
-
 <!-- bottom nav -->
 <div class="tabbar">
   <button data-tab="home" class="on"><span class="ti">🏠</span>Home</button>
@@ -245,7 +232,6 @@
   <button data-tab="zones"><span class="ti">🎯</span>Zones</button>
   <button data-tab="metrics"><span class="ti">📊</span>Metrics</button>
 </div>
-
 <!-- edit sheet -->
 <div class="sheet" id="sheet">
   <div class="sheetinner">
@@ -272,7 +258,6 @@
     </div>
   </div>
 </div>
-
 <script>
 // ====================================================================
 // CONFIG
@@ -285,7 +270,6 @@ const SLEEP_TARGET = 8;
 // ====================================================================
 const SCOPES = "https://www.googleapis.com/auth/spreadsheets";
 const DISCOVERY = "https://sheets.googleapis.com/$discovery/rest?version=v4";
-
 (function(){
   var RACE_KEY="__race__", METRICS_KEY="__metrics__";
   function addDays(dt,n){var x=new Date(dt); x.setDate(x.getDate()+n); return x;}
@@ -294,9 +278,8 @@ const DISCOVERY = "https://sheets.googleapis.com/$discovery/rest?version=v4";
   var RACE = savedRace ? new Date(savedRace+"T12:00:00") : new Date(2026,10,8,12,0,0);
   function computeW1(){ var dow=(RACE.getDay()+6)%7; return addDays(RACE,-dow-23*7); }
   var W1=computeW1(), today=noon(new Date());
-
-  var PHASE=["Survival","Survival","Survival","Survival","Survival","Survival","Base 1","Base 1","Base 1","Base 1","Base 2","Base 2","Base 2","Base 2","Build 1","Build 1","Build 1","Build 1","Build 2/Peak","Build 2/Peak","Build 2/Peak","Build 2/Peak","Taper","Race wk"];
-  var HRS=["4.0","4.0","4.5","3.5","4.5","5.0","7.0","7.5","8.0","7.0","8.5","8.5","7.5","9.0","9.5","7.5","10.0","10.0","10.0","8.5","10.5","9.5","6.5","3.0"];
+  var PHASE=["Survival","Survival","Survival","Survival","Survival","Survival","Base 1","Base 1","Base 1","Recovery","Base 2","Base 2","Base 2","Recovery+Test","Build 1","Build 1","Build 1","Recovery+Sim","Build 2","Build 2","Build 2","Peak/Rehearsal","Taper","Race wk"];
+  var HRS=["4.0","4.0","4.5","3.5","4.5","5.0","6.0","6.7","7.3","4.4","8.2","8.9","9.3","5.5","9.4","10.0","10.3","6.1","10.2","10.8","9.8","7.8","5.8","3.0"];
   var DAYS=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
   var COL={swim:"--swim",bike:"--bike",run:"--run",brick:"--brick",rest:"--rest",tennis:"--tennis",race:"--race"};
   var EMO={swim:"🏊",bike:"🚴",run:"🏃",brick:"🔁",rest:"💤",tennis:"🎾",race:"🏁"};
@@ -309,30 +292,28 @@ const DISCOVERY = "https://sheets.googleapis.com/$discovery/rest?version=v4";
    [d("swim","Swim 30 min easy","skip if shattered"),d("rest","Rest",""),d("rest","Rest",""),d("run","Run 20 min / walk",""),R,d("rest","Rest","likely needed"),d("bike","Ride 2:00 Z2","cut to 1:30 if tired")],
    [d("swim","Swim 35 min","aerobic"),d("run","Run 30 min easy","5 km easy · HR 150–158"),d("swim","Swim 30 min","8×50 · tennis optional"),d("run","Run 30 min easy","5 km easy · HR 150–158"),R,d("run","Run 35 min easy","5.5 km easy · HR 150–160"),d("bike","Long ride 2:15","55 km Z2 · HR 145–158")],
    [d("swim","Swim 40 min","8×100"),d("run","Run 30 min easy","5 km easy · HR 150–158"),d("swim","Swim 30 min","aerobic · tennis optional"),d("run","Run 35 min easy","5.5 km easy · HR 150–158"),R,d("run","Run 40 min easy","6 km easy · HR 150–160"),d("bike","Long ride 2:30","60 km Z2 · HR 145–158")],
-   [d("swim","Swim 45 min","CSS 2×400"),d("run","Run Test — 5k / 20 min","all-out even pace → re-anchor threshold & paces"),d("swim","Swim 45 min","8×100 @ CSS · tennis optional"),d("run","Run 40 min easy","6 km easy · HR 150–158"),R,d("run","Run 45 min Z2","7 km · HR 150–162"),d("bike","FTP Test (bike)","20 min all-out → FTP = avg power ×0.95")],
-   [d("swim","Swim 50 min","CSS work"),d("run","Run 45 min","7 km · HR 150–162 + strides"),d("swim","Swim 50 min","aerobic · tennis optional"),d("run","Run 40 min easy","6.5 km easy · HR 150–158"),R,d("run","Run 50 min Z2","8 km · HR 150–162"),d("bike","Long ride 2:45","65–70 km Z2 · HR 145–158")],
-   [d("swim","Swim 55 min","mixed"),d("run","Run 45 min Z2","7 km · HR 150–162"),d("swim","Swim 55 min","12×100 @ CSS · tennis optional"),d("run","Run 45 min easy","7 km easy · HR 150–158"),R,d("run","Run 55 min Z2","9 km · HR 150–162"),d("bike","Long ride 3:00","70–75 km Z2 · HR 145–158")],
-   [d("swim","Swim 40 min easy",""),d("run","Run 35 min Z2","5.5 km · HR 150–160"),d("swim","Swim 40 min","8×100 · tennis optional"),d("run","Run 30 min easy","5 km easy · HR 150–158"),R,d("brick","First brick","Bike 1:00 HR 150 + Run 15 min HR 155–165"),d("bike","Long ride 2:30","60 km easy · HR 145–155")],
-   [d("swim","Swim 1:00","5×300 @ CSS"),d("run","Run Test — 5k / 20 min","all-out even pace → re-anchor threshold & paces"),d("swim","Swim 1:00","aerobic · tennis optional"),d("run","Run 40 min easy","6.5 km easy · HR 150–158"),R,d("run","Long run 55 min","9 km Z2 · HR 150–162"),d("bike","FTP Test (bike)","20 min all-out → FTP = avg power ×0.95")],
-   [d("swim","Swim 1:00","CSS"),d("run","Run 55 min","2×10 min @ HR 166–176"),d("swim","Swim 1:00","+ strength · tennis optional"),d("run","Run 45 min easy","7 km easy · HR 150–158"),R,d("run","Long run 1:00","10 km Z2 · HR 150–162"),d("bike","Long ride 3:30","85 km Z2 + 2×15 @ HR 161–171")],
-   [d("swim","Swim 50 min easy",""),d("run","Run 45 min Z2","HR 150–162"),d("swim","Swim 50 min","aerobic · tennis optional"),d("run","Run 35 min easy","easy · HR 150–158"),R,d("run","Run 50 min Z2","HR 150–162"),d("bike","Ride 2:45 Z2","recovery · HR 140–152")],
-   [d("swim","Swim 1:00","CSS test #2"),d("run","Run 1:00 tempo","2×15 min @ HR 166–176"),d("swim","Swim 1:00","+ strength · tennis optional"),d("run","Run 40 min easy","easy · HR 150–158"),R,d("brick","Brick","Bike 2:00 HR 150 + Run 30 min HR 155–165"),d("bike","Long ride 4:00","95 km Z2 · HR 145–158")],
-   [d("swim","Swim 1:00","10×100 @ CSS"),d("run","Run Test — 5k / 20 min","all-out even pace → re-anchor threshold & paces"),d("swim","Swim 1:00","+ strength · tennis optional"),d("run","Run 45 min easy","easy · HR 150–158"),R,d("run","Long run 1:15","12 km Z2 · HR 150–162"),d("bike","FTP Test (bike)","20 min all-out → FTP = avg power ×0.95")],
-   [d("swim","Swim 50 min easy",""),d("run","Run 50 min Z2","HR 150–162"),d("swim","Swim 50 min","aerobic · tennis optional"),d("run","Run 40 min easy","easy · HR 150–158"),R,d("run","Run 50 min Z2","HR 150–162"),d("bike","Ride 3:00 Z2","HR 145–158")],
-   [d("swim","Swim 1:00","CSS"),d("run","Run 1:00 threshold","2×10 min @ HR 177–185"),d("swim","Swim 1:00","+ strength · tennis optional"),d("run","Run 45 min easy","easy · HR 150–158"),R,d("run","Long run 1:25","13 km HR 150–162, last 3 @ HR 166–176"),d("bike","Long ride 4:30","105 km Z2 + 2×30 sweet spot HR 165–172")],
-   [d("swim","Swim 1:00","race-pace 200s"),d("run","Run 1:00","threshold mix @ HR 177–185"),d("swim","Swim 1:00","+ strength · tennis optional"),d("run","Run 45 min easy","easy · HR 150–158"),R,d("brick","Brick","Bike 2:30 HR 150 + Run 40 min HR 166–176"),d("bike","Long ride 4:30","110 km · race-pace HR 150–165")],
-   [d("swim","Open water 45 min","St Kilda bay, sighting"),d("run","Run Test — 5k / 20 min","all-out even pace → re-anchor threshold & paces"),d("swim","Swim 1:00","OW or pool · tennis optional"),d("run","Run 45 min easy","easy · HR 150–158"),R,d("run","Long run 1:30","14 km Z2 HR 150–162 (cap)"),d("brick","Big brick","Bike 3:30 HR 150 + Run 30 min HR 166–176 + fuel")],
-   [d("swim","Swim 50 min easy",""),d("run","Run 50 min Z2","HR 150–162"),d("swim","Swim 50 min","OW bay · tennis optional"),d("run","Run 40 min easy","easy · HR 150–158"),R,d("run","Run 1:00 Z2","9 km · HR 150–162"),d("bike","Ride 3:00 Z2","easy · HR 145–155")],
-   [d("swim","OW bay 1:00","race distance"),d("run","Run 1:05 race-pace","3×12 min @ HR 172–180"),d("swim","Swim 1:00","+ strength · drop tennis"),d("run","Run 40 min easy","easy · HR 150–158"),R,d("brick","RACE SIM","Swim 1.5k + Bike 60k HR 150–160 + Run 8k HR 166–176"),d("bike","Ride 3:30 easy Z2","HR 145–155")],
-   [d("swim","OW bay 1:00",""),d("run","Run 1:00","race-pace HR 172–180"),d("swim","Swim 1:00","race-pace 100s · no tennis"),d("run","Run 40 min easy","easy · HR 150–158"),R,d("run","Long run 1:25","13 km Z2 HR 150–162 · final long"),d("bike","Long ride 4:00","95 km Z2 HR 145–158 · final long")],
-   [d("swim","Swim 50 min","quality short"),d("run","Run 45 min race-pace","3×6 min @ HR 172–180"),d("swim","OW bay 45 min","practice · no tennis"),d("run","Run 30 min easy","easy HR 150–158 + strides"),R,d("brick","Brick","Bike 1:30 HR 150 + Run 20 min race-pace HR 172–180"),d("bike","Ride 2:30 Z2","55 km · HR 145–158")],
-   [d("swim","Swim 30 min easy","+ pickups"),d("bike","Bike 45 min easy","HR <150 · 3×1 min openers"),d("run","Run 20 min easy","easy HR 150–158 + 4 strides"),d("rest","Rest","expo Fri"),R,d("bike","Openers","Bike 20 + Run 10 min · race-pace feel"),d("race","RACE DAY","Swim 1.9k ~39min / Bike 90k ~2:48 @ 150W / Run 21.1k ~1:57 @ 5:35/km · SUB-5:30")]
+   [d("rest","Rest + core 20'","easy opener for the new block"),d("run","Run 45'","6×2' @ 5:45–5:55 · jog 90 s between"),d("bike","Bike 60' — FTP RAMP TEST","settles 160 vs Garmin 206 W → re-anchor watt zones"),d("swim","Swim 1,800m","CSS TEST 400/200 → CSS = (T400−T200)÷2"),d("run","Run 40' Z2","HR 150–162 + 4 strides"),d("brick","Brick","Bike 1:45 Z2 + Run 15 min easy"),d("run","Long run 60'","Z2 HR 150–162 + strides")],
+   [d("rest","Strength 30'","full-body — tap for the set"),d("run","Run 50'","5×3' @ 5:45 · jog 90 s between"),d("bike","Bike 65'","3×8' sweet spot 140–150 W"),d("swim","Swim 2,000m","8×100 @ CSS+3"),d("run","Run 45' Z2","HR 150–162"),d("brick","Brick","Bike 2:00 Z2 + Run 15 min easy"),d("run","Long run 65'","Z2 HR 150–162")],
+   [d("rest","Strength 30'","full-body — tap for the set"),d("run","Run 55'","4×4' @ 5:40–5:50"),d("bike","Bike 70'","3×10' sweet spot 140–150 W"),d("swim","Swim 2,100m","6×150 @ CSS+2"),d("run","Run 45' Z2","HR 150–162"),d("brick","Brick","Bike 2:15 Z2 + Run 20 min easy"),d("run","Long run 70'","last 15' steady HR 166–172")],
+   [d("rest","Rest","recovery week"),d("run","Run 40' easy","HR 150–158"),d("bike","Bike 45' Z2","easy spin"),d("swim","Swim 1,500m","technique / drills"),d("rest","Rest / yoga",""),d("brick","Brick","Bike 1:30 Z2 + Run 10 min easy"),d("run","Run 50' easy","HR 150–158")],
+   [d("rest","Strength 30'","full-body — tap for the set"),d("run","Run 55' tempo","2×10' @ 5:50 · HR 166–176"),d("bike","Bike 70'","2×15' sweet spot 140–150 W"),d("swim","Swim 2,200m","10×100 @ CSS+2"),d("run","Run 50' Z2","HR 150–162"),d("brick","Brick","Bike 2:30 Z2 + Run 20 min easy"),d("run","Long run 75'","Z2 · optional pm swim 1,500m")],
+   [d("rest","Strength 30'","full-body — tap for the set"),d("run","Run 60'","3×8' @ 5:40"),d("bike","Bike 75'","3×12' sweet spot 140–150 W"),d("swim","Swim 2,400m","3×400 @ CSS+4"),d("run","Run 50' Z2","HR 150–162"),d("brick","Brick","Bike 2:45 Z2 + Run 25 min easy"),d("run","Long run 80'","Z2 · optional pm swim 1,600m")],
+   [d("rest","Strength 30'","full-body — tap for the set"),d("run","Run 60'","5×5' @ 5:35–5:45"),d("bike","Bike 75'","2×20' sweet spot 140–150 W"),d("swim","Swim 2,400m","6×200 @ CSS+3"),d("run","Run 55' Z2","HR 150–162"),d("brick","Brick","Bike 3:00 Z2 + Run 25 min easy"),d("run","Long run 85'","Z2 · optional pm swim 1,500m")],
+   [d("rest","Rest","test week — arrive fresh"),d("run","Run 40' easy","HR 150–158"),d("bike","FTP RETEST","20' all-out → FTP = avg ×0.95 · target ≥205 W"),d("swim","CSS RETEST","400/200 · target ≤1:58/100m"),d("rest","Rest",""),d("brick","Brick","Bike 1:45 Z2 + Run 15 min easy"),d("race","5k parkrun TT","target ≤27:00 · sub-26:00 opens the harder race model")],
+   [d("rest","Strength 30'","full-body — tap for the set"),d("run","Run 60'","3×10' @ 5:30–5:40"),d("bike","Bike 75'","4×8' @ 95–100% FTP"),d("swim","Swim 2,600m","3×500 @ CSS+4"),d("run","Run 50' Z2","HR 150–162"),d("brick","Brick","Bike 3:00 (2×30' race watts) + Run 30 min"),d("run","Long run 90'","Z2 · optional pm swim 1,500m")],
+   [d("rest","Strength 30'","full-body — tap for the set"),d("run","Run 60'","2×15' @ 5:35"),d("bike","Bike 80'","over-unders 4×9'"),d("swim","Swim 2,700m","4×400 @ CSS+3"),d("run","Run 55' Z2","HR 150–162"),d("brick","Brick","Bike 3:15 (3×25' race watts) + Run 30 min"),d("run","Long run 95'","Z2 · optional pm swim 1,600m")],
+   [d("rest","Strength 30'","full-body — tap for the set"),d("run","Run 65'","4×8' @ 5:30"),d("bike","Bike 80'","2×20' @ 92–95% FTP"),d("swim","Swim 2,800m","2×(400+300+200)"),d("run","Run 55' Z2","HR 150–162"),d("brick","Brick","Bike 3:15 (2×40' race watts) + Run 35 min"),d("run","Long run 100'","Z2 · optional pm swim 1,500m")],
+   [d("rest","Rest","recovery + sim week"),d("run","Run 40' easy","HR 150–158"),d("bike","Bike 60'","3×5' race watts"),d("swim","Swim 1,800m easy","technique"),d("rest","Rest",""),d("race","MINI RACE SIM","Swim 1k + Bike 60k + Run 8k @ race watts & pace · full nutrition"),d("bike","Spin 45'","easy legs-flush")],
+   [d("rest","Strength 30'","full-body — tap for the set"),d("run","Run 65'","3×12' @ 5:30"),d("bike","Bike 80'","3×15' @ 90–93% FTP"),d("swim","Swim 2,800m","5×300 @ CSS+2"),d("run","Run 55' Z2","HR 150–162"),d("brick","Brick","Bike 3:15 (60' race watts) + Run 35 min"),d("run","Long run 100'","Z2 · optional pm swim 1,600m")],
+   [d("rest","Strength 30'","biggest week — tap for the set"),d("run","Run 65'","2×20' @ 5:35–5:40"),d("bike","Bike 85'","2×25' @ 90% FTP"),d("swim","Swim 3,000m","incl. 1,900m TT ≤40:00"),d("run","Run 55' Z2","HR 150–162"),d("brick","Brick","Bike 3:30 (2×45' race watts) + Run 40 min"),d("run","Long run 105'","Z2 · optional pm swim 1,500m")],
+   [d("rest","Rest",""),d("run","Run 60'","3×10' @ 5:25–5:30"),d("bike","Bike 80'","4×10' @ 95% FTP"),d("swim","Swim 2,600m","10×150 @ CSS+1"),d("run","Run 50' Z2","HR 150–162"),d("brick","Brick","Bike 3:00 (75' race watts) + Run 30 min"),d("run","LAST LONG RUN 1:45","Z2 — cap it here, nothing longer")],
+   [d("rest","Rest",""),d("run","Run 55'","4×6' @ 5:25"),d("bike","Bike 75'","3×12' @ 92% FTP"),d("swim","Swim 2,400m","incl. 1,000m TT ≤20:30"),d("rest","Rest",""),d("race","DRESS REHEARSAL","Swim 1.5k + Bike 75k + Run 10k · full race kit & nutrition — lock everything in"),d("bike","Spin 40'","easy")],
+   [d("rest","Rest","taper — sleep is the session"),d("run","Run 45'","3×5' @ 5:15"),d("bike","Bike 60'","3×8' @ 90% FTP"),d("swim","Swim 2,000m","6×100 @ CSS"),d("run","Run 35' easy","HR 150–158"),d("brick","Brick","Bike 1:30 Z2 + Run 15 min easy"),d("run","Run 50'","+ optional swim 1,200m easy")],
+   [d("rest","Rest",""),d("run","Run 30'","4×2' @ race pace + strides"),d("swim","Swim 1,500m","easy + bike check"),d("bike","Bike 40'","3×3' @ 90% FTP"),d("rest","Rest + carb-load","expo Fri"),d("bike","Openers","Bike 20 + Run 10 min · race-pace feel · rack bike"),d("race","RACE DAY","Swim 1.9k ~39min / Bike 90k ~2:48 @ ~150 W / Run 21.1k ~1:57 @ 5:35–5:42 · SUB-5:30")]
   ];
-
   var overrides={}, done={}, accessToken=null, tokenClient=null, gapiReady=false, gisReady=false;
   var configured = !CLIENT_ID.includes("YOUR_") && !API_KEY.includes("YOUR_") && !SPREADSHEET_ID.includes("YOUR_");
   function setStatus(msg, cls){ var s=document.getElementById('status'); s.textContent=msg||""; s.className="statusbar "+(cls||""); }
-
   // ---- metric trends ----
   var METRIC_DEF={ sleep:{el:'m_sleep',tEl:'t_sleep',higher:true,dp:2}, hrv:{el:'m_hrv',tEl:'t_hrv',higher:true,dp:1}, rhr:{el:'m_rhr',tEl:'t_rhr',higher:false,dp:1}, vo2:{el:'m_vo2',tEl:'t_vo2',higher:true,dp:0} };
   function applyMetrics(m){
@@ -352,7 +333,6 @@ const DISCOVERY = "https://sheets.googleapis.com/$discovery/rest?version=v4";
     localStorage.setItem('i703_m_prev',JSON.stringify(np));
     localStorage.setItem('i703_m_trend',JSON.stringify(trend));
   }
-
   // ---- Sheets sync ----
   async function loadFromSheet(){
     if(!accessToken) return; setStatus("Loading…","pending");
@@ -380,7 +360,6 @@ const DISCOVERY = "https://sheets.googleapis.com/$discovery/rest?version=v4";
       setStatus("Saved ✓","ok"); setTimeout(()=>setStatus(""),1500);
     }catch(e){ console.error(e); setStatus("Save failed — check sign-in","err"); }
   }
-
   // ---- Google sign-in ----
   var refreshTimer=null;
   function showSignin(s){ document.getElementById('signinblock').style.display=s?'block':'none'; }
@@ -397,14 +376,12 @@ const DISCOVERY = "https://sheets.googleapis.com/$discovery/rest?version=v4";
   window.gisLoaded=function(){ tokenClient=google.accounts.oauth2.initTokenClient({client_id:CLIENT_ID,scope:SCOPES,callback:onToken}); gisReady=true; maybeReady(); };
   document.getElementById('signin').onclick=()=>{ if(tokenClient) tokenClient.requestAccessToken({prompt:''}); };
   document.getElementById('signoutbtn').onclick=()=>{ if(refreshTimer) clearTimeout(refreshTimer); localStorage.removeItem('i703_token'); if(accessToken){ google.accounts.oauth2.revoke(accessToken); accessToken=null; } showSignin(true); setStatus("Signed out",""); };
-
   // ---- plan logic ----
   function sess(wk,di){ var k=wk+"_"+di; if(overrides[k]) return overrides[k]; return BASEPLAN[wk][di]; }
   var startWk, cur, todayIdx;
   function recompute(){ W1=computeW1(); startWk=Math.max(0,Math.min(23,Math.floor(((today-W1)/864e5+0.5)/7))); todayIdx=(today.getDay()+6)%7; if(typeof cur!=="number") cur=startWk; }
   recompute();
   function fd(wk){ return addDays(W1,wk*7).toLocaleDateString('en-AU',{day:'numeric',month:'short'}); }
-
   function dayRows(wk, isHome){
     var html="";
     for(var i=0;i<7;i++){
@@ -426,8 +403,7 @@ const DISCOVERY = "https://sheets.googleapis.com/$discovery/rest?version=v4";
     container.querySelectorAll('[data-ck]').forEach(function(el){ el.onclick=function(ev){ ev.stopPropagation(); var p=el.getAttribute('data-ck').split('_'); var k=p[0]+'_'+p[1]; if(done[k]) delete done[k]; else done[k]=1; renderAll(); saveOneToSheet(k); }; });
     container.querySelectorAll('[data-ed]').forEach(function(el){ el.onclick=function(){ var p=el.getAttribute('data-ed').split('_'); openEditor(+p[0],+p[1]); }; });
   }
-  function descFor(wk){ return "Week "+(wk+1)+" of 24 · "+PHASE[wk]+" · ~"+HRS[wk]+"h. 3 runs Tue/Thu/Sat easy Z2 (HR 150–158), strength after Tue & Thu runs, 2 swims, long ride Sun, Fri rest."; }
-
+  function descFor(wk){ return "Week "+(wk+1)+" of 24 · "+PHASE[wk]+" · ~"+HRS[wk]+"h. Quality run Tue · bike Wed · swim Thu · easy run Fri · brick Sat · long run Sun. Tap a session for the full set."; }
   function renderHome(){
     document.getElementById('h_wt').textContent="Week "+(startWk+1);
     document.getElementById('h_badge').textContent=PHASE[startWk];
@@ -442,39 +418,39 @@ const DISCOVERY = "https://sheets.googleapis.com/$discovery/rest?version=v4";
     var c=document.getElementById('p_days'); c.innerHTML=dayRows(cur,false); bindRows(c);
   }
   function renderAll(){ renderHome(); renderPlan(); }
-
   // ---- editor ----
   // ---- structured workout builder (warm-up / main / cool-down) ----
   var STR="A) Goblet squat 3×10 · B) Single-leg calf raise 3×12/side (Achilles) · C) Romanian deadlift 3×10 · D) Walking lunge 2×10/side · E) Plank 3×40s + side-plank 3×20s/side. Light–moderate load, 1–2 reps in reserve, full range.";
   function buildSet(s, di){
     var t=s.type, ti=(s.title||"").toLowerCase(), de=s.detail||""; function L(l,x){return {l:l,t:x};}
-    if(t==='rest') return [L('Today','Full day off — or a 20–30 min easy walk + 10 min mobility/stretch.'),L('Why','Recovery and sleep are the work today — keep it restful, no strength.')];
-    if(t==='race') return [L('Swim 1.9k','Target ~38–40 min (2:00–2:06/100m). Steady, sight every 6–8 strokes.'),L('Bike 90k','Target 2:45–2:50 · ~150 W NP (Z3, ~94% FTP) · HR 150–160 · fuel 70–90 g carb/hr, drink every 15 min'),L('Run 21.1k','Target ~1:55–2:00 · 5:30–5:42/km · build from HR 168 to 178 in the back half'),L('Goal','SUB-5:30 — bike strong but controlled (≤155 W) so you can hold 5:35/km off the bike.')];
+    if(t==='rest'&&/strength|core/i.test(ti)) return [L('Warm-up','5 min easy — bodyweight squats, arm circles, leg swings'),L('Strength set', STR),L('Why','Run durability — protects the Achilles and holds form in the last 5 km of the race run.')];
+    if(t==='rest') return [L('Today','Full day off — or a 20–30 min easy walk + 10 min mobility/stretch.'),L('Why','Recovery and sleep are the work today — keep it restful.')];
+    if(t==='race'&&/sim|rehearsal/i.test(ti)) return [L('Format', de||s.title),L('Pacing','Bike at race watts (~150 W NP, HR 150–160) · run at 5:35–5:42/km (HR 172–180). This is a pacing rehearsal, not a race.'),L('Nutrition','Full race-day fuelling: 70–90 g carb/hr on the bike, gel every 25 min on the run — nothing new after today.'),L('Review','Compare splits to the sub-5:30 model afterwards and log them in a note.')];
+    if(t==='race'&&/parkrun|5k/i.test(ti)) return [L('Warm-up','15 min easy + 4×20 s strides'),L('The test','5k all-out, even effort — start AT goal pace, empty the tank over the last 800 m. Same flat course every time.'),L('Your numbers','Avg HR of the last ~18 min ≈ LTHR · avg pace = new threshold pace.'),L('The gate', de||'≤27:00 keeps sub-5:30 on track · under 26:00 (with FTP ≥200 W) opens the harder race model.')];
+    if(t==='race') return [L('Swim 1.9k','Target ~38–40 min (2:00–2:06/100m). Steady, sight every 6–8 strokes.'),L('Bike 90k','Target 2:45–2:50 · ~150 W NP · HR 150–160 · cap surges at 180 W · fuel 70–90 g carb/hr, drink every 15 min'),L('Run 21.1k','Target ~1:55–2:00 · first 3 km at 5:50/km no matter what, then 5:35–5:42/km · gel every 25 min'),L('Goal','SUB-5:30 — bike strong but controlled (≤155 W) so you can hold 5:35/km off the bike.')];
     if(t==='swim'){ var sw=[L('Warm-up','200 m easy + 4×50 drill (catch-up / fingertip-drag), 15 s rest'),L('Main set', de||s.title),L('Cool-down','100 m easy, mixed stroke')]; if(/strength/i.test(de)) sw.push(L('+ Strength (15–20 min)', STR)); return sw; }
     if(t==='brick'){
       var m=de.match(/Bike\s*([0-9:\.]+\s*[kmin]*)[^A-Za-z]*([^+]*)\+\s*Run\s*([0-9:\.]+\s*[kmin]*)\s*(.*)/i);
       var bk=m?(m[1]+(m[2]?' '+m[2].trim():'')):'as listed', rn=m?(m[3]+(m[4]?' '+m[4].trim():'')):'as listed';
-      return [L('Warm-up','10 min easy spin @ 90–110 W'),L('Bike', bk.trim()+' — Z2 power 110–130 W, eat/drink on the bike'),L('Transition','Rack bike, quick shoe swap — keep it under 2 min'),L('Run off the bike', rn.trim()+' — legs heavy ~5 min; settle ~6:45/km then build to HR target'),L('Cool-down','5 min walk + stretch')];
+      return [L('Warm-up','10 min easy spin @ 90–110 W'),L('Bike', bk.trim()+' — Z2 power 110–130 W unless race watts are named, eat/drink on the bike'),L('Transition','Rack bike, quick shoe swap — keep it under 2 min'),L('Run off the bike', rn.trim()+' — legs heavy ~5 min; settle ~6:45/km then build to HR target'),L('Cool-down','5 min walk + stretch')];
     }
     if(t==='bike'){
-      if(/ftp|test/i.test(ti)) return [L('Warm-up','15 min easy building + 3×1 min @ 140–150 W, 90 s easy between'),L('The test','20 min ALL-OUT at an even, just-sustainable power. Hold back the first 5 min so you do not fade.'),L('Your new FTP','= average 20-min power × 0.95. Then 10 min easy cool-down.'),L('Update','Enter the new FTP in the app/Sheet so your watt zones refresh.')];
+      if(/ftp|test/i.test(ti)) return [L('Warm-up','15 min easy building + 3×1 min @ 140–150 W, 90 s easy between'),L('The test','20 min ALL-OUT at an even, just-sustainable power (ramp test: follow the protocol to failure). Hold back the first 5 min so you do not fade.'),L('Your new FTP','= average 20-min power × 0.95. Then 10 min easy cool-down.'),L('Update','Enter the new FTP in the app/Sheet, Zwift AND Strava — every watt target shifts with it.')];
       if(/openers/i.test(ti)) return [L('Openers','10 min easy @ 90 W → 3×1 min @ 150–165 W (full recovery between) → easy spin home.'),L('Note','Prime the legs — do NOT fatigue them. Race-week only.')];
-      if(/sweet spot|threshold|2×15|2×30|3×20|Z3/i.test(de)||/sweet spot/i.test(ti))
-        return [L('Warm-up','15 min easy @ 95–115 W, last 3 min build + 2×1 min @ 145 W'),L('Main set', de+'  ·  Power: sweet-spot 140–150 W (88–94% FTP), threshold reps 152–168 W'),L('Cool-down','10 min easy spin @ <100 W')];
+      if(/sweet spot|threshold|over-under|race watts|9[0-9]%|FTP/i.test(de)||/sweet spot/i.test(ti))
+        return [L('Warm-up','15 min easy @ 95–115 W, last 3 min build + 2×1 min @ 145 W'),L('Main set', de+'  ·  Power: sweet-spot 140–150 W (88–94% FTP), threshold reps 152–168 W, race watts ~150 W'),L('Cool-down','10 min easy spin @ <100 W')];
       return [L('Warm-up','15 min spin, build 90→115 W'),L('Main', de+'  ·  Power: hold 105–125 W (Z2, 66–78% FTP), cadence 85–90'),L('Fuel','60 g carb/hr + 500–750 ml fluid/hr — rehearse race nutrition'),L('Cool-down','10 min easy @ <100 W')];
     }
-    // run — paces from your Strava pace zones (5k ≈ 6:09/km)
+    // run — paces re-anchor at each 5k test (W7 / W14)
     var rows;
-    if(/test/i.test(ti)) return [L('Warm-up','15 min easy @ 7:15/km + 4×20 s strides'),L('The test','Option A — 5k / parkrun all-out, even effort. Option B — 20 min time-trial. Same flat course every time.'),L('Your numbers','Avg HR of the last ~18 min ≈ LTHR · avg pace = threshold pace. Then 10 min easy cool-down.'),L('Update','Log the result and refresh your pace/HR zones.')];
-    if(/threshold/i.test(ti)) rows=[L('Warm-up','15 min easy @ 7:15–7:40/km + 3–4 strides + leg swings'),L('Main set', de+'  ·  Pace 5:50–6:10/km, HR 177–185 · jog 90 s easy between reps'),L('Cool-down','10 min easy @ ~7:30/km')];
-    else if(/tempo/i.test(ti)) rows=[L('Warm-up','10 min easy @ 7:15/km + 4×20 s strides'),L('Main set', de+'  ·  Pace 6:25–6:45/km, HR 166–176 · easy 3 min between blocks'),L('Cool-down','10 min easy')];
-    else if(/race-pace|race pace/i.test(ti)) rows=[L('Warm-up','12 min easy + 4 strides'),L('Main set', de+'  ·  Pace 6:15–6:35/km (goal HM), HR 172–180 · float 2 min easy'),L('Cool-down','10 min easy')];
-    else if(/long run/i.test(ti)) rows=[L('Warm-up','10 min easy build'),L('Main', de+'  ·  Pace 7:00–7:30/km, HR 150–162, conversational'),L('Fuel','30–40 g carb after 45 min, sip fluid'),L('Cool-down','5 min walk + stretch')];
-    else rows=[L('Warm-up','5 min brisk walk → easy jog'),L('Main', (de||'Easy aerobic')+'  ·  Pace 7:15–7:50/km, HR 150–158, fully conversational'),L('Cool-down','5 min easy + light stretch')];
-    if(di===1||di===3) rows.push(L('+ Strength (15–20 min)', STR));  // Tue & Thu run days
+    if(/test/i.test(ti)) return [L('Warm-up','15 min easy + 4×20 s strides'),L('The test','Option A — 5k / parkrun all-out, even effort. Option B — 20 min time-trial. Same flat course every time.'),L('Your numbers','Avg HR of the last ~18 min ≈ LTHR · avg pace = threshold pace. Then 10 min easy cool-down.'),L('Update','Log the result and refresh your pace/HR zones.')];
+    if(/×/.test(de)&&/5:[0-5][0-9]/.test(de)) rows=[L('Warm-up','15 min easy + 3–4 strides + leg swings'),L('Main set', de+'  ·  jog 90 s – 2 min easy between reps · HR drifts into Z4 (177–185) on the last reps'),L('Cool-down','10 min easy')];
+    else if(/tempo/i.test(ti)) rows=[L('Warm-up','10 min easy + 4×20 s strides'),L('Main set', de+'  ·  HR 166–176 · easy 3 min between blocks'),L('Cool-down','10 min easy')];
+    else if(/race-pace|race pace/i.test(ti)) rows=[L('Warm-up','12 min easy + 4 strides'),L('Main set', de+'  ·  goal race pace 5:35–5:42/km, HR 172–180 · float 2 min easy'),L('Cool-down','10 min easy')];
+    else if(/long run/i.test(ti)) rows=[L('Warm-up','10 min easy build'),L('Main', (de||'Z2')+'  ·  HR 150–162, conversational'),L('Fuel','30–40 g carb after 45 min, sip fluid — gut training for race day'),L('Cool-down','5 min walk + stretch')];
+    else rows=[L('Warm-up','5 min brisk walk → easy jog'),L('Main', (de||'Easy aerobic')+'  ·  HR 150–158, fully conversational'),L('Cool-down','5 min easy + light stretch')];
     return rows;
   }
-
   var edWk=null, edDi=null;
   function openEditor(wk,i){ edWk=wk; edDi=i; var s=sess(wk,i), k=wk+"_"+i;
     document.getElementById('sheettitle').textContent=s.title;
@@ -506,20 +482,17 @@ const DISCOVERY = "https://sheets.googleapis.com/$discovery/rest?version=v4";
     var k=edWk+"_"+edDi; overrides[k]={type:document.getElementById('sh_type').value,title:document.getElementById('sh_session').value,detail:document.getElementById('sh_detail').value,note:document.getElementById('sh_note').value};
     closeEditor(); renderAll(); saveOneToSheet(k);
   };
-
   function header(){
     var days=Math.max(0,Math.round((RACE-today)/864e5));
     document.getElementById('cd').textContent=days;
     document.getElementById('racedate').textContent=RACE.toLocaleDateString('en-AU',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
     document.getElementById('racephase').textContent="Week "+(startWk+1)+" of 24 · "+PHASE[startWk];
   }
-
   document.getElementById('prev').onclick=function(){ if(cur>0){cur--;renderPlan();} };
   document.getElementById('next').onclick=function(){ if(cur<23){cur++;renderPlan();} };
   document.getElementById('todaybtn').onclick=function(){ cur=startWk; renderPlan(); };
   document.getElementById('racebtn').onclick=function(){ cur=23; renderPlan(); };
   document.getElementById('resetbtn').onclick=function(){ if(confirm("Clear all check-offs and session edits?")){ done={}; overrides={}; renderAll(); if(accessToken){ /* note: clears local only */ } } };
-
   // ---- tabs ----
   document.querySelectorAll('.tabbar button').forEach(function(b){ b.onclick=function(){
     var t=b.getAttribute('data-tab');
@@ -528,7 +501,6 @@ const DISCOVERY = "https://sheets.googleapis.com/$discovery/rest?version=v4";
     document.getElementById('scr-'+t).classList.add('on');
     document.querySelector('.top').textContent = t==='home'?'triplan':(t.charAt(0).toUpperCase()+t.slice(1));
   }; });
-
   // auto-sync whenever the app is opened or brought back to the foreground
   var lastSync=0;
   function autoSync(force){
@@ -542,7 +514,6 @@ const DISCOVERY = "https://sheets.googleapis.com/$discovery/rest?version=v4";
   document.addEventListener('visibilitychange',function(){ if(document.visibilityState==='visible') autoSync(); });
   window.addEventListener('focus',function(){ autoSync(); });
   window.addEventListener('pageshow',function(e){ if(e.persisted) autoSync(true); }); // back/forward cache restore
-
   if(!configured) document.getElementById('setupwarn').style.display='block';
   header(); renderAll();
 })();
