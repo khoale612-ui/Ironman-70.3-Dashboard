@@ -224,12 +224,23 @@
       <button id="signoutbtn">Sign out</button>
     </div>
   </div>
+  <!-- TESTS -->
+  <div class="scr" id="scr-tests">
+    <div class="glabel">Checkpoint tests</div>
+    <p style="font-size:12px;color:var(--muted);line-height:1.5;margin:0 2px 4px;">Dates shift automatically with your race date. Mark a test done by ticking its session on the Plan tab.</p>
+    <div id="t_list"></div>
+    <div class="card">
+      <h3>The upgrade gate</h3>
+      <p class="znote" style="margin:0;">A 5k under <b>26:00</b> opens the harder <b>run</b> model (1:50 half, ~5:20–5:30/km). An FTP retest <b>≥205 W</b> opens the harder <b>bike</b> model (165–172 W). Each is independent — beat one gate, upgrade that discipline only. Otherwise the race model stays: run ~1:57 @ 5:35–5:42/km, bike ~2:48 @ ~150 W.</p>
+    </div>
+  </div>
 </div>
 <!-- bottom nav -->
 <div class="tabbar">
   <button data-tab="home" class="on"><span class="ti">🏠</span>Home</button>
   <button data-tab="plan"><span class="ti">🗓️</span>Plan</button>
   <button data-tab="zones"><span class="ti">🎯</span>Zones</button>
+  <button data-tab="tests"><span class="ti">✅</span>Tests</button>
   <button data-tab="metrics"><span class="ti">📊</span>Metrics</button>
 </div>
 <!-- edit sheet -->
@@ -279,7 +290,7 @@ const DISCOVERY = "https://sheets.googleapis.com/$discovery/rest?version=v4";
   function computeW1(){ var dow=(RACE.getDay()+6)%7; return addDays(RACE,-dow-23*7); }
   var W1=computeW1(), today=noon(new Date());
   var PHASE=["Survival","Survival","Survival","Survival","Survival","Survival","Base 1","Base 1","Base 1","Recovery","Base 2","Base 2","Base 2","Recovery+Test","Build 1","Build 1","Build 1","Recovery+Sim","Build 2","Build 2","Build 2","Peak/Rehearsal","Taper","Race wk"];
-  var HRS=["4.0","4.0","4.5","3.5","4.5","5.0","6.0","6.7","7.3","4.4","8.2","8.9","9.3","5.5","9.4","10.0","10.3","6.1","10.2","10.8","9.8","7.8","5.8","3.0"];
+  var HRS=["4.0","4.0","4.5","3.5","4.5","5.0","6.0","6.7","7.8","4.4","8.2","8.9","9.3","4.9","9.4","10.0","10.3","6.0","10.3","10.8","9.3","7.4","5.6","2.5"];
   var DAYS=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
   var COL={swim:"--swim",bike:"--bike",run:"--run",brick:"--brick",rest:"--rest",tennis:"--tennis",race:"--race"};
   var EMO={swim:"🏊",bike:"🚴",run:"🏃",brick:"🔁",rest:"💤",tennis:"🎾",race:"🏁"};
@@ -310,6 +321,17 @@ const DISCOVERY = "https://sheets.googleapis.com/$discovery/rest?version=v4";
    [d("rest","Rest",""),d("run","Run 55'","4×6' @ 5:25"),d("bike","Bike 75'","3×12' @ 92% FTP"),d("swim","Swim 2,400m","incl. 1,000m TT ≤20:30"),d("rest","Rest",""),d("race","DRESS REHEARSAL","Swim 1.5k + Bike 75k + Run 10k · full race kit & nutrition — lock everything in"),d("bike","Spin 40'","easy")],
    [d("rest","Rest","taper — sleep is the session"),d("run","Run 45'","3×5' @ 5:15"),d("bike","Bike 60'","3×8' @ 90% FTP"),d("swim","Swim 2,000m","6×100 @ CSS"),d("run","Run 35' easy","HR 150–158"),d("brick","Brick","Bike 1:30 Z2 + Run 15 min easy"),d("run","Run 50'","+ optional swim 1,200m easy")],
    [d("rest","Rest",""),d("run","Run 30'","4×2' @ race pace + strides"),d("swim","Swim 1,500m","easy + bike check"),d("bike","Bike 40'","3×3' @ 90% FTP"),d("rest","Rest + carb-load","expo Fri"),d("bike","Openers","Bike 20 + Run 10 min · race-pace feel · rack bike"),d("race","RACE DAY","Swim 1.9k ~39min / Bike 90k ~2:48 @ ~150 W / Run 21.1k ~1:57 @ 5:35–5:42 · SUB-5:30")]
+  ];
+  var CHECKPOINTS=[
+    {wk:6,di:2,test:"FTP ramp test",target:"settle 160 W vs 206 W",note:"20' effort → re-anchors all bike watt zones. (Skipped in W7 — do it at the first chance.)"},
+    {wk:6,di:3,test:"CSS swim test",target:"400 m & 200 m → CSS",note:"CSS = (T400 − T200) ÷ 2. Sets every swim pace band. (Skipped in W7 — do ASAP.)"},
+    {wk:13,di:2,test:"FTP retest",target:"≥ 205 W",note:"20' all-out → FTP = avg × 0.95. Update the app, Zwift and Strava."},
+    {wk:13,di:3,test:"CSS retest",target:"≤ 1:58 /100 m",note:"400/200 → re-anchors swim pacing for the build block."},
+    {wk:13,di:6,test:"5k parkrun TT",target:"≤ 27:00",note:"Re-anchors run zones. Sub-26:00 opens the harder run model."},
+    {wk:17,di:5,test:"Mini race sim",target:"1k swim · 60k bike · 8k run",note:"Race watts & pace + full race-day nutrition. Pacing rehearsal, not a race."},
+    {wk:19,di:3,test:"1,900 m swim TT",target:"≤ 40:00",note:"Embedded in the main set — swim fitness check."},
+    {wk:21,di:3,test:"1,000 m swim TT",target:"≤ 20:30",note:"Embedded in the main set — final swim fitness check."},
+    {wk:21,di:5,test:"Dress rehearsal",target:"1.5k swim · 75k bike · 10k run",note:"Full race kit & nutrition — lock everything in."}
   ];
   var overrides={}, done={}, accessToken=null, tokenClient=null, gapiReady=false, gisReady=false;
   var configured = !CLIENT_ID.includes("YOUR_") && !API_KEY.includes("YOUR_") && !SPREADSHEET_ID.includes("YOUR_");
@@ -417,7 +439,22 @@ const DISCOVERY = "https://sheets.googleapis.com/$discovery/rest?version=v4";
     document.getElementById('next').style.opacity=cur===23?.35:1;
     var c=document.getElementById('p_days'); c.innerHTML=dayRows(cur,false); bindRows(c);
   }
-  function renderAll(){ renderHome(); renderPlan(); }
+  function renderTests(){
+    var host=document.getElementById('t_list'); if(!host) return;
+    host.innerHTML=CHECKPOINTS.map(function(c){
+      var dt=addDays(W1,c.wk*7+c.di);
+      var ds=dt.toLocaleDateString('en-AU',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
+      var k=c.wk+"_"+c.di, isDone=!!done[k], past=noon(dt)<today && !isDone;
+      var flag=isDone?'<span style="color:var(--good)">✓ done</span>':(past?'<span style="color:var(--bad)">missed</span>':'<span style="color:var(--accent)">upcoming</span>');
+      return '<div class="card" style="margin-top:11px;padding:14px 16px'+(isDone?';opacity:.55':'')+'">'+
+        '<div style="display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--muted);letter-spacing:.04em;text-transform:uppercase"><span>'+ds+'</span><span>W'+(c.wk+1)+' · '+DAYS[c.di]+' · '+flag+'</span></div>'+
+        '<div style="font-size:17px;font-weight:800;margin:6px 0 2px;color:var(--text)">'+c.test+'</div>'+
+        '<div style="font-size:13px;color:var(--accent);font-weight:600">Target: '+c.target+'</div>'+
+        '<div style="font-size:12px;color:var(--muted);margin-top:5px;line-height:1.45">'+c.note+'</div>'+
+      '</div>';
+    }).join('');
+  }
+  function renderAll(){ renderHome(); renderPlan(); renderTests(); }
   // ---- editor ----
   // ---- structured workout builder (warm-up / main / cool-down) ----
   var STR="A) Goblet squat 3×10 · B) Single-leg calf raise 3×12/side (Achilles) · C) Romanian deadlift 3×10 · D) Walking lunge 2×10/side · E) Plank 3×40s + side-plank 3×20s/side. Light–moderate load, 1–2 reps in reserve, full range.";
