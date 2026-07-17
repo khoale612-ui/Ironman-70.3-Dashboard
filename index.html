@@ -210,6 +210,7 @@
       <p style="font-size:11px;color:var(--muted);text-align:center;margin-top:8px;">Syncs to your Google Sheet across devices</p>
     </div>
     <div class="statusbar" id="status"></div>
+    <div class="setupcard" id="planbanner" style="display:none;"></div>
     <div class="stats">
       <div class="stat"><div class="l">Sleep (4wk)</div><div class="v"><span id="m_sleep">6.48</span><span> h</span></div><div class="d neutral" id="t_sleep">—</div></div>
       <div class="stat"><div class="l">HRV (4wk)</div><div class="v"><span id="m_hrv">49</span><span> ms</span></div><div class="d neutral" id="t_hrv">—</div></div>
@@ -219,6 +220,11 @@
     <div class="card">
       <h3>Sleep target</h3>
       <p class="znote" style="margin:0;">Goal 8 h/night. To wake 7:25, lights-out ~11:00pm. A weekly progress log is kept in the Sheet (Progress columns).</p>
+    </div>
+    <div class="card">
+      <h3>Plan sync</h3>
+      <p class="znote" style="margin:0 0 10px;">Your full training plan lives in your Google Sheet — that's what every device reads on sync. After the plan is revised in the app, tap below to push it live so no re-sync can revert it.</p>
+      <button id="publishbtn">Publish plan to Sheet</button>
     </div>
     <div class="actions" style="margin-top:14px;">
       <button id="signoutbtn">Sign out</button>
@@ -277,12 +283,16 @@ const CLIENT_ID = "856518051919-r8ichknn98de10aqo6uclnc6nqf4qasd.apps.googleuser
 const API_KEY   = "AIzaSyCrLdzVxOXQOxm9TxOFBwSjlsXz_os4QKQ";
 const SPREADSHEET_ID = "1PfNjSDhZ3-bjEn4fHeUgXnZ5Oy9PsRDWAKtrcLoAo34";
 const SHEET_NAME = "Sync";
+// Bump PLAN_VERSION whenever BASEPLAN below is revised, then tap "Publish plan to Sheet"
+// in the Metrics tab so every device picks up the new plan on its next sync.
+const PLAN_VERSION = 2;
 const SLEEP_TARGET = 8;
 // ====================================================================
 const SCOPES = "https://www.googleapis.com/auth/spreadsheets";
 const DISCOVERY = "https://sheets.googleapis.com/$discovery/rest?version=v4";
 (function(){
-  var RACE_KEY="__race__", METRICS_KEY="__metrics__";
+  var RACE_KEY="__race__", METRICS_KEY="__metrics__", PLAN_KEY="__planver__";
+  var sheetPlanVer=null;
   function addDays(dt,n){var x=new Date(dt); x.setDate(x.getDate()+n); return x;}
   function noon(dt){return new Date(dt.getFullYear(),dt.getMonth(),dt.getDate(),12,0,0);}
   var savedRace=localStorage.getItem('i703_race');
@@ -360,15 +370,68 @@ const DISCOVERY = "https://sheets.googleapis.com/$discovery/rest?version=v4";
     if(!accessToken) return; setStatus("Loading…","pending");
     try{
       const r=await gapi.client.sheets.spreadsheets.values.get({spreadsheetId:SPREADSHEET_ID,range:SHEET_NAME+"!A2:F1000"});
-      const rows=r.result.values||[]; overrides={}; done={};
-      for(const row of rows){ const key=row[0]; if(!key) continue;
-        if(key===RACE_KEY){ if(row[3]){ RACE=new Date(row[3]+"T12:00:00"); localStorage.setItem('i703_race',row[3]); recompute(); cur=startWk; } continue; }
-        if(key===METRICS_KEY){ applyMetrics({sleep:row[2],hrv:row[3],rhr:row[4],vo2:row[5]}); continue; }
-        if(row[1]==="1") done[key]=1;
-        if(row[2]||row[3]||row[4]||row[5]) overrides[key]={type:row[2]||"rest",title:row[3]||"",detail:row[4]||"",note:row[5]||""};
+      const rows=r.result.values||[];
+      // Non-destructive: build into temp objects and only swap in on a successful read.
+      // A transient/empty/failed read must never blank the plan you can see.
+      var newOverrides={}, newDone={}, newPlanVer=null, sawRows=false;
+      var raceRow=null, metricsRow=null;
+      for(const row of rows){ const key=row[0]; if(!key) continue; sawRows=true;
+        if(key===RACE_KEY){ raceRow=row; continue; }
+        if(key===METRICS_KEY){ metricsRow=row; continue; }
+        if(key===PLAN_KEY){ newPlanVer=parseInt(row[2],10); if(isNaN(newPlanVer)) newPlanVer=null; continue; }
+        if(row[1]==="1") newDone[key]=1;
+        if(row[2]||row[3]||row[4]||row[5]) newOverrides[key]={type:row[2]||"rest",title:row[3]||"",detail:row[4]||"",note:row[5]||""};
       }
-      setStatus("Synced ✓","ok"); setTimeout(()=>setStatus(""),1500); header(); renderAll();
-    }catch(e){ console.error(e); setStatus("Load failed — check Sheet ID and tab name","err"); }
+      if(!sawRows){ // empty read — keep whatever we already have rather than reverting to bare base
+        setStatus("Synced ✓ (no Sheet data yet)","ok"); setTimeout(()=>setStatus(""),2000);
+        sheetPlanVer=null; updatePlanBanner(); return;
+      }
+      overrides=newOverrides; done=newDone; sheetPlanVer=newPlanVer;
+      if(raceRow && raceRow[3]){ RACE=new Date(raceRow[3]+"T12:00:00"); localStorage.setItem('i703_race',raceRow[3]); recompute(); cur=startWk; }
+      if(metricsRow){ applyMetrics({sleep:metricsRow[2],hrv:metricsRow[3],rhr:metricsRow[4],vo2:metricsRow[5]}); }
+      setStatus("Synced ✓","ok"); setTimeout(()=>setStatus(""),1500); updatePlanBanner(); header(); renderAll();
+    }catch(e){ console.error(e); setStatus("Load failed — check sign-in / Sheet ID (edits kept)","err"); }
+  }
+  // ---- full-plan publish: pushes every session + version to the Sheet so all devices sync it ----
+  function updatePlanBanner(){
+    var b=document.getElementById('planbanner'); if(!b) return;
+    if(sheetPlanVer===null){ b.style.display='block'; b.className='setupcard';
+      b.innerHTML='⚠ Plan not published to your Sheet yet. Tap <b>Publish plan to Sheet</b> below so it syncs to every device.'; return; }
+    if(sheetPlanVer < PLAN_VERSION){ b.style.display='block'; b.className='setupcard';
+      b.innerHTML='🆕 This app has a newer plan (v'+PLAN_VERSION+') than your Sheet (v'+sheetPlanVer+'). Tap <b>Publish plan to Sheet</b> to push it live to all devices.'; return; }
+    if(sheetPlanVer > PLAN_VERSION){ b.style.display='block'; b.className='setupcard';
+      b.innerHTML='ℹ This device is running an older app build (v'+PLAN_VERSION+'). It is showing the newer plan (v'+sheetPlanVer+') from your Sheet. Reload the latest index.html when you can.'; return; }
+    b.style.display='none';
+  }
+  async function publishPlanToSheet(){
+    if(!accessToken){ setStatus("Sign in first","err"); return; }
+    setStatus("Publishing plan…","pending");
+    try{
+      // Read current rows so we preserve row order (keeps any extra columns aligned),
+      // existing done flags, and the race/metrics rows.
+      const r=await gapi.client.sheets.spreadsheets.values.get({spreadsheetId:SPREADSHEET_ID,range:SHEET_NAME+"!A2:F1000"});
+      const rows=(r.result.values||[]);
+      var order=[], byKey={};
+      for(const row of rows){ var k=row[0]; if(!k) continue; if(!(k in byKey)){ order.push(k); } byKey[k]=row; }
+      // Upsert every session key with the current effective plan (BASEPLAN + any local edits).
+      for(var wk=0; wk<BASEPLAN.length; wk++){
+        for(var di=0; di<7; di++){
+          var key=wk+"_"+di, s=sess(wk,di), ex=byKey[key];
+          var doneFlag=(ex&&ex[1]==="1")?"1":(done[key]?"1":"");
+          var note=(overrides[key]&&overrides[key].note)||(ex&&ex[5])||"";
+          var rowVals=[key,doneFlag,s.type||"rest",s.title||"",s.detail||"",note];
+          if(!(key in byKey)) order.push(key);
+          byKey[key]=rowVals;
+        }
+      }
+      // Plan-version marker
+      if(!(PLAN_KEY in byKey)) order.push(PLAN_KEY);
+      byKey[PLAN_KEY]=[PLAN_KEY,"",String(PLAN_VERSION),"","","plan version"];
+      var out=order.map(function(k){ var row=byKey[k]; return [row[0]||"",row[1]||"",row[2]||"",row[3]||"",row[4]||"",row[5]||""]; });
+      await gapi.client.sheets.spreadsheets.values.update({spreadsheetId:SPREADSHEET_ID,range:SHEET_NAME+"!A2:F"+(out.length+1),valueInputOption:"RAW",resource:{values:out}});
+      sheetPlanVer=PLAN_VERSION; setStatus("Plan published ✓ — syncs to all devices","ok"); setTimeout(()=>setStatus(""),2500);
+      updatePlanBanner(); await loadFromSheet();
+    }catch(e){ console.error(e); setStatus("Publish failed — check sign-in","err"); }
   }
   async function saveOneToSheet(key){
     if(!accessToken) return; setStatus("Saving…","pending");
@@ -397,6 +460,7 @@ const DISCOVERY = "https://sheets.googleapis.com/$discovery/rest?version=v4";
   window.gapiLoaded=function(){ gapi.load('client',async()=>{ await gapi.client.init({apiKey:API_KEY,discoveryDocs:[DISCOVERY]}); gapiReady=true; maybeReady(); }); };
   window.gisLoaded=function(){ tokenClient=google.accounts.oauth2.initTokenClient({client_id:CLIENT_ID,scope:SCOPES,callback:onToken}); gisReady=true; maybeReady(); };
   document.getElementById('signin').onclick=()=>{ if(tokenClient) tokenClient.requestAccessToken({prompt:''}); };
+  document.getElementById('publishbtn').onclick=publishPlanToSheet;
   document.getElementById('signoutbtn').onclick=()=>{ if(refreshTimer) clearTimeout(refreshTimer); localStorage.removeItem('i703_token'); if(accessToken){ google.accounts.oauth2.revoke(accessToken); accessToken=null; } showSignin(true); setStatus("Signed out",""); };
   // ---- plan logic ----
   function sess(wk,di){ var k=wk+"_"+di; if(overrides[k]) return overrides[k]; return BASEPLAN[wk][di]; }
