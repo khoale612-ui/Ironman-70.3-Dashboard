@@ -179,26 +179,26 @@
       <h3>Run pace</h3>
       <table class="ztable">
         <tr><th>Effort</th><th>min/km</th></tr>
-        <tr><td>Easy / recovery</td><td>7:15–7:50</td></tr>
-        <tr><td>Long / aerobic</td><td>7:00–7:30</td></tr>
-        <tr><td>Tempo (Z3)</td><td>6:25–6:45</td></tr>
-        <tr><td>Race pace (HM)</td><td>6:15–6:35</td></tr>
-        <tr><td>Threshold (Z4)</td><td>5:50–6:10</td></tr>
+        <tr><td>Easy / recovery</td><td>6:20–7:00</td></tr>
+        <tr><td>Long / aerobic</td><td>6:00–6:25</td></tr>
+        <tr><td>Tempo (Z3)</td><td>5:25–5:40</td></tr>
+        <tr><td>Race pace (HM)</td><td>5:20–5:30</td></tr>
+        <tr><td>Threshold (Z4)</td><td>5:10–5:20</td></tr>
       </table>
-      <p class="znote">From your Strava pace zones · current 5k ≈ 6:09/km. These lift as fitness returns — re-anchor at every 5k test (W7, W14).</p>
+      <p class="znote">Re-anchored to your 5k TT 25:59 (5:12/km, 30/08) — threshold ≈ 5:12/km, a big step from the 6:09/km baseline. HR zones unchanged: you're faster at the same LTHR. Run gate cleared (sub-26:00) → harder HM model adopted: race pace 5:20–5:30/km (~1:53 half). Bike model stays standard (FTP gate not met). Prove the race pace in bricks + the W20 sim before committing on race day. Re-anchor at every 5k test.</p>
     </div>
     <div class="card">
-      <h3>Bike power · FTP 160 W</h3>
+      <h3>Bike power · FTP 162 W</h3>
       <table class="ztable">
         <tr><th>Zone</th><th>Watts</th><th>% FTP</th></tr>
-        <tr><td>Z1 recovery</td><td>&lt;90</td><td>&lt;56</td></tr>
-        <tr><td>Z2 endurance</td><td>105–120</td><td>66–75</td></tr>
-        <tr><td>Z3 tempo</td><td>121–144</td><td>76–90</td></tr>
-        <tr><td>Sweet spot</td><td>140–150</td><td>88–94</td></tr>
-        <tr><td>Z4 threshold</td><td>145–168</td><td>91–105</td></tr>
-        <tr><td>Z5 VO₂</td><td>169–192</td><td>106–120</td></tr>
+        <tr><td>Z1 recovery</td><td>&lt;91</td><td>&lt;56</td></tr>
+        <tr><td>Z2 endurance</td><td>105–122</td><td>65–75</td></tr>
+        <tr><td>Z3 tempo</td><td>123–146</td><td>76–90</td></tr>
+        <tr><td>Sweet spot</td><td>143–152</td><td>88–94</td></tr>
+        <tr><td>Z4 threshold</td><td>147–170</td><td>91–105</td></tr>
+        <tr><td>Z5 VO₂</td><td>172–194</td><td>106–120</td></tr>
       </table>
-      <p class="znote">FTP 160 W (measured, not estimated). Long rides = Z2 105–125 W. Tests built into the plan: W7 ramp test, W14 20-min retest (target ≥205 W). A confirmed ~190–205 W lifts every watt target here ~20–25%.</p>
+      <p class="znote">FTP 162 W (measured 26/08, not estimated) — Garmin's old 206 W was never confirmed by a test, so 162 W is the number. Long rides = Z2 105–122 W. Race target ~150 W NP is still ~0.93 of FTP (not yet sustainable for a 2:48 bike) — the bike is now the main limiter; keep building FTP toward ~180 W. Next 20-min retest W15.</p>
     </div>
   </div>
   <!-- METRICS -->
@@ -237,7 +237,7 @@
     <div id="t_list"></div>
     <div class="card">
       <h3>The upgrade gate</h3>
-      <p class="znote" style="margin:0;">A 5k under <b>26:00</b> opens the harder <b>run</b> model (1:50 half, ~5:20–5:30/km). An FTP retest <b>≥205 W</b> opens the harder <b>bike</b> model (165–172 W). Each is independent — beat one gate, upgrade that discipline only. Otherwise the race model stays: run ~1:57 @ 5:35–5:42/km, bike ~2:48 @ ~150 W.</p>
+      <p class="znote" style="margin:0;">Your 5k of <b>25:59</b> (30/08) clears the run gate → harder <b>run</b> model now active: HM ~1:53 @ 5:20–5:30/km. The <b>bike</b> gate (FTP retest <b>≥200 W</b>) is still open — FTP is 162 W — so the bike stays ~2:48 @ ~150 W. Gates are independent: each discipline upgrades as it's earned. Validate the faster run in bricks + the W20 sim before racing it.</p>
     </div>
   </div>
 </div>
@@ -285,7 +285,7 @@ const SPREADSHEET_ID = "1PfNjSDhZ3-bjEn4fHeUgXnZ5Oy9PsRDWAKtrcLoAo34";
 const SHEET_NAME = "Sync";
 // Bump PLAN_VERSION whenever BASEPLAN below is revised, then tap "Publish plan to Sheet"
 // in the Metrics tab so every device picks up the new plan on its next sync.
-const PLAN_VERSION = 2;
+const PLAN_VERSION = 3;
 const SLEEP_TARGET = 8;
 // ====================================================================
 const SCOPES = "https://www.googleapis.com/auth/spreadsheets";
@@ -299,8 +299,8 @@ const DISCOVERY = "https://sheets.googleapis.com/$discovery/rest?version=v4";
   var RACE = savedRace ? new Date(savedRace+"T12:00:00") : new Date(2026,10,8,12,0,0);
   function computeW1(){ var dow=(RACE.getDay()+6)%7; return addDays(RACE,-dow-23*7); }
   var W1=computeW1(), today=noon(new Date());
-  var PHASE=["Survival","Survival","Survival","Survival","Survival","Survival","Base 1","Base 1","Base 1","Recovery","Base 2","Base 2","Base 2","Recovery+Test","Build 1","Build 1","Build 1","Recovery+Sim","Build 2","Build 2","Build 2","Peak/Rehearsal","Taper","Race wk"];
-  var HRS=["4.0","4.0","4.5","3.5","4.5","5.0","6.0","6.7","7.8","4.4","8.2","8.9","9.3","4.9","9.4","10.0","10.3","6.0","10.3","10.8","9.3","7.4","5.6","2.5"];
+  var PHASE=["Survival","Survival","Survival","Survival","Survival","Survival","Base 1","Base 1","Base 1","Recovery","Base 2","Base 2","Base 2","Recovery+Test","Build 1","Build 1","Build 1","Build 1","Peak","Peak","Peak+Sim","Peak","Taper","Race wk"];
+  var HRS=["4.0","4.0","4.5","3.5","4.5","5.0","6.0","6.7","7.8","4.4","8.2","8.9","9.3","4.9","9.5","9.5","10.5","11.0","10.5","8.5","10.0","9.5","5.5","3.0"];
   var DAYS=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
   var COL={swim:"--swim",bike:"--bike",run:"--run",brick:"--brick",rest:"--rest",tennis:"--tennis",race:"--race"};
   var EMO={swim:"🏊",bike:"🚴",run:"🏃",brick:"🔁",rest:"💤",tennis:"🎾",race:"🏁"};
@@ -321,27 +321,21 @@ const DISCOVERY = "https://sheets.googleapis.com/$discovery/rest?version=v4";
    [d("rest","Strength 30'","full-body — tap for the set"),d("run","Run 60'","3×8' @ 5:40"),d("bike","Bike 75'","3×12' sweet spot 140–150 W"),d("swim","Swim 2,400m","3×400 @ CSS+4"),d("run","Run 50' Z2","HR 150–162"),d("brick","Brick","Bike 2:45 Z2 + Run 25 min easy"),d("run","Long run 80'","Z2 · optional pm swim 1,600m")],
    [d("rest","Strength 30'","full-body — tap for the set"),d("run","Run 60'","5×5' @ 5:35–5:45"),d("bike","Bike 75'","2×20' sweet spot 140–150 W"),d("swim","Swim 2,400m","6×200 @ CSS+3"),d("run","Run 55' Z2","HR 150–162"),d("brick","Brick","Bike 3:00 Z2 + Run 25 min easy"),d("run","Long run 85'","Z2 · optional pm swim 1,500m")],
    [d("rest","Rest","test week — arrive fresh"),d("run","Run 40' easy","HR 150–158"),d("bike","FTP RETEST","20' all-out → FTP = avg ×0.95 · target ≥205 W"),d("swim","CSS RETEST","400/200 · target ≤1:58/100m"),d("rest","Rest",""),d("brick","Brick","Bike 1:45 Z2 + Run 15 min easy"),d("race","5k parkrun TT","target ≤27:00 · sub-26:00 opens the harder race model")],
-   [d("rest","Strength 30'","full-body — tap for the set"),d("run","Run 60'","3×10' @ 5:30–5:40"),d("bike","Bike 75'","4×8' @ 95–100% FTP"),d("swim","Swim 2,600m","3×500 @ CSS+4"),d("run","Run 50' Z2","HR 150–162"),d("brick","Brick","Bike 3:00 (2×30' race watts) + Run 30 min"),d("run","Long run 90'","Z2 · optional pm swim 1,500m")],
-   [d("rest","Strength 30'","full-body — tap for the set"),d("run","Run 60'","2×15' @ 5:35"),d("bike","Bike 80'","over-unders 4×9'"),d("swim","Swim 2,700m","4×400 @ CSS+3"),d("run","Run 55' Z2","HR 150–162"),d("brick","Brick","Bike 3:15 (3×25' race watts) + Run 30 min"),d("run","Long run 95'","Z2 · optional pm swim 1,600m")],
-   [d("rest","Strength 30'","full-body — tap for the set"),d("run","Run 65'","4×8' @ 5:30"),d("bike","Bike 80'","2×20' @ 92–95% FTP"),d("swim","Swim 2,800m","2×(400+300+200)"),d("run","Run 55' Z2","HR 150–162"),d("brick","Brick","Bike 3:15 (2×40' race watts) + Run 35 min"),d("run","Long run 100'","Z2 · optional pm swim 1,500m")],
-   [d("rest","Rest","recovery + sim week"),d("run","Run 40' easy","HR 150–158"),d("bike","Bike 60'","3×5' race watts"),d("swim","Swim 1,800m easy","technique"),d("rest","Rest",""),d("race","MINI RACE SIM","Swim 1k + Bike 60k + Run 8k @ race watts & pace · full nutrition"),d("bike","Spin 45'","easy legs-flush")],
-   [d("rest","Strength 30'","full-body — tap for the set"),d("run","Run 65'","3×12' @ 5:30"),d("bike","Bike 80'","3×15' @ 90–93% FTP"),d("swim","Swim 2,800m","5×300 @ CSS+2"),d("run","Run 55' Z2","HR 150–162"),d("brick","Brick","Bike 3:15 (60' race watts) + Run 35 min"),d("run","Long run 100'","Z2 · optional pm swim 1,600m")],
-   [d("rest","Strength 30'","biggest week — tap for the set"),d("run","Run 65'","2×20' @ 5:35–5:40"),d("bike","Bike 85'","2×25' @ 90% FTP"),d("swim","Swim 3,000m","incl. 1,900m TT ≤40:00"),d("run","Run 55' Z2","HR 150–162"),d("brick","Brick","Bike 3:30 (2×45' race watts) + Run 40 min"),d("run","Long run 105'","Z2 · optional pm swim 1,500m")],
-   [d("rest","Rest",""),d("run","Run 60'","3×10' @ 5:25–5:30"),d("bike","Bike 80'","4×10' @ 95% FTP"),d("swim","Swim 2,600m","10×150 @ CSS+1"),d("run","Run 50' Z2","HR 150–162"),d("brick","Brick","Bike 3:00 (75' race watts) + Run 30 min"),d("run","LAST LONG RUN 1:45","Z2 — cap it here, nothing longer")],
-   [d("rest","Rest",""),d("run","Run 55'","4×6' @ 5:25"),d("bike","Bike 75'","3×12' @ 92% FTP"),d("swim","Swim 2,400m","incl. 1,000m TT ≤20:30"),d("rest","Rest",""),d("race","DRESS REHEARSAL","Swim 1.5k + Bike 75k + Run 10k · full race kit & nutrition — lock everything in"),d("bike","Spin 40'","easy")],
-   [d("rest","Rest","taper — sleep is the session"),d("run","Run 45'","3×5' @ 5:15"),d("bike","Bike 60'","3×8' @ 90% FTP"),d("swim","Swim 2,000m","6×100 @ CSS"),d("run","Run 35' easy","HR 150–158"),d("brick","Brick","Bike 1:30 Z2 + Run 15 min easy"),d("run","Run 50'","+ optional swim 1,200m easy")],
-   [d("rest","Rest",""),d("run","Run 30'","4×2' @ race pace + strides"),d("swim","Swim 1,500m","easy + bike check"),d("bike","Bike 40'","3×3' @ 90% FTP"),d("rest","Rest + carb-load","expo Fri"),d("bike","Openers","Bike 20 + Run 10 min · race-pace feel · rack bike"),d("race","RACE DAY","Swim 1.9k ~39min / Bike 90k ~2:48 @ ~150 W / Run 21.1k ~1:57 @ 5:35–5:42 · SUB-5:30")]
+   [d("rest","Rest / strength 20–30'","optional calf-Achilles eccentrics + core — or full rest"),d("run","5k TIME-TRIAL","1.5k w/u · 5.0k all-out even · 1k c/d · target ≤26:00 · PM swim 1.5k"),d("bike","Bike 60' — sweet spot","3×10' @148 W (5' easy btwn) · ~22 km"),d("swim","Swim 2,400m","400 w/u · 8×100 @1:42 (15s r) · 4×50 drill · 400 pull · 200 c/d"),d("run","Run 9 km — tempo","2×2 km @ RP 5:25 (3' jog) · HR 168–176"),d("brick","Brick — ride 2:15 + run 3 km","65 km Z2 115–125 W + 2×15' @140 W → run 3 km @ RP 5:25"),d("run","Long run 12 km","Z2 6:00–6:15 · HR 150–158")],
+   [d("rest","Rest / strength 20–30'","calf-Achilles + core — or full rest"),d("run","Run 9 km — intervals","6×800 m @5:00–5:05 (90s jog) · PM swim 1.5k"),d("bike","Bike 70' — sweet spot","4×10' @150 W · ~26 km"),d("swim","Swim 2,600m","400 w/u · 10×100 @1:42 · 4×50 drill · 300 pull · 200 c/d"),d("run","Run 11 km — tempo","3×2 km @ RP 5:25 (3' jog)"),d("brick","Brick — ride 2:30 + run 3 km","72 km Z2 + 2×15' @140 W → run 3 km @ RP"),d("run","Long run 13 km","Z2 6:00–6:15")],
+   [d("rest","Rest / strength 20–30'","calf-Achilles + core — or full rest"),d("run","Run 10 km — threshold","3×1.5 km @5:15–5:20 (3' jog) · PM swim 1.5k"),d("bike","Bike 72' — threshold","3×12' @158–165 W · ~27 km"),d("swim","Swim 2,800m","400 w/u · 6×200 @1:44 (20s r) · 6×50 drill · 200 c/d"),d("run","Run 11 km — race pace","2×3 km @ RP 5:25 (3' jog)"),d("brick","Brick — ride 3:00 + run 4 km","87 km Z2 + 2×20' @140 W → run 4 km @ RP"),d("run","Long run 14 km","Z2 6:00–6:15")],
+   [d("rest","Rest / strength 20–30'","calf-Achilles + core — or full rest"),d("run","Run 10 km — intervals","5×1 km @5:05 (2' jog) · PM swim 1.5k"),d("bike","Bike 78' — threshold","3×15' @160–168 W · ~30 km"),d("swim","Swim 3,000m","400 w/u · 8×150 @1:42 · 400 pull · 4×50 · 200 c/d"),d("run","Run 12 km — tempo","3×2.5 km @5:30 (3' jog)"),d("brick","PEAK ride 3:30 + run 4 km","100 km Z2 + 2×20' @140 W → run 4 km @ RP"),d("run","Long run 15 km","Z2 6:00–6:15")],
+   [d("rest","Rest / strength 20–30'","calf-Achilles + core — or full rest"),d("run","5k TIME-TRIAL ≤26:00","confirms the 1:57 run leg · PM swim 1.5k easy"),d("bike","Bike 65' — sweet spot","3×12' @150 W · ~24 km"),d("swim","Open water 60'","St Kilda bay ~2.5 km · sight every 6–8 strokes"),d("run","Run 10 km — race pace","3×2 km @ RP 5:25 + 4 strides"),d("brick","Brick — ride 3:00 + run 5 km","87 km + FULL race nutrition 70–90 g/hr → run 5 km @ RP"),d("run","PEAK long run 16 km","Z2 6:00–6:15")],
+   [d("rest","Rest / strength 20–30'","calf-Achilles + core — or full rest"),d("run","Run 9 km — threshold","3×1.5 km @5:20 (3' jog) · PM swim 1.5k"),d("bike","Bike 75' Z2","steady @120 W · recovery · ~28 km"),d("swim","Open water 50'","~2.0 km"),d("run","Run 8 km — tempo","2×2 km @ RP 5:25"),d("brick","Brick — ride 2:30 + run 3 km","72 km + 1×20' @140 W → run 3 km @ RP"),d("run","Long run 12 km","easy Z2 6:05–6:20")],
+   [d("rest","Rest / strength 20–30'","calf-Achilles + core — or full rest"),d("run","Run 9 km — race pace","3×2 km @ RP 5:25 (2' jog)"),d("bike","Bike 55' — openers","3×8' @140 W + easy · ~20 km"),d("swim","Swim 2,000m","400 w/u · 12×100 @1:40 · 200 c/d"),d("run","Shakeout 6 km","easy + 4 strides · pre-sim"),d("race","RACE SIM 1.5k / 60k / 8k","swim ≤21' · bike 60k @135–145 W ≤2:05 · run 8k @ RP ≤46' · full kit & nutrition"),d("run","Long run 8 km","easy Z2 · day after sim")],
+   [d("rest","Rest / strength 20–30'","calf-Achilles + core — or full rest"),d("run","Run 9 km — threshold","5×1 km @5:10 (90s jog) · PM swim 1.5k"),d("bike","Bike 65' — sweet spot","3×12' @150 W · ~24 km"),d("swim","Open water 60'","~2.5 km race-sim swim"),d("run","Run 12 km — race pace","4×2 km @ RP 5:25 (2' jog)"),d("brick","FINAL ride 3:15 + run 4 km","95 km + 2×20' @140 W → run 4 km @ RP"),d("run","FINAL long run 15 km","Z2 6:00–6:15")],
+   [d("rest","Rest","taper — sleep is the session"),d("run","Run 6 km — race pace","3×1 km @5:30 (2' jog)"),d("bike","Bike 45' easy","+ 3×3' @150 W openers · ~17 km"),d("swim","Open water 40'","~1.8 km practice"),d("run","Run 5 km easy","+ 4 strides"),d("brick","Mini-brick — ride 1:30 + run 3 km","43 km + 1×15' @140 W → run 3 km @ RP"),d("run","Long run 8 km","easy Z2")],
+   [d("rest","Rest","easy week — sleep 7.5h+"),d("bike","Bike 45' easy","3×1' openers · HR <150"),d("run","Run 20' easy","+ 4 strides · HR 150–158"),d("swim","Swim 20' easy","+ few pickups · loosen"),d("rest","Rest + carb-load","expo · nothing new"),d("bike","Openers","Bike 20' + Run 10' · race-pace feel · rack bike"),d("race","RACE DAY","Swim 1.9k ~37min / Bike 90k ~2:48 @ ~140 W / Run 21.1k ~1:53 @ 5:25 · SUB-5:30")]
   ];
   var CHECKPOINTS=[
-    {wk:6,di:2,test:"FTP ramp test",target:"settle 160 W vs 206 W",note:"20' effort → re-anchors all bike watt zones. (Skipped in W7 — do it at the first chance.)"},
-    {wk:6,di:3,test:"CSS swim test",target:"400 m & 200 m → CSS",note:"CSS = (T400 − T200) ÷ 2. Sets every swim pace band. (Skipped in W7 — do ASAP.)"},
-    {wk:13,di:2,test:"FTP retest",target:"≥ 205 W",note:"20' all-out → FTP = avg × 0.95. Update the app, Zwift and Strava."},
-    {wk:13,di:3,test:"CSS retest",target:"≤ 1:58 /100 m",note:"400/200 → re-anchors swim pacing for the build block."},
-    {wk:13,di:6,test:"5k parkrun TT",target:"≤ 27:00",note:"Re-anchors run zones. Sub-26:00 opens the harder run model."},
-    {wk:17,di:5,test:"Mini race sim",target:"1k swim · 60k bike · 8k run",note:"Race watts & pace + full race-day nutrition. Pacing rehearsal, not a race."},
-    {wk:19,di:3,test:"1,900 m swim TT",target:"≤ 40:00",note:"Embedded in the main set — swim fitness check."},
-    {wk:21,di:3,test:"1,000 m swim TT",target:"≤ 20:30",note:"Embedded in the main set — final swim fitness check."},
-    {wk:21,di:5,test:"Dress rehearsal",target:"1.5k swim · 75k bike · 10k run",note:"Full race kit & nutrition — lock everything in."}
+    {wk:14,di:1,test:"5k time-trial",target:"≤ 26:00",note:"1.5k w/u · 5k all-out even · confirms the run predictor (25:17) and re-anchors run zones."},
+    {wk:18,di:1,test:"5k time-trial",target:"≤ 26:00",note:"Confirms the 1:57 race-day run leg."},
+    {wk:20,di:5,test:"Race simulation",target:"1.5k swim · 60k bike · 8k run",note:"swim ≤21' · bike ≤2:05 @135–145 W · run ≤46' @ race pace · full kit & nutrition. FTP settled 162 W (26/08)."}
   ];
   var overrides={}, done={}, accessToken=null, tokenClient=null, gapiReady=false, gisReady=false;
   var configured = !CLIENT_ID.includes("YOUR_") && !API_KEY.includes("YOUR_") && !SPREADSHEET_ID.includes("YOUR_");
@@ -489,7 +483,7 @@ const DISCOVERY = "https://sheets.googleapis.com/$discovery/rest?version=v4";
     container.querySelectorAll('[data-ck]').forEach(function(el){ el.onclick=function(ev){ ev.stopPropagation(); var p=el.getAttribute('data-ck').split('_'); var k=p[0]+'_'+p[1]; if(done[k]) delete done[k]; else done[k]=1; renderAll(); saveOneToSheet(k); }; });
     container.querySelectorAll('[data-ed]').forEach(function(el){ el.onclick=function(){ var p=el.getAttribute('data-ed').split('_'); openEditor(+p[0],+p[1]); }; });
   }
-  function descFor(wk){ return "Week "+(wk+1)+" of 24 · "+PHASE[wk]+" · ~"+HRS[wk]+"h. Quality run Tue · bike Wed · swim Thu · easy run Fri · brick Sat · long run Sun. Tap a session for the full set."; }
+  function descFor(wk){ return "Week "+(wk+1)+" of 24 · "+PHASE[wk]+" · ~"+HRS[wk]+"h. Quality run Tue · bike Wed · swim Thu · quality run Fri · brick Sat · long run Sun. Tap a session for the full set."; }
   function renderHome(){
     document.getElementById('h_wt').textContent="Week "+(startWk+1);
     document.getElementById('h_badge').textContent=PHASE[startWk];
@@ -526,9 +520,9 @@ const DISCOVERY = "https://sheets.googleapis.com/$discovery/rest?version=v4";
     var t=s.type, ti=(s.title||"").toLowerCase(), de=s.detail||""; function L(l,x){return {l:l,t:x};}
     if(t==='rest'&&/strength|core/i.test(ti)) return [L('Warm-up','5 min easy — bodyweight squats, arm circles, leg swings'),L('Strength set', STR),L('Why','Run durability — protects the Achilles and holds form in the last 5 km of the race run.')];
     if(t==='rest') return [L('Today','Full day off — or a 20–30 min easy walk + 10 min mobility/stretch.'),L('Why','Recovery and sleep are the work today — keep it restful.')];
-    if(t==='race'&&/sim|rehearsal/i.test(ti)) return [L('Format', de||s.title),L('Pacing','Bike at race watts (~150 W NP, HR 150–160) · run at 5:35–5:42/km (HR 172–180). This is a pacing rehearsal, not a race.'),L('Nutrition','Full race-day fuelling: 70–90 g carb/hr on the bike, gel every 25 min on the run — nothing new after today.'),L('Review','Compare splits to the sub-5:30 model afterwards and log them in a note.')];
-    if(t==='race'&&/parkrun|5k/i.test(ti)) return [L('Warm-up','15 min easy + 4×20 s strides'),L('The test','5k all-out, even effort — start AT goal pace, empty the tank over the last 800 m. Same flat course every time.'),L('Your numbers','Avg HR of the last ~18 min ≈ LTHR · avg pace = new threshold pace.'),L('The gate', de||'≤27:00 keeps sub-5:30 on track · under 26:00 (with FTP ≥200 W) opens the harder race model.')];
-    if(t==='race') return [L('Swim 1.9k','Target ~38–40 min (2:00–2:06/100m). Steady, sight every 6–8 strokes.'),L('Bike 90k','Target 2:45–2:50 · ~150 W NP · HR 150–160 · cap surges at 180 W · fuel 70–90 g carb/hr, drink every 15 min'),L('Run 21.1k','Target ~1:55–2:00 · first 3 km at 5:50/km no matter what, then 5:35–5:42/km · gel every 25 min'),L('Goal','SUB-5:30 — bike strong but controlled (≤155 W) so you can hold 5:35/km off the bike.')];
+    if(t==='race'&&/sim|rehearsal/i.test(ti)) return [L('Format', de||s.title),L('Pacing','Bike at race watts (~150 W NP, HR 150–160) · run at 5:20–5:30/km (HR 175–182). This is a pacing rehearsal, not a race.'),L('Nutrition','Full race-day fuelling: 70–90 g carb/hr on the bike, gel every 25 min on the run — nothing new after today.'),L('Review','Compare splits to the sub-5:30 model afterwards and log them in a note.')];
+    if(t==='race'&&/parkrun|5k/i.test(ti)) return [L('Warm-up','15 min easy + 4×20 s strides'),L('The test','5k all-out, even effort — start AT goal pace, empty the tank over the last 800 m. Same flat course every time.'),L('Your numbers','Avg HR of the last ~18 min ≈ LTHR · avg pace = new threshold pace.'),L('The gate', de||'≤27:00 keeps sub-5:30 on track · under 26:00 opens the harder run model (5:20–5:30/km); FTP ≥200 W opens the bike model separately.')];
+    if(t==='race') return [L('Swim 1.9k','Target ~38–40 min (2:00–2:06/100m). Steady, sight every 6–8 strokes.'),L('Bike 90k','Target 2:45–2:50 · ~150 W NP · HR 150–160 · cap surges at 180 W · fuel 70–90 g carb/hr, drink every 15 min'),L('Run 21.1k','Target ~1:53 · first 3 km at 5:40/km no matter what, then 5:20–5:30/km · gel every 25 min'),L('Goal','SUB-5:30 — bike controlled (≤155 W) so you can hold 5:20–5:30/km off the bike. The run model is aggressive: back off to 5:35 if HR spikes in the first 5 km.')];
     if(t==='swim'){ var sw=[L('Warm-up','200 m easy + 4×50 drill (catch-up / fingertip-drag), 15 s rest'),L('Main set', de||s.title),L('Cool-down','100 m easy, mixed stroke')]; if(/strength/i.test(de)) sw.push(L('+ Strength (15–20 min)', STR)); return sw; }
     if(t==='brick'){
       var m=de.match(/Bike\s*([0-9:\.]+\s*[kmin]*)[^A-Za-z]*([^+]*)\+\s*Run\s*([0-9:\.]+\s*[kmin]*)\s*(.*)/i);
@@ -547,7 +541,7 @@ const DISCOVERY = "https://sheets.googleapis.com/$discovery/rest?version=v4";
     if(/test/i.test(ti)) return [L('Warm-up','15 min easy + 4×20 s strides'),L('The test','Option A — 5k / parkrun all-out, even effort. Option B — 20 min time-trial. Same flat course every time.'),L('Your numbers','Avg HR of the last ~18 min ≈ LTHR · avg pace = threshold pace. Then 10 min easy cool-down.'),L('Update','Log the result and refresh your pace/HR zones.')];
     if(/×/.test(de)&&/5:[0-5][0-9]/.test(de)) rows=[L('Warm-up','15 min easy + 3–4 strides + leg swings'),L('Main set', de+'  ·  jog 90 s – 2 min easy between reps · HR drifts into Z4 (177–185) on the last reps'),L('Cool-down','10 min easy')];
     else if(/tempo/i.test(ti)) rows=[L('Warm-up','10 min easy + 4×20 s strides'),L('Main set', de+'  ·  HR 166–176 · easy 3 min between blocks'),L('Cool-down','10 min easy')];
-    else if(/race-pace|race pace/i.test(ti)) rows=[L('Warm-up','12 min easy + 4 strides'),L('Main set', de+'  ·  goal race pace 5:35–5:42/km, HR 172–180 · float 2 min easy'),L('Cool-down','10 min easy')];
+    else if(/race-pace|race pace/i.test(ti)) rows=[L('Warm-up','12 min easy + 4 strides'),L('Main set', de+'  ·  goal race pace 5:20–5:30/km, HR 175–182 · float 2 min easy'),L('Cool-down','10 min easy')];
     else if(/long run/i.test(ti)) rows=[L('Warm-up','10 min easy build'),L('Main', (de||'Z2')+'  ·  HR 150–162, conversational'),L('Fuel','30–40 g carb after 45 min, sip fluid — gut training for race day'),L('Cool-down','5 min walk + stretch')];
     else rows=[L('Warm-up','5 min brisk walk → easy jog'),L('Main', (de||'Easy aerobic')+'  ·  HR 150–158, fully conversational'),L('Cool-down','5 min easy + light stretch')];
     return rows;
